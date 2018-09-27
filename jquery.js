@@ -3375,7 +3375,7 @@ jQuery.extend({
 			jQuery.ready( true );
 		}
 	},
-    // 文档加载
+    // ready处理方式
 	// Handle when the DOM is ready
 	ready: function( wait ) {
 
@@ -3403,6 +3403,7 @@ jQuery.extend({
 	}
 });
 
+// ready事件和该事件自动消除方法
 /**
  * The ready event handler and self cleanup method
  */
@@ -3420,12 +3421,18 @@ jQuery.ready.promise = function( obj ) {
 		// Catch cases where $(document).ready() is called after the browser event has already occurred.
 		// we once tried to use readyState "interactive" here, but it caused issues like the one
 		// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+
+		// document的文件加载状态有：
+		// uninitialized：初始状态
+		// loading：HTML文档在加载
+		// interactive：HTML文档已完成加载，但资源文件在加载
+		// complete：资源文件加载完毕，即将触发load事件
 		if ( document.readyState === "complete" ) {
 			// Handle it asynchronously to allow scripts the opportunity to delay ready
 			setTimeout( jQuery.ready );
 
 		} else {
-
+            // 为document添加DOMContentLoaded事件，在冒泡阶段触发，事件触发后，去执行completed函数中的代码
 			// Use the handy event callback
 			document.addEventListener( "DOMContentLoaded", completed, false );
 
@@ -3435,7 +3442,7 @@ jQuery.ready.promise = function( obj ) {
 	}
 	return readyList.promise( obj );
 };
-
+// 尽管用户不使用ready事件，也手动触发ready事件
 // Kick off the DOM ready check even if the user does not
 jQuery.ready.promise();
 
