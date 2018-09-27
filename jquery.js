@@ -11,11 +11,11 @@
  *
  * Date: 2014-05-01T17:11Z
  */
-// 整体上来看，是一个有两个函数参数的立即执行函数，第一个参数为this，第二参数为闭包函数
+// 整体上来看，是一个有两个函数参数的立即执行函数，第一个参数为全局对象，第二参数为函数
 // 将函数作为参数传入，主要是为了判断jQuery在不同平台（AMD和CommonJS）下的加载逻辑
 (function( global, factory ) {
-    // 不同平台下的加载逻辑
-    // CommonJS下
+    // 不同环境下的加载逻辑
+    // CommonJS下，模块标识【module】和模块导出【exports】是CommonJS的基本要素
 	if ( typeof module === "object" && typeof module.exports === "object" ) {
 		// For CommonJS and CommonJS-like environments where a proper window is present,
 		// execute the factory and get jQuery
@@ -24,6 +24,7 @@
 		// This accentuates the need for the creation of a real window
 		// e.g. var jQuery = require("jquery")(window);
 		// See ticket #14549 for more info
+		// CommonJS导出模块
 		module.exports = global.document ?
 			factory( global, true ) :
 			function( w ) {
@@ -32,7 +33,7 @@
 				}
 				return factory( w );
 			};
-	} else { // AMD
+	} else {
 		// 立即执行函数内调用闭包函数，返回的函数就可以调用jQuery内部属性和方法
 		factory( global );
 	}
@@ -45,7 +46,7 @@
 // you try to trace through "use strict" call chains. (#13335)
 // Support: Firefox 18+
 //
-
+// 采用工厂模式创建对象
 var arr = [];
 
 var slice = arr.slice;
@@ -71,7 +72,7 @@ var
 	document = window.document,
     // 版本号
 	version = "2.1.1",
-    // 声明jQuery函数，改函数返回jQuery
+    // 声明jQuery函数，该函数返回jQuery
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
 		// The jQuery object is actually just the init constructor 'enhanced'
@@ -3374,7 +3375,7 @@ jQuery.extend({
 			jQuery.ready( true );
 		}
 	},
-
+    // 文档加载
 	// Handle when the DOM is ready
 	ready: function( wait ) {
 
@@ -9188,7 +9189,7 @@ if ( typeof noGlobal === strundefined ) {
 
 
 
-
+// 工厂模式创建jQuery对象，return该对象，所以可以链式方法取值
 return jQuery;
 
 }));
