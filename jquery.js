@@ -11,9 +11,11 @@
  *
  * Date: 2014-05-01T17:11Z
  */
-
+// 整体上来看，是一个有两个函数参数的立即执行函数，第一个参数为this，第二参数为闭包函数
+// 将函数作为参数传入，主要是为了判断jQuery在不同平台（AMD和CommonJS）下的加载逻辑
 (function( global, factory ) {
-
+    // 不同平台下的加载逻辑
+    // CommonJS下
 	if ( typeof module === "object" && typeof module.exports === "object" ) {
 		// For CommonJS and CommonJS-like environments where a proper window is present,
 		// execute the factory and get jQuery
@@ -30,7 +32,8 @@
 				}
 				return factory( w );
 			};
-	} else {
+	} else { // AMD
+		// 立即执行函数内调用闭包函数，返回的函数就可以调用jQuery内部属性和方法
 		factory( global );
 	}
 
@@ -66,9 +69,9 @@ var support = {};
 var
 	// Use the correct document accordingly with window argument (sandbox)
 	document = window.document,
-
+    // 版本号
 	version = "2.1.1",
-
+    // 声明jQuery函数，改函数返回jQuery
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
 		// The jQuery object is actually just the init constructor 'enhanced'
@@ -88,7 +91,7 @@ var
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
 	};
-
+// jQuery原生属性及方法
 jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
 	jquery: version,
@@ -546,6 +549,7 @@ function isArraylike( obj ) {
 	return type === "array" || length === 0 ||
 		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
 }
+// 选择符引擎Sizzle
 var Sizzle =
 /*!
  * Sizzle CSS Selector Engine v1.10.19
@@ -7488,7 +7492,7 @@ var nonce = jQuery.now();
 
 var rquery = (/\?/);
 
-
+// ajax交互模块
 
 // Support: Android 2.3
 // Workaround failure to string-cast null input
@@ -7871,7 +7875,7 @@ jQuery.extend({
 			context: true
 		}
 	},
-
+    // ajax底层接口
 	// Creates a full fledged settings object into target
 	// with both ajaxSettings and settings fields.
 	// If target is omitted, writes into ajaxSettings.
@@ -7887,7 +7891,7 @@ jQuery.extend({
 
 	ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
 	ajaxTransport: addToPrefiltersOrTransports( transports ),
-
+    
 	// Main method
 	ajax: function( url, options ) {
 
@@ -8285,7 +8289,7 @@ jQuery.extend({
 		return jQuery.get( url, undefined, callback, "script" );
 	}
 });
-
+// 添加ajax快捷方法
 jQuery.each( [ "get", "post" ], function( i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
 		// shift arguments if data argument was omitted
@@ -8304,7 +8308,7 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 		});
 	};
 });
-
+// 使用each方法添加ajax门面接口
 // Attach a bunch of functions for handling common AJAX events
 jQuery.each( [ "ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend" ], function( i, type ) {
 	jQuery.fn[ type ] = function( fn ) {
