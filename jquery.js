@@ -3422,16 +3422,20 @@ jQuery.ready.promise = function( obj ) {
 		// we once tried to use readyState "interactive" here, but it caused issues like the one
 		// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
 
-		// document的文件加载状态有：
-		// uninitialized：初始状态
-		// loading：HTML文档在加载
-		// interactive：HTML文档已完成加载，但资源文件在加载
-		// complete：资源文件加载完毕，即将触发load事件
+		/** document的文件加载状态有：
+		    uninitialized：初始状态
+		    loading：HTML文档在加载
+		    interactive：HTML文档已完成加载，但资源文件在加载
+		    complete：资源文件加载完毕，即将触发load事件
+		*/
+		// 页面加载完毕后的动作
 		if ( document.readyState === "complete" ) {
 			// Handle it asynchronously to allow scripts the opportunity to delay ready
 			setTimeout( jQuery.ready );
 
 		} else {
+			/** DOMContentLoaded事件是HTML文档解析并加载完毕时，被触发的，此时，资源（样式、图片等）文件未加载完，
+			    即document.readyState为interactive时 */
             // 为document添加DOMContentLoaded事件，在冒泡阶段触发，事件触发后，去执行completed函数中的代码
 			// Use the handy event callback
 			document.addEventListener( "DOMContentLoaded", completed, false );
@@ -9171,11 +9175,12 @@ if ( typeof define === "function" && define.amd ) {
 var
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
-
+    // 先保存$指向的库或其他
 	// Map over the $ in case of overwrite
 	_$ = window.$;
-
+// 多库共存处理，即无冲突处理
 jQuery.noConflict = function( deep ) {
+	// 判断$变量是否为jQuery变量，若是，$指向_$保存的库或其他，且只能使用jQuery访问jQuery对象
 	if ( window.$ === jQuery ) {
 		window.$ = _$;
 	}
