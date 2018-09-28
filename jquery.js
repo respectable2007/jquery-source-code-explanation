@@ -74,10 +74,11 @@ var
 	version = "2.1.1",
     // 声明jQuery函数，该函数返回jQuery
 	// Define a local copy of jQuery
-	jQuery = function( selector, context ) {
+	jQuery = function( selector, context ) {//旧构造器
+		// 使用new运算符创建一个对象，该对象包含jQuery原型属性和方法、实例对象属性和方法，this指向新对象
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
-		return new jQuery.fn.init( selector, context );
+		return new jQuery.fn.init( selector, context );//新构造器
 	},
 
 	// Support: Android<4.1
@@ -92,12 +93,12 @@ var
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
 	};
-// jQuery原生属性及方法
+// jQuery原型链定义一些属性及方法，降低内存空间，查找快捷
 jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
 	jquery: version,
 
-	constructor: jQuery,
+	constructor: jQuery,//强制指向jQuery构造函数，若不设置，this指向的是Object对象
 
 	// Start with an empty selector
 	selector: "",
@@ -136,6 +137,7 @@ jQuery.fn = jQuery.prototype = {
 		return ret;
 	},
 
+    // 遍历方法
 	// Execute a callback for every element in the matched set.
 	// (You can seed the arguments with an array of args, but this is
 	// only used internally.)
@@ -2709,7 +2711,8 @@ var rootjQuery,
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
-
+	
+    // 在原型上创建init方法
 	init = jQuery.fn.init = function( selector, context ) {
 		var match, elem;
 
@@ -2809,6 +2812,7 @@ var rootjQuery,
 		return jQuery.makeArray( selector, this );
 	};
 
+// 将jQuery原型传递给jQuery.fn.init.prototype，解决新旧构造器隔离的问题
 // Give the init function the jQuery prototype for later instantiation
 init.prototype = jQuery.fn;
 
