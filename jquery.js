@@ -93,7 +93,9 @@ var
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
 	};
-// jQuery原型链定义一些属性及方法，降低内存空间，查找快捷
+/** jQuery原型链定义一些属性及方法，降低内存空间，查找快捷。
+    jQuery.fn保存jQuery原型对象的属性和方法，可将其赋值给init.prototype
+*/
 jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
 	jquery: version,
@@ -2711,7 +2713,7 @@ var rootjQuery,
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
-	
+
     // 在原型上创建init方法
 	init = jQuery.fn.init = function( selector, context ) {
 		var match, elem;
@@ -2812,7 +2814,10 @@ var rootjQuery,
 		return jQuery.makeArray( selector, this );
 	};
 
-// 将jQuery原型传递给jQuery.fn.init.prototype，解决新旧构造器隔离的问题
+/** jQuery使用了new运算符，this指向了init对象，使其无法调用jQuery原型对象的属性和方法。
+    jQuery.fn.init.prototype被赋值了jQuery.fn，使init原型对象上包含了jQuery原型对象的属性和方法，
+    这样jQeury就可以调用jQuery原来定义的原型属性和方法，进而解决新旧构造器隔离的问题
+*/
 // Give the init function the jQuery prototype for later instantiation
 init.prototype = jQuery.fn;
 
