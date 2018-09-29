@@ -75,7 +75,9 @@ var
     // 声明jQuery函数，该函数返回jQuery
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {//旧构造器
-		// 使用new运算符创建一个对象，该对象包含jQuery原型属性和方法、实例对象属性和方法，this指向新对象
+		/** 使用new运算符创建一个实例对象，该对象包含init的原型、实例对象属性和方法，this指向的新对象。
+		    到这里，init对象不包含jQuery的原型对象
+		*/
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
 		return new jQuery.fn.init( selector, context );//新构造器
@@ -93,6 +95,7 @@ var
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
 	};
+
 /** jQuery原型链定义一些属性及方法，降低内存空间，查找快捷。
     jQuery.fn保存jQuery原型对象的属性和方法，可将其赋值给init.prototype
 */
@@ -170,7 +173,9 @@ jQuery.fn = jQuery.prototype = {
 			j = +i + ( i < 0 ? len : 0 );
 		return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
 	},
-
+    
+    /** 返回调用对象之前的对象，若无，则返回空对象
+    */
 	end: function() {
 		return this.prevObject || this.constructor(null);
 	},
@@ -182,7 +187,18 @@ jQuery.fn = jQuery.prototype = {
 	splice: arr.splice
 };
 
+/**插件接口，用于第三方扩展功能。
+根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
+jQuery.extend的this指向jQuery函数（构造函数，也为对象），扩展功能挂载在jQuery函数对象上
+jQuery.fn.extend的this指向init的实例对象，扩展功能挂载在jQuery原型对象上
+因此，用户要根据自己的实际需求选择插件接口
+*/
 jQuery.extend = jQuery.fn.extend = function() {
+	
+	/**函数参数数量，决定于调用函数时传参的个数。
+       可以利用这个特性，通过arguments，实现函数重载。
+       即根据arguments的值不同，进行实现不同的功能。
+	*/
 	var options, name, src, copy, copyIsArray, clone,
 		target = arguments[0] || {},
 		i = 1,
@@ -3217,7 +3233,8 @@ jQuery.Callbacks = function( options ) {
 
 
 jQuery.extend({
-
+    /**异步链式
+    */
 	Deferred: function( func ) {
 		var tuples = [
 				// action, add listener, listener list, final state
@@ -3980,6 +3997,9 @@ jQuery.fn.extend({
 	clearQueue: function( type ) {
 		return this.queue( type || "fx", [] );
 	},
+
+	/**异步链式
+	*/
 	// Get a promise resolved when queues of a certain type
 	// are emptied (fx is the type by default)
 	promise: function( type, obj ) {
@@ -4806,7 +4826,9 @@ if ( !support.focusinBubbles ) {
 }
 
 jQuery.fn.extend({
-
+    
+    /**绑定事件，为异步链式，用来完成一些阻塞进程的操作
+    */
 	on: function( types, selector, data, fn, /*INTERNAL*/ one ) {
 		var origFn, type;
 
