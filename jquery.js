@@ -74,13 +74,13 @@ var
 	version = "2.1.1",
     // 声明jQuery函数，该函数返回jQuery
 	// Define a local copy of jQuery
-	jQuery = function( selector, context ) {//旧构造器
+	jQuery = function( selector, context ) {//旧构造函数
 		/** 使用new运算符创建一个实例对象，该对象包含init的原型、实例对象属性和方法，this指向的新对象。
 		    到这里，init对象不包含jQuery的原型对象
 		*/
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
-		return new jQuery.fn.init( selector, context );//新构造器
+		return new jQuery.fn.init( selector, context );//新构造函数
 	},
 
 	// Support: Android<4.1
@@ -175,6 +175,7 @@ jQuery.fn = jQuery.prototype = {
 	},
     
     /** 返回前一个DOM对象之前的对象，若无，则返回空对象
+        prevObject并不是jQuery的属性，那它从哪里来呢？
     */
 	end: function() {
 		return this.prevObject || this.constructor(null);
@@ -710,7 +711,8 @@ var i,
 	rheader = /^h\d$/i,
 
 	rnative = /^[^{]+\{\s*\[native \w/,
-
+    
+    // sizzle引擎私有变量判断是否为ID/TAG/CLASS选择器的正则表达式
 	// Easily-parseable/retrievable ID or TAG or CLASS selectors
 	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
 
@@ -2728,7 +2730,8 @@ jQuery.fn.extend({
 
 // A central reference to the root jQuery(document)
 var rootjQuery,
-
+    
+    // html字符串正则表达式
 	// A simple way to check for HTML strings
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
@@ -2737,18 +2740,23 @@ var rootjQuery,
     // 在原型上创建init方法
 	init = jQuery.fn.init = function( selector, context ) {
 		var match, elem;
-
+        
+        // 若传入为空字符串、null、undefined和false则返回jQuery实例对象
 		// HANDLE: $(""), $(null), $(undefined), $(false)
 		if ( !selector ) {
 			return this;
 		}
-
+        
+        // 若传入非空html字符串
 		// Handle HTML strings
 		if ( typeof selector === "string" ) {
+
+			// 若传入的是标签html字符串，例如<div></div>
 			if ( selector[0] === "<" && selector[ selector.length - 1 ] === ">" && selector.length >= 3 ) {
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
-
+            
+            // 不是标签HTML字符串
 			} else {
 				match = rquickExpr.exec( selector );
 			}
