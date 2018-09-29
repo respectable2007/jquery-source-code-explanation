@@ -174,7 +174,7 @@ jQuery.fn = jQuery.prototype = {
 		return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
 	},
     
-    /** 返回调用对象之前的对象，若无，则返回空对象
+    /** 返回前一个DOM对象之前的对象，若无，则返回空对象
     */
 	end: function() {
 		return this.prevObject || this.constructor(null);
@@ -190,11 +190,14 @@ jQuery.fn = jQuery.prototype = {
 /**插件接口，用于第三方扩展功能。
 根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
 jQuery.extend的this指向jQuery函数（构造函数，也为对象），扩展功能挂载在jQuery函数对象上
-jQuery.fn.extend的this指向init的实例对象，扩展功能挂载在jQuery原型对象上
-因此，用户要根据自己的实际需求选择插件接口
+jQuery.fn.extend的this指向fn对象，fn对象和jQuery.prototype指向同一个对象，扩展功能挂载在jQuery原型对象上
+那么，为何提供两种插件接口？
+77行代码声明了一个jQuery函数，函数也是对象，使用了new运算符创建一个init的实例对象，实例对象的[[prototype]]指向的是
+init构造函数的原型，而init构造函数原型与fn对象指向同一个对象，在fn对象定义extend方法，就是在原型上扩展了新方法
+fn与jQuery是两个不同的对象，为了用户方便，在两个对象上分别定义了extend方法
 */
 jQuery.extend = jQuery.fn.extend = function() {
-	
+
 	/**函数参数数量，决定于调用函数时传参的个数。
        可以利用这个特性，通过arguments，实现函数重载。
        即根据arguments的值不同，进行实现不同的功能。
@@ -759,6 +762,7 @@ try {
 	};
 }
 
+/**Sizzle构造函数*/
 function Sizzle( selector, context, results, seed ) {
 	var match, elem, m, nodeType,
 		// QSA vars
@@ -2951,7 +2955,8 @@ jQuery.fn.extend({
 			)
 		);
 	},
-
+    
+    // 在对象栈中回溯到上一个位置，并返回当前DOM对象和之前的DOM对象整合后的对象
 	addBack: function( selector ) {
 		return this.add( selector == null ?
 			this.prevObject : this.prevObject.filter(selector)
@@ -9176,6 +9181,7 @@ jQuery.fn.size = function() {
 	return this.length;
 };
 
+// andSelf是addBack的别名，也是回溯到之前的DOM对象方法
 jQuery.fn.andSelf = jQuery.fn.addBack;
 
 
