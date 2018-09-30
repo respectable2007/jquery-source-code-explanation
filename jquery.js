@@ -2731,11 +2731,22 @@ jQuery.fn.extend({
 // A central reference to the root jQuery(document)
 var rootjQuery,
     
-    // html字符串正则表达式
+    /** html字符串正则表达式
+     非全局模式，区分大小写，
+     (?:)不改变正则的处理方式，只是不捕获匹配的文本，不配置组号
+     [^>]匹配除>的任意字符
+     \w匹配大小写字母、数字、下划线或汉字
+     \W匹配除了大小写字母、数字、下划线或汉字的字符
+     \s匹配任意空字符
+     rquickExpr正则可以分为以下两个部分：
+	 1、\s*(<[\w\W]+>)[^>]*--含有尖括号的html字符串
+	 2、#([\w-]*)--id 
+	 */
 	// A simple way to check for HTML strings
 	// Prioritize #id over <tag> to avoid XSS via location.hash (#9521)
 	// Strict HTML recognition (#11290: must start with <)
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
+
 
     // 在原型上创建init方法
 	init = jQuery.fn.init = function( selector, context ) {
@@ -2756,8 +2767,10 @@ var rootjQuery,
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
             
-            // 不是标签HTML字符串
+            // 
 			} else {
+
+				// regexp.exec为
 				match = rquickExpr.exec( selector );
 			}
 
