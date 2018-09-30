@@ -2762,12 +2762,12 @@ var rootjQuery,
 		// Handle HTML strings
 		if ( typeof selector === "string" ) {
 
-			// 若传入的是标签html字符串，例如<div></div>
+			// 若传入的是标签html字符串，例如<a>
 			if ( selector[0] === "<" && selector[ selector.length - 1 ] === ">" && selector.length >= 3 ) {
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
             
-            // 
+            //若包含空白字符的标签html字符串或包含#字符的字符串
 			} else {
 
 				/** 用圆括号来表达子表达式（分组）
@@ -2781,10 +2781,12 @@ var rootjQuery,
                 */
 				match = rquickExpr.exec( selector );
 			}
-
+            
+            // 选择器
 			// Match html or make sure no context is specified for #id
 			if ( match && (match[1] || !context) ) {
-
+                
+                // 标签选择器
 				// HANDLE: $(html) -> $(array)
 				if ( match[1] ) {
 					context = context instanceof jQuery ? context[0] : context;
@@ -2812,7 +2814,8 @@ var rootjQuery,
 					}
 
 					return this;
-
+                
+                // id选择器
 				// HANDLE: $(#id)
 				} else {
 					elem = document.getElementById( match[2] );
