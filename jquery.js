@@ -157,7 +157,7 @@ jQuery.fn = jQuery.prototype = {
 		return ret;
 	},
 
-    // 遍历方法
+    // 遍历方法，以每一个匹配的元素作为上下文来执行一个函数
 	// Execute a callback for every element in the matched set.
 	// (You can seed the arguments with an array of args, but this is
 	// only used internally.)
@@ -323,7 +323,8 @@ jQuery.extend({
 	},
 
 	isArray: Array.isArray,
-
+    
+    // 判断对象是否为窗口（有可能是Frame）
 	isWindow: function( obj ) {
 		return obj != null && obj === obj.window;
 	},
@@ -361,11 +362,14 @@ jQuery.extend({
 		}
 		return true;
 	},
-
+    
+    // 判断数据类型
 	type: function( obj ) {
 		if ( obj == null ) {
 			return obj + "";
 		}
+
+		// toString.call：调用Object原型的toString方法，判断对象类型
 		// Support: Android < 4.0, iOS < 6 (functionish RegExp)
 		return typeof obj === "object" || typeof obj === "function" ?
 			class2type[ toString.call(obj) ] || "object" :
@@ -405,6 +409,12 @@ jQuery.extend({
 		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 	},
 
+    /* 通用遍历方法，用于遍历对象和数组
+       callback有两个参数：
+         第一个为对象的成员或数组的索引
+         第二个为对应变量或内容
+       返回false则退出each循环
+    */
 	// args is for internal usage only
 	each: function( obj, callback, args ) {
 		var value,
@@ -413,14 +423,18 @@ jQuery.extend({
 			isArray = isArraylike( obj );
 
 		if ( args ) {
+			// 数组
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
+
+					// 使用Function.prototype.apply方法,以obj[i]和args作为参数，执行函数内部代码
 					value = callback.apply( obj[ i ], args );
 
 					if ( value === false ) {
 						break;
 					}
 				}
+			// 对象
 			} else {
 				for ( i in obj ) {
 					value = callback.apply( obj[ i ], args );
@@ -433,6 +447,7 @@ jQuery.extend({
 
 		// A special, fast, case for the most common use of each
 		} else {
+			// 数组
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
 					value = callback.call( obj[ i ], i, obj[ i ] );
@@ -441,6 +456,7 @@ jQuery.extend({
 						break;
 					}
 				}
+			// 对象
 			} else {
 				for ( i in obj ) {
 					value = callback.call( obj[ i ], i, obj[ i ] );
@@ -451,7 +467,7 @@ jQuery.extend({
 				}
 			}
 		}
-
+        // 返回处理后的数组或对象
 		return obj;
 	},
 
@@ -589,19 +605,23 @@ jQuery.extend({
 	support: support
 });
 
+// 生成各数据类型对象
 // Populate the class2type map
 jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
 });
 
+// 判断是否为Array
 function isArraylike( obj ) {
 	var length = obj.length,
 		type = jQuery.type( obj );
 
+    // 若是函数引用类型或窗口对象，则返回false
 	if ( type === "function" || jQuery.isWindow( obj ) ) {
 		return false;
 	}
-
+    
+    // 若是元素节点，且length大于0，则是数组
 	if ( obj.nodeType === 1 && length ) {
 		return true;
 	}
