@@ -126,18 +126,22 @@ jQuery.fn = jQuery.prototype = {
 			// Return all the elements in a clean array
 			slice.call( this );
 	},
-
+    
+    // 将DOM数组推入DOM栈内，添加prevObject对象属性，返回jQuery对象
 	// Take an array of elements and push it onto the stack
 	// (returning the new matched element set)
 	pushStack: function( elems ) {
-
+        
+        // 生成一个新的对象，并合并DOM节点
 		// Build a new jQuery matched element set
 		var ret = jQuery.merge( this.constructor(), elems );
-
+        
+        // 将之前的对象引用给prevObject，只是将prevObject指向之前的对象
 		// Add the old object onto the stack (as a reference)
 		ret.prevObject = this;
 		ret.context = this.context;
-
+        
+        // 返回新的jQuery对象
 		// Return the newly-formed element set
 		return ret;
 	},
@@ -174,8 +178,10 @@ jQuery.fn = jQuery.prototype = {
 		return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
 	},
     
-    /** 返回前一个DOM对象之前的对象，若无，则返回空对象
-        prevObject并不是jQuery的属性，那它从哪里来呢？
+    /** 返回当前DOM对象之前的对象，若无，则返回空对象
+        prevObject并不是主动声明的jQuery属性，那它从哪里来呢？
+        当我们需要遍历DOM对象时，经常使用find来查找正在处理元素的后代元素，
+        那我们来查看find方法的源码（2684行）
     */
 	end: function() {
 		return this.prevObject || this.constructor(null);
@@ -2664,6 +2670,7 @@ function winnow( elements, qualifier, not ) {
 	});
 }
 
+// 返回与指定表达式匹配的集合
 jQuery.filter = function( expr, elems, not ) {
 	var elem = elems[ 0 ];
 
@@ -2678,6 +2685,7 @@ jQuery.filter = function( expr, elems, not ) {
 		}));
 };
 
+// 查找正在处理的元素的后代元素
 jQuery.fn.extend({
 	find: function( selector ) {
 		var i,
@@ -2842,13 +2850,15 @@ var rootjQuery,
 			} else {
 				return this.constructor( context ).find( selector );
 			}
-
+        
+        // 根据节点类型
 		// HANDLE: $(DOMElement)
 		} else if ( selector.nodeType ) {
 			this.context = this[0] = selector;
 			this.length = 1;
 			return this;
 
+        // 若传入函数
 		// HANDLE: $(function)
 		// Shortcut for document ready
 		} else if ( jQuery.isFunction( selector ) ) {
@@ -8881,6 +8891,8 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 		keepScripts = context;
 		context = false;
 	}
+
+	// 若context为null，则将document赋值给context
 	context = context || document;
 
 	var parsed = rsingleTag.exec( data ),
