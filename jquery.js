@@ -114,15 +114,21 @@ jQuery.fn = jQuery.prototype = {
 	toArray: function() {
 		return slice.call( this );
 	},
-
+    
+    // 获得第几个匹配元素，返回DOM对象--对象索引值选择器
 	// Get the Nth element in the matched element set OR
 	// Get the whole matched element set as a clean array
 	get: function( num ) {
 		return num != null ?
-
+            
+            /* 若num不为null，则返回匹配的DOM元素
+               若num为负数，则从尾至头返回匹配的DOM元素
+               若超出索引范围，则返回undefined
+            */
 			// Return just the one element from the set
 			( num < 0 ? this[ num + this.length ] : this[ num ] ) :
-
+            
+            // 若num为null，则返回DOM元素集合
 			// Return all the elements in a clean array
 			slice.call( this );
 	},
@@ -163,18 +169,26 @@ jQuery.fn = jQuery.prototype = {
 	slice: function() {
 		return this.pushStack( slice.apply( this, arguments ) );
 	},
-
+    
+    // 返回第一个jQuery对象
 	first: function() {
 		return this.eq( 0 );
 	},
-
+    
+    // 返回最后一个jQuery对象
 	last: function() {
 		return this.eq( -1 );
 	},
-
+    
+    // 返回第几个jQuery对象，若为负数，则从尾至头返回一个jQuery对象
 	eq: function( i ) {
 		var len = this.length,
+		    /* 利用运算符优先级，括号高于加号
+		    括号内判断是否负数，若是，则函数传参+jQuery对象数组的长度为索引值，从尾至头返回jQuery对象
+		                      若不是，则函数传参即为索引值，从头至尾返回jQuery对象
+		    */
 			j = +i + ( i < 0 ? len : 0 );
+		    // 都会返回jQuery对象
 		return this.pushStack( j >= 0 && j < len ? [ this[j] ] : [] );
 	},
     
@@ -6065,7 +6079,7 @@ jQuery.extend({
 			return style[ name ];
 		}
 	},
-
+    
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
 			origName = jQuery.camelCase( name );
