@@ -49,6 +49,7 @@
 // 采用工厂模式创建对象
 var arr = [];
 
+// 变量slice为array的slice函数
 var slice = arr.slice;
 
 var concat = arr.concat;
@@ -110,7 +111,8 @@ jQuery.fn = jQuery.prototype = {
 
 	// The default length of a jQuery object is 0
 	length: 0,
-
+    
+    // 返回DOM元素集合
 	toArray: function() {
 		return slice.call( this );
 	},
@@ -133,6 +135,9 @@ jQuery.fn = jQuery.prototype = {
 			slice.call( this );
 	},
     
+    /* 从pushStack-end方法均返回jQuery对象或jQuery对象集合
+    */
+
     // 将DOM数组推入DOM栈内，添加prevObject对象属性，返回jQuery对象
 	// Take an array of elements and push it onto the stack
 	// (returning the new matched element set)
@@ -165,8 +170,18 @@ jQuery.fn = jQuery.prototype = {
 			return callback.call( elem, i, elem );
 		}));
 	},
-
+    
+    // 返回jQuery对象集合，eq只返回一个jQuery对象
 	slice: function() {
+
+		/*slice为array的slice函数
+		  slice.apply:
+		    第一个参数：变更this指向，由原来的arr指向到jQuery对象
+            第二个参数：指定项的起始和结束位置，不包括结束位置的项
+          jQuery对象和arguments均为类数组对象，jQuery数组保存DOM
+          元素集合，arguments保存函数传参。因此，slice.apply(..,..)
+          返回DOM元素集合
+		*/
 		return this.pushStack( slice.apply( this, arguments ) );
 	},
     
