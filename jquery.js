@@ -3186,7 +3186,7 @@ jQuery.Callbacks = function( options ) {
 	// Convert options from String-formatted to Object-formatted if needed
 	// (we check in cache first)
 	options = typeof options === "string" ?
-	    // 先在缓存项中查找，若无，则调用createOptions方法，生成该项
+	    // 先在optionsCache缓存中查找，若无，则调用createOptions方法，生成该项
 		( optionsCache[ options ] || createOptions( options ) ) :
 		jQuery.extend( {}, options );
 
@@ -3202,12 +3202,13 @@ jQuery.Callbacks = function( options ) {
 		firingLength,
 		// Index of currently firing callback (modified by remove if needed)
 		firingIndex,
+		// 声明数组，用于存放回调（订阅者订阅的函数）
 		// Actual callback list
 		list = [],
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
 
-		// 触发回调函数
+		// 用给定的参数调用所有的回调
 		// Fire callbacks
 		fire = function( data ) {
 			memory = options.memory && data;
