@@ -58,8 +58,10 @@ var push = arr.push;
 
 var indexOf = arr.indexOf;
 
+// 声明数据类型对象
 var class2type = {};
 
+// 变量toString为对象toString函数
 var toString = class2type.toString;
 
 var hasOwn = class2type.hasOwnProperty;
@@ -629,7 +631,8 @@ function isArraylike( obj ) {
 	return type === "array" || length === 0 ||
 		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
 }
-// 选择符引擎Sizzle
+
+// 选择符引擎Sizzle（行635-2682）
 var Sizzle =
 /*!
  * Sizzle CSS Selector Engine v1.10.19
@@ -3141,6 +3144,7 @@ function createOptions( options ) {
 	return object;
 }
 
+// 回调函数
 /*
  * Create a callback list using the following parameters:
  *
@@ -5332,7 +5336,10 @@ jQuery.fn.extend({
 				});
 		}, null, value, arguments.length );
 	},
-
+    
+    /* 在domManip中处理以下4个方法的共性，并通过回调函数将结果返回
+    */
+    // 向每个匹配的元素内部追加内容
 	append: function() {
 		return this.domManip( arguments, function( elem ) {
 			if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
@@ -5341,7 +5348,8 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    
+    // 向每个匹配的元素内部前置内容
 	prepend: function() {
 		return this.domManip( arguments, function( elem ) {
 			if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
@@ -5350,7 +5358,8 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    
+    // 在每个匹配的元素之前插入内容
 	before: function() {
 		return this.domManip( arguments, function( elem ) {
 			if ( this.parentNode ) {
@@ -5358,7 +5367,8 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    
+    // 在每个匹配的元素之后插入内容
 	after: function() {
 		return this.domManip( arguments, function( elem ) {
 			if ( this.parentNode ) {
