@@ -3128,10 +3128,14 @@ jQuery.each({
 		return this.pushStack( matched );
 	};
 });
+
+/**空白字符：空格、制表、换行、中文全角空格等 
+   匹配至少一个非空白字符
+*/
 var rnotwhite = (/\S+/g);
 
 
-
+// 声明optionsCache变量，缓存option
 // String to Object options format cache
 var optionsCache = {};
 
@@ -3167,11 +3171,22 @@ function createOptions( options ) {
  *	stopOnFalse:	interrupt callings when a callback returns false
  *
  */
+
+ // 一个多用途的回调列表对象，提供了强大的方式来管理回调函数队列
+ /* 观察者模式使用场合：当一个对象的改变需要同时改变其他对象，且它不知道
+    具体有多少对象需要改变的时候，可以考虑观察者模式
+    提供了add、remove、fire、lock等操作
+    提供了once、memory、unique、stopOnFalse四个option，可进行特殊的控制
+    Callbacks用于queue、ajax、Deferred对象中
+    Callbacks是工厂模式，使用对象字面量声明一个新对象
+ */
 jQuery.Callbacks = function( options ) {
 
+    // 字符串类型的option转为对象类型
 	// Convert options from String-formatted to Object-formatted if needed
 	// (we check in cache first)
 	options = typeof options === "string" ?
+	    // 先在缓存项中查找，若无，则调用createOptions方法，生成该项
 		( optionsCache[ options ] || createOptions( options ) ) :
 		jQuery.extend( {}, options );
 
@@ -3191,6 +3206,8 @@ jQuery.Callbacks = function( options ) {
 		list = [],
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
+
+		// 触发回调函数
 		// Fire callbacks
 		fire = function( data ) {
 			memory = options.memory && data;
@@ -3220,6 +3237,8 @@ jQuery.Callbacks = function( options ) {
 		},
 		// Actual Callbacks object
 		self = {
+
+			// 添加一个回调函数或回调集合到变量list
 			// Add a callback or a collection of callbacks to the list
 			add: function() {
 				if ( list ) {
@@ -3251,6 +3270,8 @@ jQuery.Callbacks = function( options ) {
 				}
 				return this;
 			},
+
+			// 从回调列表中删除一个回调或回调集合
 			// Remove a callback from the list
 			remove: function() {
 				if ( list ) {
@@ -3272,26 +3293,36 @@ jQuery.Callbacks = function( options ) {
 				}
 				return this;
 			},
+
+			// 确定列表中是否提供一个回调
 			// Check if a given callback is in the list.
 			// If no argument is given, return whether or not list has callbacks attached.
 			has: function( fn ) {
 				return fn ? jQuery.inArray( fn, list ) > -1 : !!( list && list.length );
 			},
+
+			// 从列表中删除所有的回调
 			// Remove all callbacks from the list
 			empty: function() {
 				list = [];
 				firingLength = 0;
 				return this;
 			},
+
+			// 禁用回调列表中的回调
 			// Have the list do nothing anymore
 			disable: function() {
 				list = stack = memory = undefined;
 				return this;
 			},
+
+			// 确定回调列表是否已被禁用
 			// Is it disabled?
 			disabled: function() {
 				return !list;
 			},
+
+			// 锁定当前状态的回调列表
 			// Lock the list in its current state
 			lock: function() {
 				stack = undefined;
@@ -3300,10 +3331,14 @@ jQuery.Callbacks = function( options ) {
 				}
 				return this;
 			},
+
+			// 确定回调列表是否已被锁定
 			// Is it locked?
 			locked: function() {
 				return !stack;
 			},
+
+			// 访问给定的上下文和参数列表中的所有回调
 			// Call all callbacks with the given context and arguments
 			fireWith: function( context, args ) {
 				if ( list && ( !fired || stack ) ) {
@@ -3317,11 +3352,15 @@ jQuery.Callbacks = function( options ) {
 				}
 				return this;
 			},
+            
+            // 用给定的参数调用所有的回调
 			// Call all the callbacks with the given arguments
 			fire: function() {
 				self.fireWith( this, arguments );
 				return this;
 			},
+
+			// 访问给定的上下文和参数列表中的所有回调
 			// To know if the callbacks have already been called at least once
 			fired: function() {
 				return !!fired;
@@ -3333,7 +3372,7 @@ jQuery.Callbacks = function( options ) {
 
 
 jQuery.extend({
-    /**异步链式
+    /**异步队列模块
     */
 	Deferred: function( func ) {
 		var tuples = [
@@ -4050,7 +4089,9 @@ jQuery.extend({
 			hooks.empty.fire();
 		}
 	},
-
+    
+    /*队列模块
+    */
 	// not intended for public consumption - generates a queueHooks object, or returns the current one
 	_queueHooks: function( elem, type ) {
 		var key = type + "queueHooks";
@@ -8041,6 +8082,8 @@ jQuery.extend({
 	ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
 	ajaxTransport: addToPrefiltersOrTransports( transports ),
     
+    /*ajax模块
+    */
 	// Main method
 	ajax: function( url, options ) {
 
