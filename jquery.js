@@ -3135,7 +3135,12 @@ jQuery.each({
 var rnotwhite = (/\S+/g);
 
 
-// 声明optionsCache变量，缓存option
+/* 声明optionsCache变量，缓存option
+   once：确保这个回调列表只执行一次
+   memory：保持以前的值和将添加到这个礼拜的后面的最新的值立即执行调用任务回调
+   unique：确保一次只能添加一个回调，用于回调去重
+   stopOnFalse：当一个回调返回false时中断调用
+*/
 // String to Object options format cache
 var optionsCache = {};
 
@@ -3192,8 +3197,10 @@ jQuery.Callbacks = function( options ) {
 
 	var // Last fire value (for non-forgettable lists)
 		memory,
+		// 回调是否被发布fire过
 		// Flag to know if list was already fired
 		fired,
+		// 回调是否正在被fire中
 		// Flag to know if list is currently firing
 		firing,
 		// First callback to fire (used internally by add and fireWith)
@@ -3205,6 +3212,7 @@ jQuery.Callbacks = function( options ) {
 		// 声明数组，用于存放回调（订阅者订阅的函数）
 		// Actual callback list
 		list = [],
+		// stack默认为布尔型，once为true时，stack为false
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
 
@@ -3215,9 +3223,14 @@ jQuery.Callbacks = function( options ) {
 			fired = true;
 			firingIndex = firingStart || 0;
 			firingStart = 0;
+			// 回调列表长度
 			firingLength = list.length;
 			firing = true;
+			// 执行回调列表
 			for ( ; list && firingIndex < firingLength; firingIndex++ ) {
+				/*func对象原型方法apply：
+				  list[firingIndex]函数内部this值为data[0],函数参数列表为data[1]
+				*/
 				if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
 					memory = false; // To prevent further calls using add
 					break;
@@ -3225,6 +3238,7 @@ jQuery.Callbacks = function( options ) {
 			}
 			firing = false;
 			if ( list ) {
+				// once为true时，stack为false
 				if ( stack ) {
 					if ( stack.length ) {
 						fire( stack.shift() );
@@ -3232,6 +3246,7 @@ jQuery.Callbacks = function( options ) {
 				} else if ( memory ) {
 					list = [];
 				} else {
+					// once为true，将回调列表list禁用，即list为undefined
 					self.disable();
 				}
 			}
@@ -3249,9 +3264,14 @@ jQuery.Callbacks = function( options ) {
 						jQuery.each( args, function( _, arg ) {
 							var type = jQuery.type( arg );
 							if ( type === "function" ) {
+								/* options.unique
+								   false:不判断回调是否存在list中
+                                   true:判断回调是否存在list中，即去重
+								*/
 								if ( !options.unique || !self.has( arg ) ) {
 									list.push( arg );
 								}
+							// 若为数组或类数组对象，递归
 							} else if ( arg && arg.length && type !== "string" ) {
 								// Inspect recursively
 								add( arg );
@@ -3295,7 +3315,7 @@ jQuery.Callbacks = function( options ) {
 				return this;
 			},
 
-			// 确定列表中是否提供一个回调
+			// 确定列表中是否有这个回调
 			// Check if a given callback is in the list.
 			// If no argument is given, return whether or not list has callbacks attached.
 			has: function( fn ) {
@@ -3346,6 +3366,7 @@ jQuery.Callbacks = function( options ) {
 					args = args || [];
 					args = [ context, args.slice ? args.slice() : args ];
 					if ( firing ) {
+						// js为松散类型，stack转为数组类型
 						stack.push( args );
 					} else {
 						fire( args );
