@@ -3246,6 +3246,8 @@ jQuery.Callbacks = function( options ) {
 			for ( ; list && firingIndex < firingLength; firingIndex++ ) {
 				/*func对象原型方法apply：
 				  list[firingIndex]函数内部this值为data[0],函数参数列表为data[1]
+				  options.stopOnFalse为对象，则终止for循环，清空memory，防止在add中意外的fire
+				  options.stopOnFalse为null，循环继续
 				*/
 				if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
 					memory = false; // To prevent further calls using add
