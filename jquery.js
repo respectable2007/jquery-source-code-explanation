@@ -3137,7 +3137,9 @@ var rnotwhite = (/\S+/g);
 
 /* 声明optionsCache变量，缓存option
    once：确保这个回调列表只执行一次
-   memory：保持以前的值和将添加到这个礼拜的后面的最新的值立即执行调用任务回调
+   memory：保持以前的值和将添加到这个列表的后面的最新的值立即执行任何回调
+           也就是说：保持以前的值并立即执行新添加的回调，然后用最新的值执行回调列表
+           主要用来实现Deferred的异步收集与pipe管道风格的数据传递的
    unique：确保一次只能添加一个回调，用于回调去重
    stopOnFalse：当一个回调返回false时中断调用
 */
@@ -3195,7 +3197,8 @@ jQuery.Callbacks = function( options ) {
 		( optionsCache[ options ] || createOptions( options ) ) :
 		jQuery.extend( {}, options );
 
-	var // Last fire value (for non-forgettable lists)
+	var // 声明memory变量，用来存储上一次fire的值
+	    // Last fire value (for non-forgettable lists)
 		memory,
 		// 回调是否被发布fire过
 		// Flag to know if list was already fired
@@ -3219,8 +3222,16 @@ jQuery.Callbacks = function( options ) {
 		// 用给定的参数调用所有的回调
 		// Fire callbacks
 		fire = function( data ) {
+            /*在上一次fire中，保存上一次的值，用于memory为true时fire
+              与布尔操作符
+			  options.memory为对象，则返回第二个操作数，memory为data
+			  options.memory为null，则返回null，memory为null
+			*/
 			memory = options.memory && data;
 			fired = true;
+			/* memory为true，则for循环从firingStart索引位置开始，
+			   即从最新添加的回调列表执行一次
+			*/
 			firingIndex = firingStart || 0;
 			firingStart = 0;
 			// 回调列表长度
@@ -3282,10 +3293,16 @@ jQuery.Callbacks = function( options ) {
 					// current firing batch?
 					if ( firing ) {
 						firingLength = list.length;
+					/* 再一次add时，
+					   memory保存着上一次fire的值,且不为空。
+					   因此，在add时，用保持的以前的值，执行新添加的回调
+					*/
 					// With memory, if we're not firing then
 					// we should call right away
 					} else if ( memory ) {
+						// memory为true时，回调列表fire开始的位置
 						firingStart = start;
+						// fire回调列表，此时的list包含最新添加的回调
 						fire( memory );
 					}
 				}
