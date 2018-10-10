@@ -3140,7 +3140,7 @@ var rnotwhite = (/\S+/g);
    memory：保持以前的值和将添加到这个列表的后面的最新的值立即执行任何回调
            也就是说：保持以前的值并立即执行新添加的回调，然后用最新的值执行回调列表
            主要用来实现Deferred的异步收集与pipe管道风格的数据传递的
-   unique：确保一次只能添加一个回调，用于回调去重
+   unique：确保一次只能添加一个回调，回调列表中无重复的回调
    stopOnFalse：当一个回调返回false时中断调用
 */
 // String to Object options format cache
@@ -3206,6 +3206,7 @@ jQuery.Callbacks = function( options ) {
 		// 回调是否正在被fire中
 		// Flag to know if list is currently firing
 		firing,
+		// option为memory时，开始fire的回调列表索引位置
 		// First callback to fire (used internally by add and fireWith)
 		firingStart,
 		// End of the loop when firing
@@ -3215,7 +3216,11 @@ jQuery.Callbacks = function( options ) {
 		// 声明数组，用于存放回调（订阅者订阅的函数）
 		// Actual callback list
 		list = [],
-		// stack默认为布尔型，once为true时，stack为false
+		/* 非布尔操作符，
+		   option为once（是一个对象）时，!对象返回false，stack为false
+		   option.once为null时，!null返回true，stack为[]
+		   (与操作符，第二个操作数为对象，第一个操作数为true，则返回该对象)
+		*/
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
 
@@ -3229,7 +3234,7 @@ jQuery.Callbacks = function( options ) {
 			*/
 			memory = options.memory && data;
 			fired = true;
-			/* memory为true，则for循环从firingStart索引位置开始，
+			/* option为memory，则for循环从firingStart索引位置开始，
 			   即从最新添加的回调列表执行一次
 			*/
 			firingIndex = firingStart || 0;
@@ -3249,7 +3254,7 @@ jQuery.Callbacks = function( options ) {
 			}
 			firing = false;
 			if ( list ) {
-				// once为true时，stack为false
+				// option为once时，stack为false
 				if ( stack ) {
 					if ( stack.length ) {
 						fire( stack.shift() );
@@ -3257,7 +3262,7 @@ jQuery.Callbacks = function( options ) {
 				} else if ( memory ) {
 					list = [];
 				} else {
-					// once为true，将回调列表list禁用，即list为undefined
+					// option为once时，将回调列表list禁用，即list为undefined
 					self.disable();
 				}
 			}
@@ -3275,9 +3280,11 @@ jQuery.Callbacks = function( options ) {
 						jQuery.each( args, function( _, arg ) {
 							var type = jQuery.type( arg );
 							if ( type === "function" ) {
-								/* options.unique
-								   false:不判断回调是否存在list中
-                                   true:判断回调是否存在list中，即去重
+								/* 非布尔操作符 
+								   options.unique为对象，!options.unique为false，
+								   则去判断回调是否存在list中
+                                   options.unique为null，!options.unique为true，
+                                   则不去判断回调是否存在list中，即不去重
 								*/
 								if ( !options.unique || !self.has( arg ) ) {
 									list.push( arg );
