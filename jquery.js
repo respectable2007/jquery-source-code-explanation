@@ -306,6 +306,11 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
+	/* 页面中，每个jQuery对象的id
+	   正则表达式：\D 匹配任意非数字
+	              \d 匹配任意数字
+	   replace方法是去掉字符串中的非数字
+	*/
 	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
 
 	// Assume jQuery is ready without the ready module
@@ -3674,13 +3679,15 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 		len = elems.length,
 		bulk = key == null;
 
+    // 设置多个值
 	// Sets many values
 	if ( jQuery.type( key ) === "object" ) {
 		chainable = true;
 		for ( i in key ) {
 			jQuery.access( elems, fn, i, key[i], true, emptyGet, raw );
 		}
-
+    
+    // 设置单个值
 	// Sets one value
 	} else if ( value !== undefined ) {
 		chainable = true;
@@ -3693,6 +3700,7 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 			// Bulk operations run against the entire set
 			if ( raw ) {
 				fn.call( elems, value );
+				// 此处有闭包，为防止内存泄漏。因此，将fn置为null
 				fn = null;
 
 			// ...except when executing function values
@@ -3721,7 +3729,9 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 };
 
 
-/**
+/**判断对象是否有保存数据的能力
+   DOM节点仅支持元素节点和文档根节点
+   任何对象
  * Determines whether an object can have data
  */
 jQuery.acceptData = function( owner ) {
@@ -3735,8 +3745,12 @@ jQuery.acceptData = function( owner ) {
 	return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
 };
 
-
+// Data类，用于数据缓存--构造函数+原型模式
 function Data() {
+
+	/* 设置cache对象的访问器属性
+	   0属性只设置了[[Get]]，只能读取
+	*/
 	// Support: Android < 4,
 	// Old WebKit does not have Object.preventExtensions/freeze method,
 	// return new empty object instead with no [[set]] accessor
@@ -3745,14 +3759,21 @@ function Data() {
 			return {};
 		}
 	});
-
+    
+    /* Data实例对象扩展expando属性，用于把当前数据缓存的UUID值做一个节点的属性
+       给写入到指定的元素上形成关联桥梁
+       说白了，就是将this.expando的值作为对象的属性，这个属性用来保存uid的值
+       Data实例化一次，产生一次expando，并是不调用一次$().data()/$.data()就生成一次
+    */
 	this.expando = jQuery.expando + Math.random();
 }
 
+// 设置uid的默认初始值
 Data.uid = 1;
 Data.accepts = jQuery.acceptData;
 
 Data.prototype = {
+	// 设置、获取uid
 	key: function( owner ) {
 		// We can accept data for non-element nodes in modern browsers,
 		// but we should not, see #8335.
@@ -3762,13 +3783,19 @@ Data.prototype = {
 		}
 
 		var descriptor = {},
+		    // 判断对象是否已经存在cache key
 			// Check if the owner object already has a cache key
 			unlock = owner[ this.expando ];
-
+        
+        /* 若unlock为空，则生成uid，即owner[this.expando] = unlock = Data.uid++
+           这样，在cache对象中，保持了数据的唯一性
+        */
 		// If not, create one
 		if ( !unlock ) {
+			// 后置++，先赋值给unlock，uid再自增1
 			unlock = Data.uid++;
-
+            
+            // 为对象定义[this.expando]属性，其值为unlock
 			// Secure it in a non-enumerable, non-writable property
 			try {
 				descriptor[ this.expando ] = { value: unlock };
@@ -3781,19 +3808,23 @@ Data.prototype = {
 				jQuery.extend( owner, descriptor );
 			}
 		}
-
+        
+        // 若this.cache[unlock]不存在，则置为空值对象
 		// Ensure the cache object
 		if ( !this.cache[ unlock ] ) {
 			this.cache[ unlock ] = {};
 		}
-
+        
+        // 返回唯一标识uid
 		return unlock;
 	},
+	// 保存数据
 	set: function( owner, data, value ) {
 		var prop,
 			// There may be an unlock assigned to this node,
 			// if there is no entry for this "owner", create one inline
 			// and set the unlock as though an owner entry had always existed
+			// 获取uid
 			unlock = this.key( owner ),
 			cache = this.cache[ unlock ];
 
@@ -3908,8 +3939,10 @@ Data.prototype = {
 		}
 	}
 };
+// jQuery内部使用的数据
 var data_priv = new Data();
 
+// 用户自定义的数据
 var data_user = new Data();
 
 
@@ -3961,7 +3994,8 @@ jQuery.extend({
 	hasData: function( elem ) {
 		return data_user.hasData( elem ) || data_priv.hasData( elem );
 	},
-
+    
+    // $.data()，不覆盖
 	data: function( elem, name, data ) {
 		return data_user.access( elem, name, data );
 	},
@@ -3983,6 +4017,8 @@ jQuery.extend({
 });
 
 jQuery.fn.extend({
+
+	// 在元素上存放或读取数据，返回jQuery对象
 	data: function( key, value ) {
 		var i, name, data,
 			elem = this[ 0 ],
