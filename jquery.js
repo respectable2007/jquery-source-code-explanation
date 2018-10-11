@@ -2843,6 +2843,7 @@ var rootjQuery,
 				               第2个是与正则表达式第2个子表达式相匹配的文本。。。
 				    非全局模式下，多次调用始终返回第一个匹配项
 				    全局模式下，每次调用则会在字符串中继续查找新匹配项
+				    match[2]为id字符串
                 */
 				match = rquickExpr.exec( selector );
 			}
@@ -3827,7 +3828,6 @@ Data.prototype = {
 			// 获取uid
 			unlock = this.key( owner ),
 			cache = this.cache[ unlock ];
-
 		// Handle: [ owner, key, value ] args
 		if ( typeof data === "string" ) {
 			cache[ data ] = value;
@@ -3989,13 +3989,15 @@ function dataAttr( elem, key, data ) {
 	}
 	return data;
 }
-
+/* $().data()方法代码中，有elem = this[ 0 ]，elem为DOM元素，两次为相同的对象，uid相同，缓存区相同，因此会被覆盖。
+   $.data()代码中，elem是jQuery的实例对象，不同的实例对象，分配了不同的缓存区，$.data()不覆盖。
+*/
 jQuery.extend({
 	hasData: function( elem ) {
 		return data_user.hasData( elem ) || data_priv.hasData( elem );
 	},
     
-    // $.data()，不覆盖
+    // $.data()，两次使用jQuery获取相同DOM节点，并使用$.data()和相同key存储不同的数据，两者不覆盖
 	data: function( elem, name, data ) {
 		return data_user.access( elem, name, data );
 	},
@@ -4018,7 +4020,9 @@ jQuery.extend({
 
 jQuery.fn.extend({
 
-	// 在元素上存放或读取数据，返回jQuery对象
+	/* 在元素上存放或读取数据，返回jQuery对象 
+	   两次使用jQuery获取相同DOM节点，并使用$().data()和相同key存储不同的数据，后者会覆盖前者
+	*/
 	data: function( key, value ) {
 		var i, name, data,
 			elem = this[ 0 ],

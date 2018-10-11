@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<script src="http://code.jquery.com/jquery-latest.js"></script>
+<!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
+<script src="../jquery.js"></script>
 <title>jquery缓存系统</title>
 </head>
 <body>
@@ -16,7 +17,8 @@ var ele2 = $("#aaron");
 
 ele1.data('a',1111);
 ele2.data('a',2222);
-
+console.log(ele1)
+console.log(ele2)
 show('第一组,通过$().data()的方式,只取到最后一个a值,之前的被覆盖')
 show(ele1.data('a'))
 show(ele2.data('a'))
@@ -27,6 +29,8 @@ show()
 show('第二组,通过$.data的方式,取到2组b值，未覆盖')
 $.data(ele1,"b","1111")
 $.data(ele2,"b","2222")
+console.log(ele1)
+console.log(ele2)
 
 show($.data(ele1,"b"))
 show($.data(ele2,"b") )
@@ -34,7 +38,6 @@ show($.data(ele2,"b") )
 
 
 function show(data) {
-	console.log(ele1)
     if (arguments.length == 2) {
 		var info = arguments[0]
 		var data = arguments[1];
