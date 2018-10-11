@@ -613,7 +613,7 @@ jQuery.each("Boolean Number String Function Array Date RegExp Object Error".spli
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
 });
 
-// 判断是否为Array
+// 判断是否为Array引用类型
 function isArraylike( obj ) {
 	var length = obj.length,
 		type = jQuery.type( obj );
@@ -3142,6 +3142,7 @@ var rnotwhite = (/\S+/g);
            主要用来实现Deferred的异步收集与pipe管道风格的数据传递的
    unique：确保一次只能添加一个回调，回调列表中无重复的回调
    stopOnFalse：当一个回调返回false时中断调用
+   这四中option可以组合使用
 */
 // String to Object options format cache
 var optionsCache = {};
@@ -3969,6 +3970,7 @@ jQuery.extend({
 		data_user.remove( elem, name );
 	},
 
+    // 数据缓存系统，在元素上存放数据，返回jQuery对象
 	// TODO: Now that all calls to _data and _removeData have been replaced
 	// with direct calls to data_priv methods, these can be deprecated.
 	_data: function( elem, name, data ) {
