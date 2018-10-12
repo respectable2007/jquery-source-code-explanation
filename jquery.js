@@ -3990,7 +3990,7 @@ function dataAttr( elem, key, data ) {
 	return data;
 }
 /* $().data()方法代码中，有elem = this[ 0 ]，elem为DOM元素，两次为相同的对象，uid相同，缓存区相同，因此会被覆盖。
-   $.data()代码中，elem是jQuery的实例对象，不同的实例对象，分配了不同的缓存区，$.data()不覆盖。
+   $.data()代码中，elem是jQuery的实例对象，不同的实例对象，uid不同，分配了不同的缓存区，因此不覆盖。
 */
 jQuery.extend({
 	hasData: function( elem ) {
