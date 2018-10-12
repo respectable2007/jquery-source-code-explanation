@@ -3427,7 +3427,9 @@ jQuery.Callbacks = function( options ) {
 
 
 jQuery.extend({
-    /**异步队列模块
+    /* Defered提供了一个抽象的非阻塞的解决方案（如异步请求的响应），它创建一个promise对象
+       其目的是在未来某个时间点返回一个响应。简单来说就是一个异步/同步回调函数的处理方案
+       promise方法、DOM ready、Ajax模块及动画模块使用了Deferred模块
     */
 	Deferred: function( func ) {
 		var tuples = [
@@ -8155,7 +8157,7 @@ jQuery.extend({
 			context: true
 		}
 	},
-    // ajax底层接口
+    // ajax全局配置方法
 	// Creates a full fledged settings object into target
 	// with both ajaxSettings and settings fields.
 	// If target is omitted, writes into ajaxSettings.

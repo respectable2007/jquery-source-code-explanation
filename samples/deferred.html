@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<title>Deferred</title>
+</head>
+<body>
+
+<button id="aaron1">运行案例一</button>
+
+<button id="aaron2">运行案例二</button>
+
+<script type="text/javascript">
+
+
+//提供一种方法来执行一个或多个对象的回调函数
+//在实际开发中，我们可能要发送多个异步的请求操作，我们需要等所有的异步都处理完毕后，才能继续下一个动作
+
+//案例一
+function task1(name, fn) {
+  setTimeout(function() {
+    fn(name)
+  }, 500)
+}
+
+function task2(name, fn) {
+  setTimeout(function() {
+    fn(name)
+  }, 1000)
+}
+
+//任务数
+var taskNuns = function() {
+  var num = 2; //2个任务
+  return function() {
+    if (num === 1) {
+      show('任务都完成了',$("#aaron1"))
+    }
+    num--;
+  }
+}()
+
+
+$("#aaron1").click(function() {
+  //常规处理
+  task1('任务一', function() {
+    show('task1', $("#aaron1"))
+    taskNuns()
+  })
+
+  task2('任务二', function() {
+    show('task2', $("#aaron1"))
+    taskNuns();
+  })
+})
+
+
+
+
+//========================分割线============================================
+
+//案例二
+//通过Deferred改进
+function task3(name) {
+  var dtd = $.Deferred();
+  setTimeout(function() {
+    show('task3执行完毕',$("#aaron2"))
+    dtd.resolve(name)
+  }, 500)
+  return dtd;
+}
+
+function task4(name) {
+  var dtd = $.Deferred();
+  setTimeout(function() {
+    show('task4执行完毕',$("#aaron2"))
+    dtd.resolve(name)
+  }, 1000)
+  return dtd;
+}
+
+$("#aaron2").click(function() {
+  $.when(task3('task1'), task4('task2')).done(function() {
+    show('when处理成功', $("#aaron2"))
+  })
+})
+
+
+function show(data, ele) {
+  /* 逻辑或
+     操作数不是布尔值时，
+     第一个操作数是对象，则返回第一个操作数
+     第一个操作数是false，则返回第二个操作数
+     两个操作数是对象，则返回第一个操作数
+     第一个操作数是null，则返回第二个操作数
+     短路操作：若第一个操作数为true，则不会对第二个操作数求值
+              若第一个操作数为false，则会对第二个操作数求值
+  */
+  console.log(ele);
+  (ele || $("body")).append('<li>' + data + '</li>')
+}
+
+</script>
+
+</body>
+</html>
