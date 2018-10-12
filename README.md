@@ -10,3 +10,7 @@ version 2.1.1
 
 jQuery explanation in Chinese
 ------------------------------
+
+jQuery Deferred
+------------------------------
+jQuery.Deferred is based on Promise/A principle(http://wiki.commonjs.org/wiki/Promises/A)

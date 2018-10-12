@@ -3429,6 +3429,8 @@ jQuery.Callbacks = function( options ) {
 jQuery.extend({
     /* Defered提供了一个抽象的非阻塞的解决方案（如异步请求的响应），它创建一个promise对象
        其目的是在未来某个时间点返回一个响应。简单来说就是一个异步/同步回调函数的处理方案
+       说白了就是：一个可链式操作的对象，提供多个回调函数的注册，以及回调列队的会滴，并转达
+       任何异步操作成功或失败的消息
        promise方法、DOM ready、Ajax模块及动画模块使用了Deferred模块
     */
 	Deferred: function( func ) {
