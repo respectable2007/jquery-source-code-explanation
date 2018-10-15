@@ -3468,12 +3468,20 @@ jQuery.extend({
 				then: function( /* fnDone, fnFail, fnProgress */ ) {
 					var fns = arguments;
 					return jQuery.Deferred(function( newDefer ) {
+						// newDefer就是外部接口对象deferred
 						jQuery.each( tuples, function( i, tuple ) {
+							// 取出传入的回调函数
 							var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
+							/* 添加done、fail、progress(Callbacks.add)的处理方法
+							   针对deferred对象直接做处理
+							*/
 							// deferred[ done | fail | progress ] for forwarding actions to newDefer
 							deferred[ tuple[1] ](function() {
+								// 若fn存在，则调用fn
 								var returned = fn && fn.apply( this, arguments );
+								// 若returned不为null
 								if ( returned && jQuery.isFunction( returned.promise ) ) {
+									// 在原来的deferred对象上添加新处理方法
 									returned.promise()
 										.done( newDefer.resolve )
 										.fail( newDefer.reject )
@@ -3483,6 +3491,7 @@ jQuery.extend({
 								}
 							});
 						});
+						// 防止内存泄漏
 						fns = null;
 					}).promise();
 				},
@@ -3519,16 +3528,15 @@ jQuery.extend({
 
 			// Handle state
 			if ( stateString ) {
-				// 添加回调函数
+				// 添加回调函数：匿名函数、disable、lock
 				list.add(function() {
 					// state = [ resolved | rejected ]
 					state = stateString;
-
+                
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
 			}
             /* 定义上下文的接口 resolveWith | rejectWith | notifyWith（jQuery.Callbacks的fireWith
-
             */
 			// deferred[ resolve | reject | notify ]
 			deferred[ tuple[0] ] = function() {
@@ -3547,6 +3555,7 @@ jQuery.extend({
 
 		// Call given func if any
 		if ( func ) {
+			// 修改this值，使function指向deferred
 			func.call( deferred, deferred );
 		}
 
