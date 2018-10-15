@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<title></title>
+</head>
+<body>
+
+
+<button>模拟的代码测试</button>
+
+<script type="text/javascript">
+
+
+var filterResolve = function() {
+
+  // 调用$.Deferred()方法生成promise对象，使defer可以调用resolve、done等方法
+  var defer = $.Deferred();
+
+  //先执行成功
+  defer.resolve(5);
+
+  //后添加，
+  /* 那么添加前，依靠什么记录value值呢？
+     Deferred源码中jQuery.Callbacks('once memory')
+     Callbacks源码中fire()memory = options.memory && data,data保存了上次fire时的value
+     调用done方法就是Callbacks中的add方法，该方法的源码中 else if(memory) { startIndex = start fire(memory)}，在add时用上次保存的value值触发新添加的回调函数
+  */
+  defer.done(function(value) {
+    $('body').append("<li>defer.done的值是：" + value + "</li>");
+  })
+
+  //实现一个管道方法
+  var filtered = defer.then(function(value) {
+    return value * 2;
+  });
+
+  //接受上一个值，叠加处理
+  filtered.done(function(value) {
+    $('body').append("<li>filtered.done ( 2*5 = ) 10: " + "</li>");
+  });
+
+};
+
+$("button").on("click", filterResolve);
+  
+
+</script>
+
+</body>
+</html>
