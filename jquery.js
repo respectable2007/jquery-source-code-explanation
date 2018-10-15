@@ -3432,9 +3432,15 @@ jQuery.extend({
        说白了就是：一个可链式操作的对象，提供多个回调函数的注册，以及回调列队的会滴，并转达
        任何异步操作成功或失败的消息
        promise方法、DOM ready、Ajax模块及动画模块使用了Deferred模块
+       jQuery.Deferred遵循Promise/A规范
+       Deferred也可认为是一种观察者模式，
+       可订阅done、fail、progress，
+       通过resolve、reject、notify发布
     */
 	Deferred: function( func ) {
+		// 动作接口定义
 		var tuples = [
+		        // 发布，订阅，监听列表，结果
 				// action, add listener, listener list, final state
 				[ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ],
 				[ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
@@ -3449,6 +3455,7 @@ jQuery.extend({
 					deferred.done( arguments ).fail( arguments );
 					return this;
 				},
+				// then方法
 				then: function( /* fnDone, fnFail, fnProgress */ ) {
 					var fns = arguments;
 					return jQuery.Deferred(function( newDefer ) {
@@ -3470,6 +3477,13 @@ jQuery.extend({
 						fns = null;
 					}).promise();
 				},
+				/* 返回一个Promise对象用来观察当某个类型的所有行动绑定到集合，排队与否还是已经完成
+			       默认情况下，type是fx，意味着当选定的元素已完成所有动画，返回的Promise是解决的
+			       解决上下文和唯一的参数是哪个集合到promise()调用
+			       如果target是提供，promise()将附加到它的方法，然后返回这个对象，而不是创建一个新的。
+			       这对在已经存在的对象上附加Promise的行为非常有用
+			       type是需要处理的字符串，target是附加promise方法的Object
+			    */
 				// Get a promise for this deferred
 				// If obj is provided, the promise aspect is added to the object
 				promise: function( obj ) {
@@ -3477,7 +3491,7 @@ jQuery.extend({
 				}
 			},
 			deferred = {};
-
+        // promise管道
 		// Keep pipe for back-compat
 		promise.pipe = promise.then;
 
@@ -3498,7 +3512,7 @@ jQuery.extend({
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
 			}
-
+            // 定义上下文的接口 resolveWith | rejectWith | notifyWith
 			// deferred[ resolve | reject | notify ]
 			deferred[ tuple[0] ] = function() {
 				deferred[ tuple[0] + "With" ]( this === deferred ? promise : this, arguments );
