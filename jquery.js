@@ -3438,7 +3438,12 @@ jQuery.extend({
        通过resolve、reject、notify发布
     */
 	Deferred: function( func ) {
-		// 动作接口定义
+		/* 工厂模式
+		*/
+		/* 动作接口定义
+		   使用二维数组，保存了所有的接口API，
+		   通过jQuery.each将这些接口分布挂在promise内部对象和deferred外部对象上
+		*/
 		var tuples = [
 		        // 发布，订阅，监听列表，结果
 				// action, add listener, listener list, final state
@@ -3447,6 +3452,10 @@ jQuery.extend({
 				[ "notify", "progress", jQuery.Callbacks("memory") ]
 			],
 			state = "pending",
+			/* 内部promise对象
+			   不包括resolve、reject、notify和resolveWith、rejectWith、notifyWith等能改变deferred对象状态的方法
+			   只包括done、fail、progress
+			*/
 			promise = {
 				state: function() {
 					return state;
@@ -3487,9 +3496,13 @@ jQuery.extend({
 				// Get a promise for this deferred
 				// If obj is provided, the promise aspect is added to the object
 				promise: function( obj ) {
+					/* 若obj不为null，则使用jQuery.extend，
+					   将promise的属性和方法挂在obj对象上
+					*/
 					return obj != null ? jQuery.extend( obj, promise ) : promise;
 				}
 			},
+			// 外部接口对象
 			deferred = {};
         // promise管道
 		// Keep pipe for back-compat
@@ -3497,6 +3510,7 @@ jQuery.extend({
 
 		// Add list-specific methods
 		jQuery.each( tuples, function( i, tuple ) {
+			// list就是jQuery.Callbacks
 			var list = tuple[ 2 ],
 				stateString = tuple[ 3 ];
 
@@ -3505,6 +3519,7 @@ jQuery.extend({
 
 			// Handle state
 			if ( stateString ) {
+				// 添加回调函数
 				list.add(function() {
 					// state = [ resolved | rejected ]
 					state = stateString;
@@ -3512,15 +3527,21 @@ jQuery.extend({
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
 			}
-            // 定义上下文的接口 resolveWith | rejectWith | notifyWith
+            /* 定义上下文的接口 resolveWith | rejectWith | notifyWith（jQuery.Callbacks的fireWith
+
+            */
 			// deferred[ resolve | reject | notify ]
 			deferred[ tuple[0] ] = function() {
 				deferred[ tuple[0] + "With" ]( this === deferred ? promise : this, arguments );
 				return this;
 			};
+			/* resolveWith | rejectWith | notifyWith = jQuery.Callbacks的fireWith
+			   callbacks.fireWith是访问给定的上下文和参数列表中的所有回调
+			*/
 			deferred[ tuple[0] + "With" ] = list.fireWith;
 		});
-
+        
+        // 将promise对象挂载deferred对象上
 		// Make the deferred a promise
 		promise.promise( deferred );
 
