@@ -3562,27 +3562,54 @@ jQuery.extend({
 		// All done!
 		return deferred;
 	},
-
+     
+    /* 提供一种方法来执行一个或多个对象的回调函数，延迟对象通常表示异步事件
+       如果单一延迟传递给when，它是通过这个方法或延迟对象附件的其他方法来访问绑
+       定的回调函数返回的，如deferred.then。当延迟得到解决或拒绝，通常的代码创建
+       了原来的延迟，适当的回调将被调用。
+       如果一个参数被传递给when，这不是延迟，将被视为延迟解决，并立即执行附件任何
+       doneCallbacks。该doneCallbacks传递原始的参数。在这种情况下，任何failCallbacks
+       您可能会设置是永远不会被调用，因为延迟从不拒绝
+    */
 	// Deferred helper
 	when: function( subordinate /* , ..., subordinateN */ ) {
 		var i = 0,
+		    // resolveValues为对象数组
 			resolveValues = slice.call( arguments ),
 			length = resolveValues.length,
-
+            
+            /* length不是1，remaining是0
+               length是1，判断subordinate.promise是否为function，若是，remaining等于1
+            */
 			// the count of uncompleted subordinates
 			remaining = length !== 1 || ( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
 
+            /* 如果resolveValues只有一个Deferred对象，deferred为subordinate
+               如果不只有一个，deferred为jQuery.Deferred()
+            */
 			// the master Deferred. If resolveValues consist of only a single Deferred, just use that.
 			deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
 
+            /* 通过判断异步对象执行的次数来决定是不是已经完成了所有的处理或者是失败处理
+            */
 			// Update function for both resolve and progress values
 			updateFunc = function( i, contexts, values ) {
 				return function( value ) {
 					contexts[ i ] = this;
+					
+					/* 当promise是解决的（done）时，values是resolveValues
+					   当promise是访问deferred对象（progress）时，values是progressValues
+					*/
 					values[ i ] = arguments.length > 1 ? slice.call( arguments ) : value;
+
+					/* 相等操作符
+                       两次为对象，比较两者是否为同一个实例对象，即是不是同一个对象引用地址
+					*/
 					if ( values === progressValues ) {
+						// 当访问deferred对象并生成进度通知添加处理程序
 						deferred.notifyWith( contexts, values );
 					} else if ( !( --remaining ) ) {
+						// 执行回调函数
 						deferred.resolveWith( contexts, values );
 					}
 				};
@@ -3598,6 +3625,7 @@ jQuery.extend({
 			for ( ; i < length; i++ ) {
 				if ( resolveValues[ i ] && jQuery.isFunction( resolveValues[ i ].promise ) ) {
 					resolveValues[ i ].promise()
+					    // done订阅的是updateFunc返回的匿名函数
 						.done( updateFunc( i, resolveContexts, resolveValues ) )
 						.fail( deferred.reject )
 						.progress( updateFunc( i, progressContexts, progressValues ) );
@@ -3612,6 +3640,7 @@ jQuery.extend({
 			deferred.resolveWith( resolveContexts, resolveValues );
 		}
 
+        // 链式操作
 		return deferred.promise();
 	}
 });
