@@ -3538,6 +3538,11 @@ jQuery.extend({
 					state = stateString;
                 
                 /* 位操作符
+                   按位异或^，将两侧操作数转为数值，再转为二进制，
+                   同一位上，相同则为0，不同则为1，再转为十进制，即可
+                */
+                /* i为0时，添加reject_list.disable函数
+                   i为1时，添加resolve_list.disable函数
                 */
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
