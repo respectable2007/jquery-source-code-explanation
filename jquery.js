@@ -668,6 +668,10 @@ var i,
 	document,
 	docElem,
 	documentIsHTML,
+	/*IE8开始支持querySelectorAll的API，
+	  但是会有各式各样的BUG,
+	  所以sizzle使用rbuggyQSA记录BUG问题
+	*/
 	rbuggyQSA,
 	rbuggyMatches,
 	matches,
@@ -3533,6 +3537,8 @@ jQuery.extend({
 					// state = [ resolved | rejected ]
 					state = stateString;
                 
+                /* 位操作符
+                */
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
 			}
@@ -3596,7 +3602,7 @@ jQuery.extend({
 			updateFunc = function( i, contexts, values ) {
 				return function( value ) {
 					contexts[ i ] = this;
-					
+
 					/* 当promise是解决的（done）时，values是resolveValues
 					   当promise是访问deferred对象（progress）时，values是progressValues
 					*/
@@ -6332,7 +6338,11 @@ jQuery.extend({
 			return style[ name ];
 		}
 	},
-    
+    /* 浏览器解析CSS引擎是从右向左解析，原因在于
+       正向解析时，父父节点包含多个子节点，若出现不匹配的情况，会不断的回溯，效率很低
+       逆向解析时，子节点只有一个父节点，先找到匹配的目标子节点集合，在根据选择器规则，
+       对父节点进行验证，进行过滤，最终找到最终匹配集合，降低了搜索步骤，较正向解析效率高
+    */
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
 			origName = jQuery.camelCase( name );

@@ -36,7 +36,7 @@ var filterResolve = function() {
     return value * 2;
   });
 
-  //接受上一个值，叠加处理
+  //接收上一个值（10），叠加处理
   filtered.done(function(value) {
     $('body').append("<li>filtered.done ( 2*5 = ) 10: " + value + "</li>");
   });
@@ -47,6 +47,5 @@ $("button").on("click", filterResolve);
   
 
 </script>
-
 </body>
 </html>
