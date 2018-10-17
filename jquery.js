@@ -637,7 +637,10 @@ function isArraylike( obj ) {
 		typeof length === "number" && length > 0 && ( length - 1 ) in obj;
 }
 
-// 选择符引擎Sizzle（行635-2682）
+/* 选择符引擎Sizzle（行635-2682）
+   为了兼容低版本浏览器，实现querySelectorAll等高级API，因此，开发了Sizzle引擎
+   与querySelectorAll一样，从右向左解析选择符，提高查询效率
+*/
 var Sizzle =
 /*!
  * Sizzle CSS Selector Engine v1.10.19
