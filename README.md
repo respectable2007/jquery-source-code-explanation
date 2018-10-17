@@ -13,3 +13,7 @@ jQuery explanation in Chinese
 jQuery Deferred
 ------------------------------
 jQuery.Deferred is based on Promise/A principle(http://wiki.commonjs.org/wiki/Promises/A)
+
+Sizzle
+------------------------------
+A pure-JavaScript CSS selector engine(http://sizzlejs.com/)
