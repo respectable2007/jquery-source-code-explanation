@@ -639,6 +639,8 @@ function isArraylike( obj ) {
 
 /* 选择符引擎Sizzle（行635-2682）
    为了兼容低版本浏览器，实现querySelectorAll等高级API，因此，开发了Sizzle引擎
+   也就是说在高级浏览器上，jquery使用querySelectorAll来处理DOM，而在低版本浏览
+   器中为实现该高级API，需要使用原生js去模拟querySelectorAll等。
    与querySelectorAll一样，从右向左解析选择符，提高查询效率
 */
 var Sizzle =
@@ -1618,11 +1620,16 @@ Expr = Sizzle.selectors = {
 	attrHandle: {},
 
 	find: {},
-
+    /* 记录选择器关系
+    */
 	relative: {
+		// 父子关系，返回第一个后代元素
 		">": { dir: "parentNode", first: true },
+		// 祖宗和后代关系，返回所有后代元素
 		" ": { dir: "parentNode" },
+		// 临近兄弟关系，返回第一个兄弟元素
 		"+": { dir: "previousSibling", first: true },
+		// 兄弟关系，返回所有的兄弟元素
 		"~": { dir: "previousSibling" }
 	},
 
