@@ -781,15 +781,17 @@ var i,
 	rpseudo = new RegExp( pseudos ),
 	ridentifier = new RegExp( "^" + identifier + "$" ),
 
-    // 字面量正则表达式
-    // ATTR:/^\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\]/
-    // CHILD:/^:(only|first|last|nth|nth-last)-(child|of-type)(?:\([\x20\t\r\n\f]*(even|odd|(([+-]|)(\d*)n|)[\x20\t\r\n\f]*(?:([+-]|)[\x20\t\r\n\f]*(\d+)|))[\x20\t\r\n\f]*\)|)/i
-    // CLASS:/^\.((?:\\.|[\w-]|[^\x00-\xa0])+)/
-    // ID:/^#((?:\\.|[\w-]|[^\x00-\xa0])+)/
-    // PSEUDO:/^:((?:\\.|[\w-]|[^\x00-\xa0])+)(?:\((('((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)")|((?:\\.|[^\\()[\]]|\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\])*)|.*)\)|)/
-    // TAG:/^((?:\\.|[\w*-]|[^\x00-\xa0])+)/
-    // bool:/^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped)$/i
-    // needsContext:/^[\x20\t\r\n\f]*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\([\x20\t\r\n\f]*((?:-\d)?\d*)[\x20\t\r\n\f]*\)|)(?=[^-]|$)/i
+    /* 字面量正则表达式
+       \x00-\xao 只匹配汉字
+       ATTR:/^\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\]/
+       CHILD:/^:(only|first|last|nth|nth-last)-(child|of-type)(?:\([\x20\t\r\n\f]*(even|odd|(([+-]|)(\d*)n|)[\x20\t\r\n\f]*(?:([+-]|)[\x20\t\r\n\f]*(\d+)|))[\x20\t\r\n\f]*\)|)/i
+       CLASS:/^\.((?:\\.|[\w-]|[^\x00-\xa0])+)/
+       ID:/^#((?:\\.|[\w-]|[^\x00-\xa0])+)/
+       PSEUDO:/^:((?:\\.|[\w-]|[^\x00-\xa0])+)(?:\((('((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)")|((?:\\.|[^\\()[\]]|\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\])*)|.*)\)|)/
+       TAG:/^((?:\\.|[\w*-]|[^\x00-\xa0])+)/
+       bool:/^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped)$/i
+       needsContext:/^[\x20\t\r\n\f]*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\([\x20\t\r\n\f]*((?:-\d)?\d*)[\x20\t\r\n\f]*\)|)(?=[^-]|$)/i
+    */ 
 	matchExpr = {
 		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
 		"CLASS": new RegExp( "^\\.(" + characterEncoding + ")" ),
@@ -2131,6 +2133,8 @@ Expr.setFilters = new setFilters();
    要库把复杂选择器按照一样的设计规则，分解成浏览器原始
    API能够识别的结构，然后通过其他方法找这个结构。因此，
    tokenize采用了分割算法来识别复杂选择器
+   selector = soFar = div.aaron input[name=ttt],div p
+   为例进行代码分析
 */
 tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	var matched, match, tokens, type,
@@ -2144,16 +2148,19 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	soFar = selector;
 	groups = [];
 	preFilters = Expr.preFilter;
-
+    // var i = 0
 	while ( soFar ) {
-        // 逗号
+		// console.log(++i)
+        /*第一次循环，matched为undefined
+          第二次循环，matched为非空字符串，执行||后代码，match为空*/
 		// Comma and first run
 		if ( !matched || (match = rcomma.exec( soFar )) ) {
 			if ( match ) {
 				// Don't consume trailing commas as valid
 				soFar = soFar.slice( match[0].length ) || soFar;
 			}
-			// 第一次执行代码，使groups为二维数组
+			/*第一次循环，使groups为二维数组
+			  第二次循环，使groups为二维数组*/
 			groups.push( (tokens = []) );
 		}
 
@@ -2173,12 +2180,31 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			soFar = soFar.slice( matched.length );
 		}
 
-		/* Expr.filter包括TAG、CLASS、ATTR、CHILD、PSEUDO和ID
+		/* 假如soFar = div.aaron input[name=ttt],div p
+		   Expr.filter包括ID、TAG、CLASS、ATTR、CHILD、PSEUDO
 		   matchExpr包括ID、CLASS、TAG、ATTR、PSEUDO、CHILD、bool、needsContext
+		   preFilter包括ATTR、CHILD、PSEUDO
 		*/
 		// Filters
 		for ( type in Expr.filter ) {
-			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+			/* 首次循环
+			   type = ID    null  false tokens = []
+			   type = TAG   true        tokens = [ {value: 'div',type:'TAG', matched:['div','div']}]
+			   此时soFar = .aaron input[name=ttt],div p
+			   type = CLASS true        tokens = [{...},{
+	                                               value: '.aaron',
+	                                               type: 'CLASS',
+	                                               matched: ['.aaron','aaron']
+			                                     }]  
+			   type = ATTR  null  false
+			   type = CHILD null  false
+			   type = PSEUDO null false
+			*/
+			if ( type == 'CLASS' ) {
+				// console.log(matchExpr[ type ].exec( soFar ))
+			}
+			if ( (match = matchExpr[ type ].exec( soFar )) && 
+				(!preFilters[ type ] ||
 				(match = preFilters[ type ]( match ))) ) {
 				matched = match.shift();
 				tokens.push({
@@ -2186,10 +2212,15 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 					type: type,
 					matches: match
 				});
+
+				/* 当type为TAG时，matched = 'div' matched.length = 3
+				   那么，从第4位截取soFar soFar = .aaron input[name=ttt],div p
+				   当type为CLASS时，matched = '.aaron' matched.length = 6
+				   那么，从第4位截取soFar soFar =  input[name=ttt],div p
+				*/
 				soFar = soFar.slice( matched.length );
 			}
 		}
-
 		if ( !matched ) {
 			break;
 		}
@@ -2205,7 +2236,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 };
 
-// tokenize('div.aaron input[name=ttt],div p')
+tokenize('div.aaron input[name=ttt],div p')
 // console.log(matchExpr)
 
 function toSelector( tokens ) {

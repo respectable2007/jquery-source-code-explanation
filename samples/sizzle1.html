@@ -6,30 +6,50 @@
  	<script src='../jquery.js'></script>
  </head>
  <body>
- 	<div id='sizzle'></div>
+ 	<div id='\sizzle'></div>
  	<script type="text/javascript">
  	  var whitespace = "[\\x20\\t\\r\\n\\f]",
           // 逗号分组
 	      rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
 	      // 关系符
-	      rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*");
+	      rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*"),
+	      // \\.匹配规则是：斜杠\后有任意字符
+	      ID = /^#((?:\\.|[\w-]|[^\x00-\xa0])+)/,
+	      ATTR = /^\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\]/,
+          CHILD = /^:(only|first|last|nth|nth-last)-(child|of-type)(?:\([\x20\t\r\n\f]*(even|odd|(([+-]|)(\d*)n|)[\x20\t\r\n\f]*(?:([+-]|)[\x20\t\r\n\f]*(\d+)|))[\x20\t\r\n\f]*\)|)/i,
+          CLASS = /^\.((?:\\.|[\w-]|[^\x00-\xa0])+)/,
+          PSEUDO = /^:((?:\\.|[\w-]|[^\x00-\xa0])+)(?:\((('((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)")|((?:\\.|[^\\()[\]]|\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\])*)|.*)\)|)/,
+          TAG = /^((?:\\.|[\w*-]|[^\x00-\xa0])+)/;
 	   var string = 'div.aaron input[name=ttt],div p'
-	   var match = rcomma.exec( string )
-	   var matchs = rcombinators.exec( string )
 
-	   console.log(match)
-	   console.log(matchs)
+	   /*第二次循环，正则验证
+	   string = ' input[name=ttt],div p'
+	   console.log(rcomma.exec(string))*/
+	   // var match = rcomma.exec( string )
+	   // var matchs = rcombinators.exec( string )
+       
+       // var idStr ='#\\a'
+       console.log(ID.exec(string))
+       console.log(TAG.exec(string))
+
+       /*第一次循环，第二次for循环，正则验证CLASS
+       string = '.aaron input[name=ttt],div p'*/
+       console.log(CLASS.exec(string))
+       console.log(ATTR.exec(string))
+       console.log(CHILD.exec(string))
+       console.log(PSEUDO.exec(string))
+	   // console.log(match)
+	   // console.log(matchs)
        
 	   // var string1 = '   >  '
 	   // var match1 = rcombinators.exec( string )
 	   // console.log(match1)
 
 	   // 问题一
-       // var tokens,
-       //     groups = [];
-       // groups.push( (tokens = []) )
-       // console.log(groups)
-	   // console.log($('div.aaron input[name=ttt],div p'))
+       /*var tokens = [1],
+           groups = [];
+       groups.push( (tokens = []) )
+       console.log(groups)*/
  	</script>
  </body>
 </html>
