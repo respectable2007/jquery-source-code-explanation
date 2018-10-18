@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+ 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ 	<title>sizzle tokenize</title>
+ 	<script src='../jquery.js'></script>
+ </head>
+ <body>
+ 	<div id='sizzle'></div>
+ 	<script type="text/javascript">
+ 	  var whitespace = "[\\x20\\t\\r\\n\\f]",
+          // 逗号分组
+	      rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	      // 关系符
+	      rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*");
+	   var string = 'div.aaron input[name=ttt],div p'
+	   var match = rcomma.exec( string )
+	   var matchs = rcombinators.exec( string )
+
+	   console.log(match)
+	   console.log(matchs)
+       
+	   // var string1 = '   >  '
+	   // var match1 = rcombinators.exec( string )
+	   // console.log(match1)
+
+	   // 问题一
+       // var tokens,
+       //     groups = [];
+       // groups.push( (tokens = []) )
+       // console.log(groups)
+	   // console.log($('div.aaron input[name=ttt],div p'))
+ 	</script>
+ </body>
+</html>

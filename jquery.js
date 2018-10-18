@@ -721,19 +721,35 @@ var i,
 	},
 
 	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
-
+    
+    // 正则表达式字符串
 	// Regular expressions
-
+    
+    /* 空白分割，空白符包括空格、制表符、换行符、中文全角空格等
+       \x2o 空格
+       \t   制表
+       \r   换行
+       \n   回车换行
+       \f   换页
+       正则表达式字符串的表达方式
+       \\x20 \\t \\r \\n \\f
+    */
 	// Whitespace characters http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\r\\n\\f]",
+
+	/* 后向引用(?:exp)匹配exp，不捕获匹配的文本，也不给此分组分配组号
+	   不会改变正则表达式的处理方式，其匹配的内容不会被捕获到某个组里面
+	*/
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
 
+    // CSS中ID选择器
 	// Loosely modeled on CSS identifier characters
 	// An unquoted value should be a CSS identifier http://www.w3.org/TR/css3-selectors/#attribute-selectors
 	// Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
 	identifier = characterEncoding.replace( "w", "w#" ),
 
+    // 属性选择器
 	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
 	attributes = "\\[" + whitespace + "*(" + characterEncoding + ")(?:" + whitespace +
 		// Operator (capture 2)
@@ -754,8 +770,10 @@ var i,
 
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
-
+    
+    // 逗号分组
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	// 关系符
 	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
 
 	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
@@ -763,6 +781,15 @@ var i,
 	rpseudo = new RegExp( pseudos ),
 	ridentifier = new RegExp( "^" + identifier + "$" ),
 
+    // 字面量正则表达式
+    // ATTR:/^\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\]/
+    // CHILD:/^:(only|first|last|nth|nth-last)-(child|of-type)(?:\([\x20\t\r\n\f]*(even|odd|(([+-]|)(\d*)n|)[\x20\t\r\n\f]*(?:([+-]|)[\x20\t\r\n\f]*(\d+)|))[\x20\t\r\n\f]*\)|)/i
+    // CLASS:/^\.((?:\\.|[\w-]|[^\x00-\xa0])+)/
+    // ID:/^#((?:\\.|[\w-]|[^\x00-\xa0])+)/
+    // PSEUDO:/^:((?:\\.|[\w-]|[^\x00-\xa0])+)(?:\((('((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)")|((?:\\.|[^\\()[\]]|\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\])*)|.*)\)|)/
+    // TAG:/^((?:\\.|[\w*-]|[^\x00-\xa0])+)/
+    // bool:/^(?:checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped)$/i
+    // needsContext:/^[\x20\t\r\n\f]*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\([\x20\t\r\n\f]*((?:-\d)?\d*)[\x20\t\r\n\f]*\)|)(?=[^-]|$)/i
 	matchExpr = {
 		"ID": new RegExp( "^#(" + characterEncoding + ")" ),
 		"CLASS": new RegExp( "^\\.(" + characterEncoding + ")" ),
@@ -1633,7 +1660,9 @@ Expr = Sizzle.selectors = {
 		"~": { dir: "previousSibling" }
 	},
 
+    // 保存ATTR、CHILD、PSEUDO三种复杂选择器的兼容处理
 	preFilter: {
+
 		"ATTR": function( match ) {
 			match[1] = match[1].replace( runescape, funescape );
 
@@ -1707,7 +1736,10 @@ Expr = Sizzle.selectors = {
 			return match.slice( 0, 3 );
 		}
 	},
-
+    
+    /* 元素匹配器
+       ID选择器位于setDocument内根据不同浏览器进行了定义
+    */
 	filter: {
 
 		"TAG": function( nodeNameSelector ) {
@@ -2078,7 +2110,6 @@ Expr = Sizzle.selectors = {
 		})
 	}
 };
-
 Expr.pseudos["nth"] = Expr.pseudos["eq"];
 
 // Add button/input type pseudos
@@ -2094,6 +2125,13 @@ function setFilters() {}
 setFilters.prototype = Expr.filters = Expr.pseudos;
 Expr.setFilters = new setFilters();
 
+/* 词法分析器，是将编写的文本代码流解析为一个一个的记号，
+   分析得到的记号以供后续语法分析使用
+   复杂的选择器，在低版本浏览器是无法直接获取的，那就需
+   要库把复杂选择器按照一样的设计规则，分解成浏览器原始
+   API能够识别的结构，然后通过其他方法找这个结构。因此，
+   tokenize采用了分割算法来识别复杂选择器
+*/
 tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	var matched, match, tokens, type,
 		soFar, groups, preFilters,
@@ -2108,29 +2146,36 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	preFilters = Expr.preFilter;
 
 	while ( soFar ) {
-
+        // 逗号
 		// Comma and first run
 		if ( !matched || (match = rcomma.exec( soFar )) ) {
 			if ( match ) {
 				// Don't consume trailing commas as valid
 				soFar = soFar.slice( match[0].length ) || soFar;
 			}
+			// 第一次执行代码，使groups为二维数组
 			groups.push( (tokens = []) );
 		}
 
 		matched = false;
-
+        
+        // 关系符
 		// Combinators
 		if ( (match = rcombinators.exec( soFar )) ) {
+			// 取得数组第一项
 			matched = match.shift();
 			tokens.push({
 				value: matched,
 				// Cast descendant combinators to space
 				type: match[0].replace( rtrim, " " )
 			});
+			// 截取字符串，从上一个匹配项字符串长度的位置截取
 			soFar = soFar.slice( matched.length );
 		}
 
+		/* Expr.filter包括TAG、CLASS、ATTR、CHILD、PSEUDO和ID
+		   matchExpr包括ID、CLASS、TAG、ATTR、PSEUDO、CHILD、bool、needsContext
+		*/
 		// Filters
 		for ( type in Expr.filter ) {
 			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
@@ -2149,7 +2194,6 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			break;
 		}
 	}
-
 	// Return the length of the invalid excess
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
@@ -2160,6 +2204,9 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			// Cache the tokens
 			tokenCache( selector, groups ).slice( 0 );
 };
+
+// tokenize('div.aaron input[name=ttt],div p')
+// console.log(matchExpr)
 
 function toSelector( tokens ) {
 	var i = 0,
