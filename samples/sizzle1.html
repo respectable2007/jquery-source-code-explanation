@@ -19,7 +19,8 @@
           CHILD = /^:(only|first|last|nth|nth-last)-(child|of-type)(?:\([\x20\t\r\n\f]*(even|odd|(([+-]|)(\d*)n|)[\x20\t\r\n\f]*(?:([+-]|)[\x20\t\r\n\f]*(\d+)|))[\x20\t\r\n\f]*\)|)/i,
           CLASS = /^\.((?:\\.|[\w-]|[^\x00-\xa0])+)/,
           PSEUDO = /^:((?:\\.|[\w-]|[^\x00-\xa0])+)(?:\((('((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)")|((?:\\.|[^\\()[\]]|\[[\x20\t\r\n\f]*((?:\\.|[\w-]|[^\x00-\xa0])+)(?:[\x20\t\r\n\f]*([*^$|!~]?=)[\x20\t\r\n\f]*(?:'((?:\\.|[^\\'])*)'|"((?:\\.|[^\\"])*)"|((?:\\.|[\w#-]|[^\x00-\xa0])+))|)[\x20\t\r\n\f]*\])*)|.*)\)|)/,
-          TAG = /^((?:\\.|[\w*-]|[^\x00-\xa0])+)/;
+          TAG = /^((?:\\.|[\w*-]|[^\x00-\xa0])+)/,
+          rtrim = /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g;
 	   var string = 'div.aaron input[name=ttt],div p'
 
 	   /*第二次循环，正则验证
@@ -29,15 +30,15 @@
 	   // var matchs = rcombinators.exec( string )
        
        // var idStr ='#\\a'
-       console.log(ID.exec(string))
-       console.log(TAG.exec(string))
+      /* console.log(ID.exec(string))
+       console.log(TAG.exec(string))*/
 
        /*第一次循环，第二次for循环，正则验证CLASS
        string = '.aaron input[name=ttt],div p'*/
-       console.log(CLASS.exec(string))
+       /*console.log(CLASS.exec(string))
        console.log(ATTR.exec(string))
        console.log(CHILD.exec(string))
-       console.log(PSEUDO.exec(string))
+       console.log(PSEUDO.exec(string))*/
 	   // console.log(match)
 	   // console.log(matchs)
        
@@ -50,6 +51,15 @@
            groups = [];
        groups.push( (tokens = []) )
        console.log(groups)*/
+       // 问题二
+       /*console.log(rtrim.exec(string))
+       console.log(string.replace(rtrim,'$1'))
+       console.log(string)
+       结果为：div.aaron input[name=ttt].div p*/
+
+       // $('div.aaron input[name=ttt],div p')
+
+
  	</script>
  </body>
 </html>

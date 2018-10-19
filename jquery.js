@@ -672,6 +672,7 @@ var i,
 	setDocument,
 	document,
 	docElem,
+	// 文档是否为HTML文档
 	documentIsHTML,
 	/*IE8开始支持querySelectorAll的API，
 	  但是会有各式各样的BUG,
@@ -835,7 +836,7 @@ var i,
 				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	};
-
+    
 // Optimize for push.apply( _, NodeList )
 try {
 	push.apply(
@@ -865,12 +866,17 @@ try {
 	};
 }
 
-/**Sizzle构造函数*/
+/* Sizzle构造函数
+   以selector = 'div.aaron input[name=ttt],div p'为例
+*/
 function Sizzle( selector, context, results, seed ) {
 	var match, elem, m, nodeType,
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector;
 
+    /* ownerDocument是只读属性，返回子节点的根级Document对象
+       若节点为文档节点，则返回null
+    */
 	if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
 		setDocument( context );
 	}
@@ -885,9 +891,11 @@ function Sizzle( selector, context, results, seed ) {
 	if ( (nodeType = context.nodeType) !== 1 && nodeType !== 9 ) {
 		return [];
 	}
-
+    
+    /*若是html文档，且seed为undefined*/
 	if ( documentIsHTML && !seed ) {
-
+        
+        /*是否为ID、TAG、CLASS选择，使用ById ByTagName ByClassName获取DOM*/
 		// Shortcuts
 		if ( (match = rquickExpr.exec( selector )) ) {
 			// Speed-up: Sizzle("#ID")
@@ -907,6 +915,7 @@ function Sizzle( selector, context, results, seed ) {
 						return results;
 					}
 				} else {
+					/*context不是文档节点*/
 					// Context is not a document
 					if ( context.ownerDocument && (elem = context.ownerDocument.getElementById( m )) &&
 						contains( context, elem ) && elem.id === m ) {
@@ -970,7 +979,14 @@ function Sizzle( selector, context, results, seed ) {
 			}
 		}
 	}
-
+    
+    /* context = document
+       results = []
+       seed = undefined
+       selector = 'div.aaron input[name=ttt],div p'
+       传入select函数中，返回DOM集合
+       p2659
+    */
 	// All others
 	return select( selector.replace( rtrim, "$1" ), context, results, seed );
 }
@@ -1739,7 +1755,7 @@ Expr = Sizzle.selectors = {
 		}
 	},
     
-    /* 元素匹配器
+    /* 选择器
        ID选择器位于setDocument内根据不同浏览器进行了定义
     */
 	filter: {
@@ -2225,6 +2241,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			break;
 		}
 	}
+	console.log(groups)
 	// Return the length of the invalid excess
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
@@ -2236,7 +2253,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 };
 
-tokenize('div.aaron input[name=ttt],div p')
+// tokenize('div.aaron input[name=ttt],div p')
 // console.log(matchExpr)
 
 function toSelector( tokens ) {
@@ -2249,6 +2266,10 @@ function toSelector( tokens ) {
 	return selector;
 }
 
+/* sizzle过滤器
+   从种子集合seed里边找到选择器指定的元素
+   调用逻辑select--compile--matcherFromTokens--addCombinator
+*/
 function addCombinator( matcher, combinator, base ) {
 	var dir = combinator.dir,
 		checkNonElements = base && dir === "parentNode",
@@ -2594,6 +2615,9 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 }
 
 compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
+	/* 以selector = 'div.aaron input[name=ttt],div p', 
+	   match = [Array(5),Array(3)]为例
+	*/
 	var i,
 		setMatchers = [],
 		elementMatchers = [],
@@ -2623,6 +2647,12 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 	return cached;
 };
 
+/* context = document
+   results = []
+   seed = undefined
+   selector = 'div.aaron input[name=ttt],div p'
+   传入select函数中，返回DOM集合
+*/
 /**
  * A low-level selection function that works with Sizzle's compiled
  *  selector functions
@@ -2634,7 +2664,9 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
  */
 select = Sizzle.select = function( selector, context, results, seed ) {
 	var i, tokens, token, type, find,
+	    /*compiled为false*/
 		compiled = typeof selector === "function" && selector,
+		/*match = [Array(5),Array(3)]*/
 		match = !seed && tokenize( (selector = compiled.selector || selector) );
 
 	results = results || [];
@@ -2711,9 +2743,11 @@ support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
 // Always assume duplicates if they aren't passed to the comparison function
 support.detectDuplicates = !!hasDuplicate;
 
+/*仿照默认文件作初始化*/
 // Initialize against the default document
 setDocument();
 
+/*浏览器兼容性处理*/
 // Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 // Detached nodes confoundingly follow *each other*
 support.sortDetached = assert(function( div1 ) {
