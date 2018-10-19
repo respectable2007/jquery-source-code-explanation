@@ -2331,16 +2331,21 @@ function addCombinator( matcher, combinator, base ) {
 }
 
 function elementMatcher( matchers ) {
+	// 生成一个终极匹配器
 	return matchers.length > 1 ?
+	// 若是多个匹配器的情况，那么就需要elem符合全部匹配器规则
 		function( elem, context, xml ) {
 			var i = matchers.length;
+			// 从右到左开始匹配
 			while ( i-- ) {
+				// 若有一个没匹配中，那就说明该节点elem不符合规则
 				if ( !matchers[i]( elem, context, xml ) ) {
 					return false;
 				}
 			}
 			return true;
 		} :
+		// 单个匹配器的话就返回自己即可
 		matchers[0];
 }
 
@@ -2467,6 +2472,12 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 	});
 }
 
+/* 充当了selector“分词”与Expr中定义的匹配方法的串联和纽带的作用，
+   可以说选择符的各种排列组合都是能适应的。
+   Sizzle巧妙的是没有直接将拿到的“分词”结果与Expr中的方法逐个匹配
+   逐个执行，而是先根据规则组合出一个大的匹配方法，最好一步执行
+   matcherFromTokens的分解是有规律的
+*/
 function matcherFromTokens( tokens ) {
 	/*Array(3)*/
 	var checkContext, matcher, j,
@@ -2490,9 +2501,12 @@ function matcherFromTokens( tokens ) {
 		} ];
 
 	for ( ; i < len; i++ ) {
+		/*当遇到关系选择器时，elementMatcher函数将matchers数组中的函数生成一个函数*/
 		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
 			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
 		} else {
+			/*在递归分解tokens中的词法元素时，提出第一个type匹配到对应的处理方法*/
+			// f()
 			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
 
 			// Return special upon seeing a positional matcher
@@ -2533,6 +2547,11 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				unmatched = seed && [],
 				setMatched = [],
 				contextBackup = outermostContext,
+				/* 有可能是直接从seed中查询过滤，也有可能在context或者context的父节点范围内。
+				   如果不是从seed开始，那只能把整个DOM树节点取出来过滤了，把整个DOM树节点取出
+				   来过滤了，它会先执行Expr.find["TAG"]( "*", outermost )这句代码等到一个elems
+				   集合（数组合集）
+				*/
 				// We must always have either seed elements or outermost context
 				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
 				// Use integer dirruns iff this is the outermost matcher
@@ -2637,6 +2656,7 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		}
 		i = match.length;
 		while ( i-- ) {
+			// f()
 			cached = matcherFromTokens( match[i] );
 			if ( cached[ expando ] ) {
 				setMatchers.push( cached );
@@ -2644,7 +2664,9 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 				elementMatchers.push( cached );
 			}
 		}
-
+        /* superMatcher函数不是一个直接定义的方法，
+           通过matcherFromGroupMatchers方法return的一个函数
+        */
 		// Cache the compiled function
 		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
 
@@ -2728,7 +2750,10 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 			}
 		}
 	}
-
+    
+    /* superMatcher函数不是一个直接定义的方法，
+       通过matcherFromGroupMatchers方法return的一个函数
+    */
 	// Compile and execute a filtering function if one is not provided
 	// Provide `match` to avoid retokenization if we modified the selector above
 	( compiled || compile( selector, match ) )(
