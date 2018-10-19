@@ -6,7 +6,10 @@
  	<script src='../jquery.js'></script>
  </head>
  <body>
- 	<div id='\sizzle'></div>
+ 	<div id='\sizzle' class='aaron'>
+ 		<input name='ttt'>
+ 		<p></p>
+ 	</div>
  	<script type="text/javascript">
  	  var whitespace = "[\\x20\\t\\r\\n\\f]",
           // 逗号分组
@@ -57,7 +60,7 @@
        console.log(string)
        结果为：div.aaron input[name=ttt].div p*/
 
-       // $('div.aaron input[name=ttt],div p')
+       console.log($('div.aaron,div p'))
 
 
  	</script>

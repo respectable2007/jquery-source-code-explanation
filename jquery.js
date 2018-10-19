@@ -1755,8 +1755,13 @@ Expr = Sizzle.selectors = {
 		}
 	},
     
-    /* 选择器
+    /* 过滤器
        ID选择器位于setDocument内根据不同浏览器进行了定义
+       从1.8后采用了空间换时间的方式，通过把各种过滤器编译
+       成闭包的函数，来提高查询效率
+       将闭包作为私有变量的保存处理，把过滤器中每一个选择原
+       子都变成了函数的处理方法，然后通过闭包保存着。再缓存
+       在内存中去，这样又重复使用的时候就会首先调用缓存
     */
 	filter: {
 
@@ -2253,7 +2258,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 };
 
-// tokenize('div.aaron input[name=ttt],div p')
+tokenize('div.aaron input[name=ttt],div p')
 // console.log(matchExpr)
 
 function toSelector( tokens ) {
@@ -2276,6 +2281,7 @@ function addCombinator( matcher, combinator, base ) {
 		doneName = done++;
 
 	return combinator.first ?
+	    // 沿着父级或之前的元素获取第一个的元素
 		// Check against closest ancestor/preceding element
 		function( elem, context, xml ) {
 			while ( (elem = elem[ dir ]) ) {
@@ -2284,7 +2290,8 @@ function addCombinator( matcher, combinator, base ) {
 				}
 			}
 		} :
-
+        
+        // 沿着父级或之前的元素获取所有的元素
 		// Check against all ancestor/preceding elements
 		function( elem, context, xml ) {
 			var oldCache, outerCache,
@@ -2461,6 +2468,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 }
 
 function matcherFromTokens( tokens ) {
+	/*Array(3)*/
 	var checkContext, matcher, j,
 		len = tokens.length,
 		leadingRelative = Expr.relative[ tokens[0].type ],
@@ -2622,7 +2630,6 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		setMatchers = [],
 		elementMatchers = [],
 		cached = compilerCache[ selector + " " ];
-
 	if ( !cached ) {
 		// Generate a function of recursive functions that can be used to check each element
 		if ( !match ) {
