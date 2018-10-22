@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>自调用匿名函数</title>
+  </head>
+  <body>
+  	<script type="text/javascript">
+  		/*function(){
+          alert(1)
+  		}()
+  		SyntaxError报错，原因在于js将function作为一个函数声明的开始，
+  		而函数声明后不能直接添加括号*/
+
+
+  		/*(function(){
+  		  alert(1)
+  		}())
+  		自调用匿名函数*/
+
+
+  		/*(function(){
+  		  alert(2)
+  		})()
+  		自调用匿名函数*/
+  	</script>
+  </body>
+</html>
