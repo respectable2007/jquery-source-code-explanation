@@ -101,6 +101,7 @@ var
 
 /** jQuery原型链定义一些属性及方法，降低内存空间，查找快捷。
     jQuery.fn保存jQuery原型对象的属性和方法，可将其赋值给init.prototype
+    工具方法模块
 */
 jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
@@ -304,6 +305,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	return target;
 };
 
+/*工具方法模块*/
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
 	/* 页面中，每个jQuery对象的id
@@ -2258,7 +2260,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			tokenCache( selector, groups ).slice( 0 );
 };
 
-tokenize('div.aaron input[name=ttt],div p')
+// tokenize('div.aaron input[name=ttt],div p')
 // console.log(matchExpr)
 
 function toSelector( tokens ) {
@@ -4366,7 +4368,7 @@ jQuery.fn.extend({
 	}
 });
 
-
+// 队列模块
 jQuery.extend({
 	queue: function( elem, type, data ) {
 		var queue;
@@ -5157,6 +5159,7 @@ jQuery.removeEvent = function( elem, type, handle ) {
 	}
 };
 
+/*事件模块*/
 jQuery.Event = function( src, props ) {
 	// Allow instantiation without the 'new' keyword
 	if ( !(this instanceof jQuery.Event) ) {
@@ -7033,6 +7036,7 @@ function propFilter( props, specialEasing ) {
 	}
 }
 
+/*动画模块*/
 function Animation( elem, properties, options ) {
 	var result,
 		stopped,
