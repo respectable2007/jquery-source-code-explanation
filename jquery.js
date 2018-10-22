@@ -9715,6 +9715,9 @@ jQuery.noConflict = function( deep ) {
 	return jQuery;
 };
 
+/* 手动将jQuery添加到window对象上，明确地使变量jQuery
+   成为公开的全局变量
+*/
 // Expose jQuery and $ identifiers, even in
 // AMD (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
 // and CommonJS for browser emulators (#13566)
