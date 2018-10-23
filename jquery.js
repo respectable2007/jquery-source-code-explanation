@@ -108,7 +108,8 @@ jQuery.fn = jQuery.prototype = {
 	jquery: version,
 
 	constructor: jQuery,//强制指向jQuery构造函数，若不设置，this指向的是Object对象
-
+    
+    /*一堆原型属性和方法*/
 	// Start with an empty selector
 	selector: "",
 
@@ -305,7 +306,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	return target;
 };
 
-/*工具方法模块*/
+/*工具方法模块，一堆静态属性和方法*/
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
 	/* 页面中，每个jQuery对象的id
@@ -2851,6 +2852,7 @@ jQuery.contains = Sizzle.contains;
 
 var rneedsContext = jQuery.expr.match.needsContext;
 
+// 是否为单个标签
 var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/);
 
 
@@ -2973,7 +2975,9 @@ var rootjQuery,
 	rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/,
 
 
-    // 在原型上创建init方法
+    /* 在原型上创建init方法
+       context用来限定查找范围，称为选择器的上下文，或上下文
+    */
 	init = jQuery.fn.init = function( selector, context ) {
 		var match, elem;
         
@@ -3008,7 +3012,7 @@ var rootjQuery,
 				match = rquickExpr.exec( selector );
 			}
             
-            // 选择器
+            // css选择器或未指定context
 			// Match html or make sure no context is specified for #id
 			if ( match && (match[1] || !context) ) {
                 
@@ -3059,10 +3063,11 @@ var rootjQuery,
 					return this;
 				}
 
+            /*指定context*/
 			// HANDLE: $(expr, $(...))
 			} else if ( !context || context.jquery ) {
 				return ( context || rootjQuery ).find( selector );
-
+            
 			// HANDLE: $(expr, context)
 			// (which is just equivalent to: $(context).find(expr)
 			} else {
@@ -3072,11 +3077,12 @@ var rootjQuery,
         // 根据节点类型
 		// HANDLE: $(DOMElement)
 		} else if ( selector.nodeType ) {
+			/*封装到jQuery对象*/
 			this.context = this[0] = selector;
 			this.length = 1;
 			return this;
 
-        // 若传入函数
+        // 若传入函数，则在document上绑定ready事件的监听函数
 		// HANDLE: $(function)
 		// Shortcut for document ready
 		} else if ( jQuery.isFunction( selector ) ) {
@@ -9342,6 +9348,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 
 	// Single tag
 	if ( parsed ) {
+		/*单个标签产生一个DOM元素*/
 		return [ context.createElement( parsed[1] ) ];
 	}
 
