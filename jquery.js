@@ -2991,7 +2991,7 @@ var rootjQuery,
 		// Handle HTML strings
 		if ( typeof selector === "string" ) {
 
-			// 若传入的是标签html字符串，例如<a>
+			// 若传入的是标签html字符串，但不一定是合法的html代码，例如<a>，<a></p>
 			if ( selector[0] === "<" && selector[ selector.length - 1 ] === ">" && selector.length >= 3 ) {
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
@@ -3074,10 +3074,10 @@ var rootjQuery,
 				return this.constructor( context ).find( selector );
 			}
         
-        // 根据节点类型
+        // DOM元素
 		// HANDLE: $(DOMElement)
 		} else if ( selector.nodeType ) {
-			/*封装到jQuery对象*/
+			/*手动设置第一个元素和context为selector，封装到jQuery对象*/
 			this.context = this[0] = selector;
 			this.length = 1;
 			return this;

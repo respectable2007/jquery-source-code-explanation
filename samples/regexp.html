@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>正则表达式</title>
+  </head>
+  <body>
+  	<script type="text/javascript">
+  	  var rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/
+  	  // [^#<]匹配除#<外的字符
+  	  var rquickExpr7 = /^(?:[^#<]*(<[\w\W]+>)[^>]*|#([\w-]*))$/
+  	  console.log(rquickExpr.exec('#target'))
+  	  console.log(rquickExpr.exec('<div>'))
+  	  console.log(rquickExpr.exec('abc<div>'))
+  	  console.log(rquickExpr.exec('abc<div>abc#id'))
+  	  console.log(rquickExpr.exec('div'))
+  	  console.log(rquickExpr.exec('<div><img></div>'))
+  	</script>
+  </body>
+</html>
