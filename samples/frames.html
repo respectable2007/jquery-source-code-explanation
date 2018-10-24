@@ -48,9 +48,23 @@
 
       // console.log(undefined instanceof Object)
 
-      var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/)
-      var data = '<div><input></div>'
-      console.log(rsingleTag.exec(data))
+     console.log(location.hash)
+     console.log(location.host)
+     console.log(location.hostname)
+     console.log(location.href)
+     console.log(location.pathname)
+     console.log(location.port)
+     console.log(location.protocol)
+     console.log(location.search)
+     /*变更浏览器位置*/
+     location.hash = '#content'
+     setTimeout(function(){
+       location.replace('https://www.baidu.com')
+     },1000)
+     // location.hostname = 'www.baidu.com'
+     // location.pathname = 'mydir'
+     // location.search = '?q=jquery' 闪屏
+     // window.location = 'https://www.baidu.com/' 无效果
   	</script>
   </body>
 </html>
