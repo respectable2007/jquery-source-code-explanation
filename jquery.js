@@ -345,7 +345,8 @@ jQuery.extend({
 		// subtraction forces infinities to NaN
 		return !jQuery.isArray( obj ) && obj - parseFloat( obj ) >= 0;
 	},
-
+    
+    /*判断是否为[object object]*/
 	isPlainObject: function( obj ) {
 		// Not plain objects:
 		// - Any object or value whose internal [[Class]] property is not "[object Object]"
@@ -510,6 +511,7 @@ jQuery.extend({
 		return arr == null ? -1 : indexOf.call( arr, elem, i );
 	},
 
+    /*将两个数组强制合并到第一个数组，不去重，参数为类数组对象也可以*/
 	merge: function( first, second ) {
 		var len = +second.length,
 			j = 0,
@@ -3016,7 +3018,9 @@ var rootjQuery,
 			// Match html or make sure no context is specified for #id
 			if ( match && (match[1] || !context) ) {
                 
-                // 标签选择器
+                /* 标签选择器，调用parseHTML方法，
+                   其实是调用document.createElement方法，
+                   生成DOM元素*/
 				// HANDLE: $(html) -> $(array)
 				if ( match[1] ) {
 					context = context instanceof jQuery ? context[0] : context;
@@ -3028,14 +3032,17 @@ var rootjQuery,
 						context && context.nodeType ? context.ownerDocument || context : document,
 						true
 					) );
-
+                    
+                    /*若为单个标签且context为[object object]*/
 					// HANDLE: $(html, props)
 					if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
 						for ( match in context ) {
+							/*若this对象中为函数，则调用该方法*/
 							// Properties of context are called as methods if possible
 							if ( jQuery.isFunction( this[ match ] ) ) {
 								this[ match ]( context[ match ] );
 
+                            /*若不为函数，则设为属性值*/
 							// ...and otherwise set as attributes
 							} else {
 								this.attr( match, context[ match ] );

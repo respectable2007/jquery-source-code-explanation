@@ -3,8 +3,10 @@
   <head>
   	<meta charset="utf-8">
   	<title>自调用匿名函数</title>
+    <script src="../jquery.js"></script>
   </head>
   <body>
+    <div id='create'>create</div>
   	<script type="text/javascript">
   		/*function(){
           alert(1)
@@ -47,24 +49,41 @@
       /*因此，在使用自调用匿名函数时，最好在前或后添加分号*/
 
       // console.log(undefined instanceof Object)
-
-     console.log(location.hash)
+      
+     /*location对象*/
+     /*console.log(location.hash)
      console.log(location.host)
      console.log(location.hostname)
      console.log(location.href)
      console.log(location.pathname)
      console.log(location.port)
      console.log(location.protocol)
-     console.log(location.search)
+     console.log(location.search)*/
      /*变更浏览器位置*/
-     location.hash = '#content'
-     setTimeout(function(){
+     // location.hash = '#content'
+     /*setTimeout(function(){
        location.replace('https://www.baidu.com')
-     },1000)
+     },1000)*/
      // location.hostname = 'www.baidu.com'
      // location.pathname = 'mydir'
      // location.search = '?q=jquery' 闪屏
      // window.location = 'https://www.baidu.com/' 无效果
+
+     /*var div = document.createElement('div')
+     console.log(div.ownerDocument)
+     var create = document.getElementById('create')
+     console.log(create)*/
+     /*var div1 = create.createElement('div')
+     createElement方法只属于HTMLDocument类型
+     console.log(div1.ownerDocument)*/
+
+     console.log($('#create', {
+      id: 'create1',
+      name: 'rrrr',
+      show: function() {
+        alert('1111')
+      }
+     }))
   	</script>
   </body>
 </html>
