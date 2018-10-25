@@ -77,13 +77,53 @@
      createElement方法只属于HTMLDocument类型
      console.log(div1.ownerDocument)*/
 
-     console.log($('#create', {
+     /*console.log($('#create', {
       id: 'create1',
       name: 'rrrr',
       show: function() {
         alert('1111')
       }
-     }))
+     }))*/
+
+     /*var b = [8,3,14]
+     b.length = -1
+     报错，b.length 为 0 或大于0的数，-1为无效值
+     console.log(b)*/
+
+     /*var a = [8,5,6,3,1]
+     a.length = 1
+     console.log(a)*/
+
+     /*function fn(num) {
+      var total = 1;
+      total *= num;
+      return function (numx) {
+        console.log(arguments)
+        total *= numx;
+        if(arguments.length === 1) {
+          return total;
+        }
+        return fn;
+      }
+     }*/
+
+
+   /* ES6 
+   var fn = (function() {
+        let r = 1;
+        return function f(...args){
+            r *= args.reduce((p, n) => p * n);
+            f.valueOf = () => r;
+            return f;
+        }
+    }())
+     const a = fn(2)(3)(4)
+     console.log(a)
+     const b = a(2)(5)
+     console.log(b)*/
+
+
+     console.log($('#create',$('#create')))
   	</script>
   </body>
 </html>

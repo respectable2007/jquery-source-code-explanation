@@ -104,6 +104,8 @@ var
     工具方法模块
 */
 jQuery.fn = jQuery.prototype = {
+
+	/*当前jQuery版本号*/
 	// The current version of jQuery being used
 	jquery: version,
 
@@ -489,17 +491,21 @@ jQuery.extend({
 			( text + "" ).replace( rtrim, "" );
 	},
 
+    /*将arr对象属性添加到results上*/
 	// results is for internal usage only
 	makeArray: function( arr, results ) {
 		var ret = results || [];
 
 		if ( arr != null ) {
+			/*若为[object array]*/
 			if ( isArraylike( Object(arr) ) ) {
+				/*不去重将arr合并到ret*/
 				jQuery.merge( ret,
 					typeof arr === "string" ?
 					[ arr ] : arr
 				);
 			} else {
+				/*类对象合并*/
 				push.call( ret, arr );
 			}
 		}
@@ -511,7 +517,7 @@ jQuery.extend({
 		return arr == null ? -1 : indexOf.call( arr, elem, i );
 	},
 
-    /*将两个数组强制合并到第一个数组，不去重，参数为类数组对象也可以*/
+    /*将两个数组强制合并到第一个数组，不去重*/
 	merge: function( first, second ) {
 		var len = +second.length,
 			j = 0,
@@ -2988,7 +2994,6 @@ var rootjQuery,
 		if ( !selector ) {
 			return this;
 		}
-        
         // 若传入非空html字符串
 		// Handle HTML strings
 		if ( typeof selector === "string" ) {
@@ -3013,8 +3018,7 @@ var rootjQuery,
                 */
 				match = rquickExpr.exec( selector );
 			}
-            
-            // css选择器或未指定context
+            // 标签选择器或id选择器，且未指定context
 			// Match html or make sure no context is specified for #id
 			if ( match && (match[1] || !context) ) {
                 
@@ -3056,7 +3060,8 @@ var rootjQuery,
 				// HANDLE: $(#id)
 				} else {
 					elem = document.getElementById( match[2] );
-
+                    
+                    /*Blackberry4.6会返回不在文档中的DOM节点*/
 					// Check parentNode to catch when Blackberry 4.6 returns
 					// nodes that are no longer in the document #6963
 					if ( elem && elem.parentNode ) {
@@ -3070,14 +3075,20 @@ var rootjQuery,
 					return this;
 				}
 
-            /*指定context*/
+            /* 选择器表达式*/
 			// HANDLE: $(expr, $(...))
 			} else if ( !context || context.jquery ) {
+            
+				/*若未指定上下文，则rootjQuery.find
+				若指定上下文，且上下文为jQuery对象，则context.find
+				jquery为jQuery实例对象的原型属性，保存着版本号，若存在，则为jQuery对象*/
 				return ( context || rootjQuery ).find( selector );
             
 			// HANDLE: $(expr, context)
 			// (which is just equivalent to: $(context).find(expr)
 			} else {
+				/*若指定上下文，且上下文不为jQuery对象，
+				则先用context生成一个jQuery对象，用新生成的jQuery对象调用find*/
 				return this.constructor( context ).find( selector );
 			}
         
@@ -3099,6 +3110,7 @@ var rootjQuery,
 				selector( jQuery );
 		}
 
+        /*若为jQuery对象*/
 		if ( selector.selector !== undefined ) {
 			this.selector = selector.selector;
 			this.context = selector.context;
@@ -7459,6 +7471,7 @@ var nodeHook, boolHook,
 	attrHandle = jQuery.expr.attrHandle;
 
 jQuery.fn.extend({
+	/*实例方法，DOM元素设置属性*/
 	attr: function( name, value ) {
 		return access( this, jQuery.attr, name, value, arguments.length > 1 );
 	},
@@ -7471,15 +7484,18 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
+	/*静态方法，DOM元素设置属性*/
 	attr: function( elem, name, value ) {
 		var hooks, ret,
 			nType = elem.nodeType;
-
+        
+        /*若为属性、文本和注释类型，则不做处理*/
 		// don't get/set attributes on text, comment and attribute nodes
 		if ( !elem || nType === 3 || nType === 8 || nType === 2 ) {
 			return;
 		}
-
+        
+        /*若不支持getAttributes，则使用jQuery.prop*/
 		// Fallback to prop when attributes are not supported
 		if ( typeof elem.getAttribute === strundefined ) {
 			return jQuery.prop( elem, name, value );
