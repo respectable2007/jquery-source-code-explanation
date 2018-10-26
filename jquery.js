@@ -229,27 +229,41 @@ jQuery.fn = jQuery.prototype = {
 	splice: arr.splice
 };
 
-/* 插件接口，用于第三方扩展功能。
-   根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
+/* 根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
    jQuery.extend的this指向jQuery函数（构造函数，也为对象），扩展功能挂载在jQuery函数对象上
-   jQuery.fn.extend的this指向fn对象，fn对象和jQuery.prototype指向同一个对象，扩展功能挂载在jQuery原型对象上
+   jQuery.fn.extend的this指向fn对象，fn对象和jQuery.prototype指向同一个对象，扩展功能挂载在jQuery实例对象上
    那么，为何提供两种插件接口？
    77行代码声明了一个jQuery函数，函数也是对象，使用了new运算符创建一个init的实例对象，实例对象的[[prototype]]指向的是
    init构造函数的原型，而init构造函数原型与fn对象指向同一个对象，在fn对象定义extend方法，就是在原型上扩展了新方法
    fn与jQuery是两个不同的对象，为了用户方便，在两个对象上分别定义了extend方法
+   extend用于合并两个或多个对象的属性到第一个对象，常用于编写插件和处理函数的参数。
 */
 jQuery.extend = jQuery.fn.extend = function() {
 
 	/**函数参数数量，决定于调用函数时传参的个数。
        可以利用这个特性，通过arguments，实现函数重载。
        即根据arguments的值不同，进行实现不同的功能。
+       options 指向某个源对象
+       name 某个源对象的某个属性名
+       src 目标对象的某个属性的原始值
+       copy 某个源对象的某个属性的值
+       copyIsArray 变量copy是否是数组
+       clone 深度复制时原始值的修正值
+       target 目标对象
+       i 源对象的起始下标
+       length 参数的个数，用于修正变量target
+       deep 是否进行深度合并，
+            false时，第一个参数的属性是一个对象或数组，会被第二个或后面的其他参数的同名属性完全覆盖；
+            true时，为深度合并，合并过程是递归的
 	*/
 	var options, name, src, copy, copyIsArray, clone,
 		target = arguments[0] || {},
 		i = 1,
 		length = arguments.length,
 		deep = false;
-
+    /*如果第一个参数是布尔值，则修改deep
+      target为第二个参数，i从第三个元素开始
+    */
 	// Handle a deep copy situation
 	if ( typeof target === "boolean" ) {
 		deep = target;
@@ -258,46 +272,61 @@ jQuery.extend = jQuery.fn.extend = function() {
 		target = arguments[ i ] || {};
 		i++;
 	}
-
+    
+    /*如果target不是对象，也不是函数，而是字符串或其他基本类型，则target为空对象*/
 	// Handle case when target is a string or something (possible in deep copy)
 	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
 		target = {};
 	}
-
+    
+    /* 表示期望的源对象没有传入，例如extend(object)/extend(deep,object)
+       则target为jQuery对象，并将下标减一
+    */
 	// extend jQuery itself if only one argument is passed
 	if ( i === length ) {
 		target = this;
 		i--;
 	}
 
+    // 遍历对象
 	for ( ; i < length; i++ ) {
 		// Only deal with non-null/undefined values
 		if ( (options = arguments[ i ]) != null ) {
+			// 循环遍历options对象
 			// Extend the base object
 			for ( name in options ) {
 				src = target[ name ];
 				copy = options[ name ];
-
+                
+                /*避免死循环*/
 				// Prevent never-ending loop
 				if ( target === copy ) {
 					continue;
 				}
-
+                
+                /*深度合并，copy是对象或数组时*/
 				// Recurse if we're merging plain objects or arrays
 				if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
+					/*数组*/
 					if ( copyIsArray ) {
 						copyIsArray = false;
+						/*若目标对象中存在，且为数组，则返回src
+						  反之[]*/
 						clone = src && jQuery.isArray(src) ? src : [];
-
 					} else {
+						/*若目标对象中存在，且为数组，则返回src
+						  反之{}*/
 						clone = src && jQuery.isPlainObject(src) ? src : {};
 					}
-
+                    
+                    /*clone保存目标对象原始值或空数组（空对象）*/
+                    /*递归合并到clone，再覆盖目标对象的同名属性*/
 					// Never move original objects, clone them
 					target[ name ] = jQuery.extend( deep, clone, copy );
 
 				// Don't bring in undefined values
 				} else if ( copy !== undefined ) {
+					/*源对象属性覆盖目标对象属性*/
 					target[ name ] = copy;
 				}
 			}
