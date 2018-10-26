@@ -6,7 +6,9 @@
     <script src="../jquery.js"></script>
   </head>
   <body>
-    <div id='create'>create</div>
+    <!-- <div id='create'>create</div> -->
+
+    <div id='fragment'><select><option></option></select></div>
   	<script type="text/javascript">
   		/*function(){
           alert(1)
@@ -123,7 +125,19 @@
      console.log(b)*/
 
 
-     console.log($('#create',$('#create')))
+
+     /*j = 1
+     var tmp = document.getElementById('fragment')
+     console.log(tmp.childNodes)
+     while(j--){
+        console.log(1)
+        tmp = tmp.lastChild;
+     }
+     若换行lastChild为文本节点，
+     若很紧凑书写，lastChild为select
+     console.log(tmp.childNodes)*/
+
+     // console.log($('#create',$('#create')))
   	</script>
   </body>
 </html>

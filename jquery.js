@@ -229,14 +229,14 @@ jQuery.fn = jQuery.prototype = {
 	splice: arr.splice
 };
 
-/**插件接口，用于第三方扩展功能。
-根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
-jQuery.extend的this指向jQuery函数（构造函数，也为对象），扩展功能挂载在jQuery函数对象上
-jQuery.fn.extend的this指向fn对象，fn对象和jQuery.prototype指向同一个对象，扩展功能挂载在jQuery原型对象上
-那么，为何提供两种插件接口？
-77行代码声明了一个jQuery函数，函数也是对象，使用了new运算符创建一个init的实例对象，实例对象的[[prototype]]指向的是
-init构造函数的原型，而init构造函数原型与fn对象指向同一个对象，在fn对象定义extend方法，就是在原型上扩展了新方法
-fn与jQuery是两个不同的对象，为了用户方便，在两个对象上分别定义了extend方法
+/* 插件接口，用于第三方扩展功能。
+   根据用户的调用方式，this的指向不同，扩展功能挂载的位置不同
+   jQuery.extend的this指向jQuery函数（构造函数，也为对象），扩展功能挂载在jQuery函数对象上
+   jQuery.fn.extend的this指向fn对象，fn对象和jQuery.prototype指向同一个对象，扩展功能挂载在jQuery原型对象上
+   那么，为何提供两种插件接口？
+   77行代码声明了一个jQuery函数，函数也是对象，使用了new运算符创建一个init的实例对象，实例对象的[[prototype]]指向的是
+   init构造函数的原型，而init构造函数原型与fn对象指向同一个对象，在fn对象定义extend方法，就是在原型上扩展了新方法
+   fn与jQuery是两个不同的对象，为了用户方便，在两个对象上分别定义了extend方法
 */
 jQuery.extend = jQuery.fn.extend = function() {
 
@@ -517,7 +517,7 @@ jQuery.extend({
 		return arr == null ? -1 : indexOf.call( arr, elem, i );
 	},
 
-    /*将两个数组强制合并到第一个数组，不去重*/
+    /*将两个数组强制合并到第一个数组，不去重，参数可为类数组对象*/
 	merge: function( first, second ) {
 		var len = +second.length,
 			j = 0,
@@ -3115,7 +3115,7 @@ var rootjQuery,
 			this.selector = selector.selector;
 			this.context = selector.context;
 		}
-
+        /*若为任意其他值，例如{context:'aa'}，则将其属性添加到jQuery对象上*/
 		return jQuery.makeArray( selector, this );
 	};
 
@@ -5432,9 +5432,13 @@ jQuery.fn.extend({
 });
 
 
-var
+var 
+    // (?!pattern)在任何不匹配pattern的字符串开始处匹配查找字符串
+    // 不匹配br等自关闭标签
 	rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi,
+	// 匹配标签
 	rtagName = /<([\w:]+)/,
+	// 是否为标签<、字符&、数字&#
 	rhtml = /<|&#?\w+;/,
 	rnoInnerhtml = /<(?:script|style|link)/i,
 	// checked="checked" or checked
@@ -5604,9 +5608,15 @@ jQuery.extend({
 		// Return the cloned set
 		return clone;
 	},
-
+    
+    /* 生成文档片段
+       elems 数组，包含待转换的HTML代码
+       context 文档对象
+       scripts 数组，用于存放转换后DOM元素中的script元素
+    */
 	buildFragment: function( elems, context, scripts, selection ) {
 		var elem, tmp, tag, wrap, contains, j,
+		    /*创建一个文档片段*/
 			fragment = context.createDocumentFragment(),
 			nodes = [],
 			i = 0,
@@ -5617,31 +5627,44 @@ jQuery.extend({
 
 			if ( elem || elem === 0 ) {
 
+                // 若为节点，则直接添加到nodes
 				// Add nodes directly
 				if ( jQuery.type( elem ) === "object" ) {
 					// Support: QtWebKit
 					// jQuery.merge because push.apply(_, arraylike) throws
 					jQuery.merge( nodes, elem.nodeType ? [ elem ] : elem );
-
+                
+                // 若不是标签、字符、数字代码，则转为文本节点，添加到nodes
 				// Convert non-html into a text node
 				} else if ( !rhtml.test( elem ) ) {
 					nodes.push( context.createTextNode( elem ) );
 
 				// Convert html into DOM nodes
 				} else {
+                    
+                    // 创建临时div元素
 					tmp = tmp || fragment.appendChild( context.createElement("div") );
-
+                    
+                    // 提取标签名，并转为小写
 					// Deserialize a standard representation
 					tag = ( rtagName.exec( elem ) || [ "", "" ] )[ 1 ].toLowerCase();
+					/* 从对象wrapMap中取出标签tag对应的父标签
+					   若tag为需要包含在父标签内，例如option，则在tag前先添加select的html片段，将其包裹在select标签内
+					*/
 					wrap = wrapMap[ tag ] || wrapMap._default;
+					/* replace使用特殊字符$n，匹配第n个捕获组的子字符串，其中n=0-9，如$1是匹配第一个捕获组的子字符串
+					   可将自关闭标签，拆解如<div/>=><div></div>
+					*/
 					tmp.innerHTML = wrap[ 1 ] + elem.replace( rxhtmlTag, "<$1></$2>" ) + wrap[ 2 ];
-
+                    
+                    // 剥去div等父级节点，如option，tmp = 'select'
 					// Descend through wrappers to the right content
 					j = wrap[ 0 ];
 					while ( j-- ) {
 						tmp = tmp.lastChild;
 					}
-
+                    
+                    // 将最准确的节点加到nodes，如option，tmp.childNodes就为option，没有添加额外的节点
 					// Support: QtWebKit
 					// jQuery.merge because push.apply(_, arraylike) throws
 					jQuery.merge( nodes, tmp.childNodes );
@@ -5677,7 +5700,8 @@ jQuery.extend({
 			if ( contains ) {
 				setGlobalEval( tmp );
 			}
-
+            
+            /*提取script元素*/
 			// Capture executables
 			if ( scripts ) {
 				j = 0;

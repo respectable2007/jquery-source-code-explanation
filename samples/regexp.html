@@ -9,16 +9,32 @@
   	  var rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/
   	  // [^#<]匹配除#<外的字符
   	  var rquickExpr7 = /^(?:[^#<]*(<[\w\W]+>)[^>]*|#([\w-]*))$/
-  	  console.log(rquickExpr.exec('#target'))
+  	  /*console.log(rquickExpr.exec('#target'))
   	  console.log(rquickExpr.exec('<div>'))
   	  console.log(rquickExpr.exec('abc<div>'))
   	  console.log(rquickExpr.exec('abc<div>abc#id'))
   	  console.log(rquickExpr.exec('div'))
-  	  console.log(rquickExpr.exec('<div><img></div>'))
+  	  console.log(rquickExpr.exec('<div><img></div>'))*/
       
       var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/)
       var data = '<div><input></div>'
-      console.log(rsingleTag.exec(data))
+      // console.log(rsingleTag.exec(data))
+
+      var rhtml = /<|&#?\w+;/;
+      var string = '&1;'
+      // console.log(rhtml.test(string))
+
+      var  rtagName = /<([\w:]+)/;
+      string = '<divttt/>'
+      // console.log(rtagName.exec(string))
+      
+      /*[^>]匹配除>字符*/
+      var rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi;
+      console.log(string.replace(rxhtmlTag,'<$1><$2>'))
+      // var code = /\d{5}|\d{5}-\d{4}/;
+      // var code = /\d{5}-\d{4}|\d{5}/;
+      // var string = '12345ymmm'
+      // console.log(code.test(string))
   	</script>
   </body>
 </html>
