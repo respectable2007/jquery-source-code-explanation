@@ -99,26 +99,27 @@ var
 		return letter.toUpperCase();
 	};
 
-/** jQuery原型链定义一些属性及方法，降低内存空间，查找快捷。
-    jQuery.fn保存jQuery原型对象的属性和方法，可将其赋值给init.prototype
+/** 原型属性和方法，降低内存空间，查找快捷。
+    jQuery.fn保存jQuery原型对象的属性和方法，并将其赋值给init.prototype
     工具方法模块
 */
 jQuery.fn = jQuery.prototype = {
 
-	/*当前jQuery版本号*/
+	/*正在使用的jQuery版本号*/
 	// The current version of jQuery being used
 	jquery: version,
 
 	constructor: jQuery,//强制指向jQuery构造函数，若不设置，this指向的是Object对象
     
-    /*一堆原型属性和方法*/
+    /*记录jQuery查找或过滤DOM元素时的选择器表达式，但不一定是可执行的选择器表达式，更多是为了方便调试*/
 	// Start with an empty selector
 	selector: "",
-
+    
+    /*当前jQuery对象中元素的个数*/
 	// The default length of a jQuery object is 0
 	length: 0,
     
-    // 返回DOM元素集合
+    /*将当前jQuery对象转换为真正的数组，转换后的数组包含了所有元素，返回DOM元素集合*/
 	toArray: function() {
 		return slice.call( this );
 	},
