@@ -165,7 +165,7 @@ jQuery.fn = jQuery.prototype = {
 		return ret;
 	},
 
-    // 遍历方法，以每一个匹配的元素作为上下文来执行一个函数
+    // 遍历当前jQuery对象，并在每个元素上执行回调函数
 	// Execute a callback for every element in the matched set.
 	// (You can seed the arguments with an array of args, but this is
 	// only used internally.)
@@ -453,10 +453,8 @@ jQuery.extend({
 		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 	},
 
-    /* 通用遍历方法，用于遍历对象和数组
-       callback有两个参数：
-         第一个为对象的成员或数组的索引
-         第二个为对应变量或内容
+    /* 通用遍历迭代方法，用于无缝地遍历对象和数组
+       callback总是指向当前元素
        返回false则退出each循环
     */
 	// args is for internal usage only
@@ -465,15 +463,15 @@ jQuery.extend({
 			i = 0,
 			length = obj.length,
 			isArray = isArraylike( obj );
-
+        /*args可选，若传入，则只把该参数传给回调函数*/
 		if ( args ) {
-			// 数组
+			// 数组或类数组对象
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
 
 					// 使用Function.prototype.apply方法,以obj[i]和args作为参数，执行函数内部代码
 					value = callback.apply( obj[ i ], args );
-
+                    /*若callback返回false，则结束遍历*/
 					if ( value === false ) {
 						break;
 					}
@@ -488,10 +486,12 @@ jQuery.extend({
 					}
 				}
 			}
-
+        /* 若没有传入，执行回调函数时会传入两个参数
+           下标或属性名，对应的元素或属性值
+        */
 		// A special, fast, case for the most common use of each
 		} else {
-			// 数组
+			// 数组或类数组
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
 					value = callback.call( obj[ i ], i, obj[ i ] );
@@ -511,7 +511,7 @@ jQuery.extend({
 				}
 			}
 		}
-        // 返回处理后的数组或对象
+        // 返回处理后的数组或对象，以支持链式句法
 		return obj;
 	},
 
