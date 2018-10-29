@@ -124,7 +124,8 @@ jQuery.fn = jQuery.prototype = {
 		return slice.call( this );
 	},
     
-    // 获得第几个匹配元素，返回DOM对象--对象索引值选择器
+    /* 返回当前jQuery对象中指定位置的元素或包含了全部元素的数组
+    */
 	// Get the Nth element in the matched element set OR
 	// Get the whole matched element set as a clean array
 	get: function( num ) {
