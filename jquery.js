@@ -186,7 +186,7 @@ jQuery.fn = jQuery.prototype = {
 		}));
 	},
     
-    // 返回jQuery对象集合，eq只返回一个jQuery对象
+    // 返回元素集合，eq只返回一个元素
 	slice: function() {
 
 		/*slice为array的slice函数
@@ -200,21 +200,21 @@ jQuery.fn = jQuery.prototype = {
 		return this.pushStack( slice.apply( this, arguments ) );
 	},
     
-    // 返回第一个jQuery对象
+    // 返回集合中的第一个元素
 	first: function() {
 		return this.eq( 0 );
 	},
     
-    // 返回最后一个jQuery对象
+    // 返回集合中的最后一个元素
 	last: function() {
 		return this.eq( -1 );
 	},
     
-    // 返回第几个jQuery对象，若为负数，则从尾至头返回一个jQuery对象
+    // 返回指定位置的元素，若为负数，则从尾至头返回一个元素
 	eq: function( i ) {
 		var len = this.length,
 		    /* 利用运算符优先级，括号高于加号
-		    括号内判断是否负数，若是，则函数传参+jQuery对象数组的长度为索引值，从尾至头返回jQuery对象
+		       括号内判断是否负数，若是，则函数传参+jQuery对象数组的长度为索引值，从尾至头返回jQuery对象
 		                      若不是，则函数传参即为索引值，从头至尾返回jQuery对象
 		    */
 			j = +i + ( i < 0 ? len : 0 );
@@ -232,10 +232,14 @@ jQuery.fn = jQuery.prototype = {
 		return this.prevObject || this.constructor(null);
 	},
 
+    /* 仅在jQuery内部使用*/
 	// For internal use only.
 	// Behaves like an Array's method, not like a jQuery method.
+	/* 向当前jQuery对象的末尾添加新元素*/
 	push: push,
+	/* 对当前jQuery对象中的元素进行排序，可以传入一个比较函数*/
 	sort: arr.sort,
+	/* 向当前jQuery对象中插入、删除或替换元素，并返回被处理过的数组*/
 	splice: arr.splice
 };
 
