@@ -146,12 +146,14 @@ jQuery.fn = jQuery.prototype = {
     /* 从pushStack-end方法均返回jQuery对象或jQuery对象集合
     */
 
-    // 将DOM数组推入DOM栈内，添加prevObject对象属性，返回jQuery对象
+    /* 将DOM数组推入DOM栈内，添加prevObject对象属性，返回jQuery对象
+       创建一个新的空jQuery对象，然后把DOM元素集合放入这个jQuery对象中，并保留对当前jQuery对象的引用
+    */
 	// Take an array of elements and push it onto the stack
 	// (returning the new matched element set)
 	pushStack: function( elems ) {
         
-        // 生成一个新的对象，并合并DOM节点
+        // 生成一个新的jQuery对象，将elems合并到新jQuery对象上
 		// Build a new jQuery matched element set
 		var ret = jQuery.merge( this.constructor(), elems );
         
@@ -224,6 +226,7 @@ jQuery.fn = jQuery.prototype = {
         prevObject并不是主动声明的jQuery属性，那它从哪里来呢？
         当我们需要遍历DOM对象时，经常使用find来查找正在处理元素的后代元素，
         那我们来查看find方法的源码（2684行）
+        其最根本的在于.pushStack方法新建属性prevObject，保存了之前的jQuery对象
     */
 	end: function() {
 		return this.prevObject || this.constructor(null);
