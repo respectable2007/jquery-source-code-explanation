@@ -172,7 +172,12 @@ jQuery.fn = jQuery.prototype = {
 	each: function( callback, args ) {
 		return jQuery.each( this, callback, args );
 	},
+    
+    /* 遍历当前jQuery对象，在每个元素上执行回调函数，并将回调函数的返回值放入一个新jQuery对象中。
+       该方法常用于获取或设置DOM元素集合的值；
+       该方法通过静态方法jQuery.map和原型方法pushStack实现；
 
+    */
 	map: function( callback ) {
 		return this.pushStack( jQuery.map(this, function( elem, i ) {
 			return callback.call( elem, i, elem );
@@ -581,7 +586,12 @@ jQuery.extend({
 
 		return matches;
 	},
-
+    /* 静态方法jQuery.map
+       对数组中的每个元素或对象的每个属性调用一个回调函数，
+       并将回调函数的返回值放入一个新的数组中
+       若为null和undefine则不放入数组中
+       arg，仅限于jQuery内部使用，若传入参数arg，则该参数会被传给回调函数callback
+    */
 	// arg is for internal usage only
 	map: function( elems, callback, arg ) {
 		var value,
@@ -610,7 +620,9 @@ jQuery.extend({
 				}
 			}
 		}
-
+        
+        /* 返回新数组
+        */
 		// Flatten any nested arrays
 		return concat.apply( [], ret );
 	},
