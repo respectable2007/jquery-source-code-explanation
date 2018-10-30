@@ -92,6 +92,7 @@ var
 
 	// Matches dashed string for camelizing
 	rmsPrefix = /^-ms-/,
+	/* 匹配连接符-和其后第一位为数字或字母*/
 	rdashAlpha = /-([\da-z])/gi,
 
 	// Used by jQuery.camelCase as callback to replace()
@@ -446,7 +447,8 @@ jQuery.extend({
 			class2type[ toString.call(obj) ] || "object" :
 			typeof obj;
 	},
-
+    
+    /* 在全局作用域中执行JavaScript代码*/
 	// Evaluates a script in a global context
 	globalEval: function( code ) {
 		var script,
@@ -469,7 +471,7 @@ jQuery.extend({
 			}
 		}
 	},
-
+    /* 将链式字符串转为驼峰式*/
 	// Convert dashed to camelCase; used by the css and data modules
 	// Microsoft forgot to hump their vendor prefix (#9572)
 	camelCase: function( string ) {
