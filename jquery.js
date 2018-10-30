@@ -8142,28 +8142,38 @@ var rquery = (/\?/);
 
 // ajax交互模块
 
+/* 字符串转JavaScript值*/
 // Support: Android 2.3
 // Workaround failure to string-cast null input
 jQuery.parseJSON = function( data ) {
+	/* JSON.parse，将字符串解析为原生JavaScript值
+	   若字符串不符合JSON规范，这个方法会报错
+	*/
 	return JSON.parse( data + "" );
 };
 
-
+/* 接受一个格式良好的XML字符串，返回解析后的XML文档*/
 // Cross-browser xml parsing
 jQuery.parseXML = function( data ) {
 	var xml, tmp;
 	if ( !data || typeof data !== "string" ) {
 		return null;
 	}
-
+    /* 若XML格式不良好，会返回一个Document对象，但这个对象的文档元素是<parsererror>
+       但IE9中使用这个实例对象，解析失败时，是抛出一个解析错误，而不是Document对象。
+       因此，使用try-catch，捕获这个错误，将其置为undefined
+    */
 	// Support: IE9
 	try {
+		/* DOMParser，将某个XML文档解析为DOM结构*/
 		tmp = new DOMParser();
+		/* parseFromString，第一个参数是要解析的XML字符串和内容类型，第二个参数是内容类型text/xml*/
 		xml = tmp.parseFromString( data, "text/xml" );
 	} catch ( e ) {
 		xml = undefined;
 	}
-
+    
+    /* xml为undefined或有parsererror标签，则xml解析失败*/
 	if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) {
 		jQuery.error( "Invalid XML: " + data );
 	}

@@ -170,8 +170,25 @@
     0
     console.log(Number.MIN_VALUE - parseFloat( Number.MIN_VALUE ))
     */
+    
+    /*报错
+    console.log(JSON.parse(""))
+    null
+    console.log(JSON.parse(null + ""))
+    报错
+    console.log(JSON.parse(undefined + ""))
+    报错
+    console.log(JSON.parse({} + ""))
+    {}
+    console.log(JSON.parse("{}"))*/
 
     
+    /*try {
+      console.log(JSON.parse(""))
+    } catch (error) {
+      console.log(error)
+    }
+    alert(1)*/
   	</script>
   </body>
 </html>
