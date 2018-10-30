@@ -370,20 +370,24 @@ jQuery.extend({
 
 	noop: function() {},
 
+    // 是否是函数
 	// See test/unit/core.js for details concerning isFunction.
 	// Since version 1.3, DOM methods and functions like alert
 	// aren't supported. They return false on IE (#2968).
 	isFunction: function( obj ) {
 		return jQuery.type(obj) === "function";
 	},
-
+    
+    // 是否是数组
 	isArray: Array.isArray,
     
-    // 判断对象是否为窗口（有可能是Frame）
+    /* 判断是否为window对象，利用window对象的window属性进行全等判断
+       window属性指向该window对象本身
+    */
 	isWindow: function( obj ) {
 		return obj != null && obj === obj.window;
 	},
-
+    /*是否为数字*/
 	isNumeric: function( obj ) {
 		// parseFloat NaNs numeric-cast false positives (null|true|false|"")
 		// ...but misinterprets leading-number strings, particularly hex literals ("0x...")
@@ -391,7 +395,7 @@ jQuery.extend({
 		return !jQuery.isArray( obj ) && obj - parseFloat( obj ) >= 0;
 	},
     
-    /*判断是否为[object object]*/
+    /*判断是否为[object object]，即是否是用对象字面量或构造函数创建的对象*/
 	isPlainObject: function( obj ) {
 		// Not plain objects:
 		// - Any object or value whose internal [[Class]] property is not "[object Object]"
@@ -400,7 +404,12 @@ jQuery.extend({
 		if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
 			return false;
 		}
-
+        
+        /* 是否为自定义构造函数产生的对象
+           在自定义构造函数中，这个函数的原型对象属性、方法、constructor属性会被重写
+           isPrototypeOf为Object原型对象特有属性，若不存在，则为自定义构造函数
+           hasOwnPropertyof-某个属性是否为某个对象的实例属性
+        */
 		if ( obj.constructor &&
 				!hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
 			return false;
@@ -410,9 +419,10 @@ jQuery.extend({
 		// |obj| is a plain object, created by {} or constructed with new Object
 		return true;
 	},
-
+    /* 对象是否为空，即不包含属性或方法*/
 	isEmptyObject: function( obj ) {
 		var name;
+		/* for-in循环对象中的实例属性和原型属性*/
 		for ( name in obj ) {
 			return false;
 		}
@@ -421,11 +431,16 @@ jQuery.extend({
     
     // 判断数据类型
 	type: function( obj ) {
+
+		// 若为null或undefined，则返回null或undefined
 		if ( obj == null ) {
 			return obj + "";
 		}
 
-		// toString.call：调用Object原型的toString方法，判断对象类型
+		/* toString.call：调用Object原型的toString方法，判断原生对象类型
+		   若为原生对象，则返回对应的[object Class]
+		   其他返回object
+		*/
 		// Support: Android < 4.0, iOS < 6 (functionish RegExp)
 		return typeof obj === "object" || typeof obj === "function" ?
 			class2type[ toString.call(obj) ] || "object" :
