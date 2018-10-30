@@ -574,8 +574,10 @@ jQuery.extend({
 
 		return ret;
 	},
-
+    
+    /* 在数组中查找指定的元素并返回其下标*/
 	inArray: function( elem, arr, i ) {
+		/* indexOf，第一个参数是要查找的项；第二个参数是从第几位索引开始查找*/
 		return arr == null ? -1 : indexOf.call( arr, elem, i );
 	},
 
@@ -593,17 +595,22 @@ jQuery.extend({
 
 		return first;
 	},
-
+    /* 用于查找数组中满足过滤函数的元素，原数组不会受影响
+       invert为true，返回一个不满足回调函数的元素数组
+       invert未传入或为false，返回一个满足回调函数的元素数组
+    */
 	grep: function( elems, callback, invert ) {
 		var callbackInverse,
 			matches = [],
 			i = 0,
 			length = elems.length,
+			// 未传入为true
 			callbackExpect = !invert;
 
 		// Go through the array, only saving the items
 		// that pass the validator function
 		for ( ; i < length; i++ ) {
+			/*满足回调函数,callbackInverse为false*/
 			callbackInverse = !callback( elems[ i ], i );
 			if ( callbackInverse !== callbackExpect ) {
 				matches.push( elems[ i ] );
