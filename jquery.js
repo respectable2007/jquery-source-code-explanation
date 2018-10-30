@@ -351,7 +351,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	return target;
 };
 
-/*工具方法模块，一堆静态属性和方法*/
+/*一堆静态属性和方法，是其他模块实现的基础*/
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
 	/* 页面中，每个jQuery对象的id
@@ -9797,9 +9797,14 @@ if ( typeof define === "function" && define.amd ) {
 }
 
 
+/* 用于释放jQuery对全局变量$的控制权，
+   如果有必要，也可以释放全局变量jQuery的控制权
+*/
 
-
-var
+var  
+    /* 把可能存在的window.jQuery和window.$
+       备份到局部变量_jQuery和_$
+    */
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
     // 先保存$指向的库或其他
@@ -9808,10 +9813,16 @@ var
 // 多库共存处理，即无冲突处理
 jQuery.noConflict = function( deep ) {
 	// 判断$变量是否为jQuery变量，若是，$指向_$保存的库或其他，且只能使用jQuery访问jQuery对象
+	/* 当前jQuery库持有全局变量$的情况下，
+	   释放$的控制权给前一个JavaScript库
+	*/
 	if ( window.$ === jQuery ) {
 		window.$ = _$;
 	}
-
+    
+    /* 参数deep为true，且在当前jQuery库持有全局变量jQuery的情况下，
+       释放jQuery的控制权给前一个JavaScript库
+    */
 	if ( deep && window.jQuery === jQuery ) {
 		window.jQuery = _jQuery;
 	}
