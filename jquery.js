@@ -477,7 +477,8 @@ jQuery.extend({
 	camelCase: function( string ) {
 		return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
 	},
-
+    
+    /* 用于检查DOM元素的节点名称与指定的值是否相等，检查时忽略大小写*/
 	nodeName: function( elem, name ) {
 		return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 	},
@@ -543,7 +544,8 @@ jQuery.extend({
         // 返回处理后的数组或对象，以支持链式句法
 		return obj;
 	},
-
+    
+    /* 移除字符串开头和结尾的空白符*/
 	// Support: Android<4.1
 	trim: function( text ) {
 		return text == null ?
