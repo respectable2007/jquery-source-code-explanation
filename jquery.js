@@ -660,32 +660,50 @@ jQuery.extend({
 		return concat.apply( [], ret );
 	},
 
+    /* 全局计数器，用于jQuery事件模块和缓存模块。
+       在事件模块中，每个事件监听函数会被设置一个guid属性，用来唯一标识这个函数
+       在缓存模块中，通过在DOM元素上附加一个唯一标识，来关联该元素和该元素对应的缓存
+    */
 	// A global GUID counter for objects
 	guid: 1,
-
+    
+    /* 接受一个函数，返回一个新函数，新函数总是持有特定的上下文；
+       有两种方式：
+       1、fn为函数名，context为上下文，作用是fn的作用域是context
+       2、fn为上下文，context为上下文中的一个属性且为函数名，其代码会将二者互换，作用依然是context的作用域是fn
+       最终的达到的效果是强制函数的作用域指向上下文
+    */
 	// Bind a function to a context, optionally partially applying any
 	// arguments.
 	proxy: function( fn, context ) {
 		var tmp, args, proxy;
-
+        /* context为字符串且为一个函数名，fn为object，且context是fn的一个属性
+           然后，将context和fn互换，修正为proxy(context,fn)
+        */
 		if ( typeof context === "string" ) {
 			tmp = fn[ context ];
 			context = fn;
 			fn = tmp;
 		}
+        
+        // 无论传参是什么，到这一步，fn是函数名，context是上下文
 
 		// Quick check to determine if target is callable, in the spec
 		// this throws a TypeError, but we will just return undefined.
 		if ( !jQuery.isFunction( fn ) ) {
 			return undefined;
 		}
-
+        
+        // 除fn和context外，其余参数以数组形式保存在args中
 		// Simulated bind
 		args = slice.call( arguments, 2 );
+
 		proxy = function() {
+			/* 将$.proxy多余参数与proxy函数传入的参数合并，在执行fn函数*/
 			return fn.apply( context || this, args.concat( slice.call( arguments ) ) );
 		};
-
+        
+        // 设置唯一标识，且代理函数和原始函数关联了起来
 		// Set the guid of unique handler to the same of original handler, so it can be removed
 		proxy.guid = fn.guid = fn.guid || jQuery.guid++;
 
