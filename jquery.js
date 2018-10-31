@@ -364,11 +364,13 @@ jQuery.extend({
 
 	// Assume jQuery is ready without the ready module
 	isReady: true,
-
+    /* 接受一个字符串，抛出一个包含该字符串的异常*/
 	error: function( msg ) {
 		throw new Error( msg );
 	},
-
+    /* 表示一个空函数，当希望传递一个什么也不做的函数时，可以使用这个空函数
+       开发插件时，这个方法可以作为可选回调函数的默认值，如果没有提供回调函数，则执行jQuery.noop
+    */
 	noop: function() {},
 
     // 是否是函数
@@ -709,7 +711,7 @@ jQuery.extend({
 
 		return proxy;
 	},
-
+    /* 返回当前时间的毫秒数*/
 	now: Date.now,
 
 	// jQuery.support is not used in Core but other projects attach their
