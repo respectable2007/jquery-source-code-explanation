@@ -804,7 +804,8 @@ var i,
 		}
 		return 0;
 	},
-
+    
+    // 字符串undefined
 	// General-purpose constants
 	strundefined = typeof undefined,
 	MAX_NEGATIVE = 1 << 31,
@@ -1777,13 +1778,19 @@ Expr = Sizzle.selectors = {
 	cacheLength: 50,
 
 	createPseudo: markFunction,
-
+    
+    /* 确定块表达式的类型，并解析其中的参数*/
 	match: matchExpr,
 
     /* 属性值读取函数集*/
 	attrHandle: {},
 
-    /* 块表达式查找函数集*/
+    /* 块表达式查找函数集
+       在setDocument方法中分别定义了ID、CLASS、TAG所对应的查找函数
+       例如ID---》getElementById
+           CLASS--->getElementsByClassName
+           TAG--->getElementsByTagName
+    */
 	find: {},
 
     /* 记录选择器关系
@@ -1801,7 +1808,7 @@ Expr = Sizzle.selectors = {
 	},
 
     // 保存ATTR、CHILD、PSEUDO三种复杂选择器的兼容处理
-    /* 块表达式预过滤函数集*/
+    /* 块表达式预过滤函数集，调用对应类型的预过滤函数，执行过滤前的修正操作*/
 	preFilter: {
 
 		"ATTR": function( match ) {
@@ -1879,6 +1886,7 @@ Expr = Sizzle.selectors = {
 	},
     
     /* 块表达式过滤函数集
+       调用对应类型的过滤函数，执行过滤操作，若过滤函数返回false，则把元素集合中对应位置的元素替换为false
        ID选择器位于setDocument内根据不同浏览器进行了定义
        从1.8后采用了空间换时间的方式，通过把各种过滤器编译
        成闭包的函数，来提高查询效率
@@ -2294,9 +2302,8 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	soFar = selector;
 	groups = [];
 	preFilters = Expr.preFilter;
-    // var i = 0
+
 	while ( soFar ) {
-		// console.log(++i)
         /*第一次循环，matched为undefined
           第二次循环，matched为非空字符串，执行||后代码，match为空*/
 		// Comma and first run
@@ -2371,7 +2378,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 			break;
 		}
 	}
-	console.log(groups)
+
 	// Return the length of the invalid excess
 	// if we're just parsing
 	// Otherwise, throw an error or return tokens
