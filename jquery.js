@@ -975,6 +975,7 @@ try {
 
 /* Sizzle构造函数
    以selector = 'div.aaron input[name=ttt],div p'为例
+   选择器引擎入口，查找与选择器表达式selector匹配的元素集合
 */
 function Sizzle( selector, context, results, seed ) {
 	var match, elem, m, nodeType,
@@ -1626,10 +1627,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 	return doc;
 };
 
+/* 便捷方法，使用指定的选择器表达式expr对元素集合set进行过滤
+*/
 Sizzle.matches = function( expr, elements ) {
 	return Sizzle( expr, null, null, elements );
 };
 
+/* 便捷方法，检查某个元素node是否匹配选择器表达式expr*/
 Sizzle.matchesSelector = function( elem, expr ) {
 	// Set document vars if needed
 	if ( ( elem.ownerDocument || elem ) !== document ) {
@@ -1659,6 +1663,7 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
 };
 
+/* 工具方法，检测元素a是否包含元素b*/
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
 	if ( ( context.ownerDocument || context ) !== document ) {
@@ -1688,10 +1693,12 @@ Sizzle.attr = function( elem, name ) {
 				null;
 };
 
+/* 工具方法，抛出异常*/
 Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
+/* 工具方法，排序、去重*/
 /**
  * Document sorting and removing duplicates
  * @param {ArrayLike} results
@@ -1725,6 +1732,7 @@ Sizzle.uniqueSort = function( results ) {
 	return results;
 };
 
+/* 工具方法，获取DOM元素集合的文本内容*/
 /**
  * Utility function for retrieving the text value of an array of DOM nodes
  * @param {Array|Element} elem
@@ -1760,6 +1768,9 @@ getText = Sizzle.getText = function( elem ) {
 	return ret;
 };
 
+/* 扩展方法和属性
+   Expr与Sizzle.selectors指向同一个对象，是为了减少拼写字符串、缩短作用域链，且方便压缩
+*/
 Expr = Sizzle.selectors = {
 
 	// Can be adjusted by the user
@@ -1769,10 +1780,14 @@ Expr = Sizzle.selectors = {
 
 	match: matchExpr,
 
+    /* 属性值读取函数集*/
 	attrHandle: {},
 
+    /* 块表达式查找函数集*/
 	find: {},
+
     /* 记录选择器关系
+       块间关系过滤函数集
     */
 	relative: {
 		// 父子关系，返回第一个后代元素
@@ -1786,6 +1801,7 @@ Expr = Sizzle.selectors = {
 	},
 
     // 保存ATTR、CHILD、PSEUDO三种复杂选择器的兼容处理
+    /* 块表达式预过滤函数集*/
 	preFilter: {
 
 		"ATTR": function( match ) {
@@ -1862,7 +1878,7 @@ Expr = Sizzle.selectors = {
 		}
 	},
     
-    /* 过滤器
+    /* 块表达式过滤函数集
        ID选择器位于setDocument内根据不同浏览器进行了定义
        从1.8后采用了空间换时间的方式，通过把各种过滤器编译
        成闭包的函数，来提高查询效率
@@ -2041,7 +2057,8 @@ Expr = Sizzle.selectors = {
 			return fn;
 		}
 	},
-
+    
+    /* 伪类*/
 	pseudos: {
 		// Potentially complex pseudos
 		"not": markFunction(function( selector ) {
@@ -2250,6 +2267,7 @@ for ( i in { submit: true, reset: true } ) {
 	Expr.pseudos[ i ] = createButtonPseudo( i );
 }
 
+/* 位置伪类过滤函数集*/
 // Easy API for creating new setFilters
 function setFilters() {}
 setFilters.prototype = Expr.filters = Expr.pseudos;
