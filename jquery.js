@@ -4035,7 +4035,8 @@ jQuery.ready.promise();
 
 
 
-
+/* 可以为集合中的元素设置一个或多个属性值，或读取第一个元素的属性值。
+*/
 // Multifunctional method to get and set values of a collection
 // The value/s can optionally be executed if it's a function
 var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
@@ -4048,6 +4049,7 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 	if ( jQuery.type( key ) === "object" ) {
 		chainable = true;
 		for ( i in key ) {
+			// 递归迭代
 			jQuery.access( elems, fn, i, key[i], true, emptyGet, raw );
 		}
     
@@ -4077,15 +4079,19 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 		}
 
 		if ( fn ) {
+			// 遍历元素集合，为每个元素执行回调函数fn
 			for ( ; i < len; i++ ) {
 				fn( elems[i], key, raw ? value : value.call( elems[i], i, fn( elems[i], key ) ) );
 			}
 		}
 	}
-
+    // 若key是对象，则返回elems集合
 	return chainable ?
 		elems :
-
+        /* 读取属性
+           elems不为空，则为第一个元素执行回调函数fn，读取key对应的属性值
+           否则返回undefined
+        */
 		// Gets
 		bulk ?
 			fn.call( elems ) :
