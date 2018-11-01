@@ -1476,7 +1476,12 @@ setDocument = Sizzle.setDocument = function( node ) {
 			rbuggyQSA.push(",.*:");
 		});
 	}
-
+    
+    /* matchesSelector方法，检查DOM元素与选择器表达式是否匹配
+       msMatchesSelector---IE9+
+       mozMatchesSelector---FF3.6+
+       webkitMatchesSelector---Safari5+、Chrome
+    */
 	if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
 		docElem.webkitMatchesSelector ||
 		docElem.mozMatchesSelector ||
@@ -1651,7 +1656,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 	return doc;
 };
 
-/* 便捷方法，使用指定的选择器表达式expr对元素集合set进行过滤
+/* 便捷方法，
+   使用指定的选择器表达式expr对元素集合elements进行过滤，并返回过滤结果
+   调用函数Sizzle来实现
 */
 Sizzle.matches = function( expr, elements ) {
 	return Sizzle( expr, null, null, elements );
@@ -1666,6 +1673,10 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 	// Make sure that attribute selectors are quoted
 	expr = expr.replace( rattributeQuotes, "='$1']" );
+    
+    /* 若浏览器支持原生方法，则尝试调用原生方法检查元素是否匹配
+       若不支持或抛出异常，则调用Sizzle，查找，返回值长度是否大于0
+    */
 
 	if ( support.matchesSelector && documentIsHTML &&
 		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
