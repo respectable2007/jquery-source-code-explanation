@@ -8,7 +8,11 @@
   <body>
     <!-- <div id='create'>create</div> -->
 
-    <div id='fragment'><select><option></option></select></div>
+    <!-- <div id='fragment'><select><option></option></select></div> -->
+
+    <!-- compareDocumentPosition -->
+    <p id='p1'></p>
+    <p id='p2'></p>
   	<script type="text/javascript">
   		/*function(){
           alert(1)
@@ -219,7 +223,13 @@
     返回The Window
     console.log(obj.getName()())*/
 
-    
+
+    /* compareDocumentPosition
+    var A = document.getElementById('p1')
+    var B = document.getElementById('p2')
+    console.log(A.compareDocumentPosition(B))
+    console.log(typeof (A.compareDocumentPosition))*/
+
   	</script>
   </body>
 </html>

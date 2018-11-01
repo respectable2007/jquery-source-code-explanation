@@ -1501,7 +1501,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 	/* Contains
 	---------------------------------------------------------------------- */
 	hasCompare = rnative.test( docElem.compareDocumentPosition );
-
+    
+    /* 检测一个元素是否包含另一个元素*/
 	// Element contains another
 	// Purposefully does not implement inclusive descendent
 	// As in, an element does not contain itself
@@ -1511,10 +1512,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 				bup = b && b.parentNode;
 			return a === bup || !!( bup && bup.nodeType === 1 && (
 				adown.contains ?
+				    /* 调用原生方法contains*/
 					adown.contains( bup ) :
+					/* 调用原生方法compareDocumentPosition*/
 					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
 			));
 		} :
+		/*若没有compareDocumentPosition和contains原生方法，则使用如下的递归函数进行包含关系判断*/
 		function( a, b ) {
 			if ( b ) {
 				while ( (b = b.parentNode) ) {
@@ -1539,12 +1543,26 @@ setDocument = Sizzle.setDocument = function( node ) {
 			return 0;
 		}
 
+        /* compareDocumentPosition方法比较两个节点，并返回描述它们在文档中位置的整数
+           例子如下：
+		     A.compareDocumentPosition(B);
+		     1：没有关系，两个节点不属于同一个文档
+             2：A位于B后
+             4：A位于B前
+             8：A位于B内
+             16：A位于B外
+             32：没有关系，或是两个节点是同一元素的两个属性
+             注释：返回值可以是值的组合。
+             例如，返回20 意味着在A位于B外（16），并且 A位于B前（4）
+             IE9+
+        */
 		// Sort on method existence if only one input has compareDocumentPosition
 		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
 		if ( compare ) {
 			return compare;
 		}
-
+        
+        /* 若在同一个文档内，计算文档位置*/
 		// Calculate position if both inputs belong to the same document
 		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
 			a.compareDocumentPosition( b ) :
@@ -1555,7 +1573,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 		// Disconnected nodes
 		if ( compare & 1 ||
 			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
-
+            
+            /* 包含关系*/
 			// Choose the first element that is related to our preferred document
 			if ( a === doc || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
 				return -1;
@@ -1569,7 +1588,10 @@ setDocument = Sizzle.setDocument = function( node ) {
 				( indexOf.call( sortInput, a ) - indexOf.call( sortInput, b ) ) :
 				0;
 		}
-
+        
+        /* &，按位与，两个数值对应的位上都是1时才返回1，其余都是0
+           只有a在b前返回-1，其余返回1
+        */
 		return compare & 4 ? -1 : 1;
 	} :
 	function( a, b ) {
@@ -1665,7 +1687,8 @@ Sizzle.matchesSelector = function( elem, expr ) {
 	return Sizzle( expr, document, null, [ elem ] ).length > 0;
 };
 
-/* 工具方法，检测元素a是否包含元素b*/
+/* 工具方法，检测元素a是否包含元素b
+   使用了compareDocumentPosition、contains原生方法*/
 Sizzle.contains = function( context, elem ) {
 	// Set document vars if needed
 	if ( ( context.ownerDocument || context ) !== document ) {
@@ -1742,7 +1765,7 @@ Sizzle.uniqueSort = function( results ) {
 	return results;
 };
 
-/* 工具方法，获取DOM元素集合的文本内容*/
+/* 工具方法，获取DOM元素集合中所有元素合并的文本内容*/
 /**
  * Utility function for retrieving the text value of an array of DOM nodes
  * @param {Array|Element} elem
@@ -1752,24 +1775,26 @@ getText = Sizzle.getText = function( elem ) {
 		ret = "",
 		i = 0,
 		nodeType = elem.nodeType;
-
+    // 若不是节点，则认为是数组，递归合并
 	if ( !nodeType ) {
 		// If no nodeType, this is expected to be an array
 		while ( (node = elem[i++]) ) {
 			// Do not traverse comment nodes
 			ret += getText( node );
 		}
+	// 元素节点、文档节点、文档片段节点
 	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
 		// Use textContent for elements
 		// innerText usage removed for consistency of new lines (jQuery #11153)
 		if ( typeof elem.textContent === "string" ) {
 			return elem.textContent;
 		} else {
+			// 遍历子元素，获取子元素文本内容
 			// Traverse its children
 			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
 				ret += getText( elem );
 			}
-		}
+	// 文本节点、CDATA节点
 	} else if ( nodeType === 3 || nodeType === 4 ) {
 		return elem.nodeValue;
 	}

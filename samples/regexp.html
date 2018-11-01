@@ -5,6 +5,9 @@
   	<title>正则表达式</title>
   </head>
   <body>
+
+    <p id='p1'></p>
+
   	<script type="text/javascript">
   	  var rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]*))$/
   	  // [^#<]匹配除#<外的字符
@@ -35,6 +38,12 @@
       // var code = /\d{5}-\d{4}|\d{5}/;
       // var string = '12345ymmm'
       // console.log(code.test(string))
+
+      /*var rnative = /^[^{]+\{\s*\[native \w/
+      ƒ compareDocumentPosition() { [native code] }
+      console.log(document.getElementById('p1').compareDocumentPosition)
+      true
+      console.log(rnative.test(document.getElementById('p1').compareDocumentPosition))*/
   	</script>
   </body>
 </html>
