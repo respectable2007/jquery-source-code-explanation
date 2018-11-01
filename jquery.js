@@ -798,6 +798,7 @@ var i,
 	classCache = createCache(),
 	tokenCache = createCache(),
 	compilerCache = createCache(),
+    // 判断是否有重复项
 	sortOrder = function( a, b ) {
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -1699,7 +1700,9 @@ Sizzle.error = function( msg ) {
 	throw new Error( "Syntax error, unrecognized expression: " + msg );
 };
 
-/* 工具方法，排序、去重*/
+/* 工具方法
+   对元素集合中的元素按照出现在文档中的顺序进行排序，并删除重复元素
+*/
 /**
  * Document sorting and removing duplicates
  * @param {ArrayLike} results
@@ -1718,10 +1721,16 @@ Sizzle.uniqueSort = function( results ) {
 	if ( hasDuplicate ) {
 		while ( (elem = results[i++]) ) {
 			if ( elem === results[ i ] ) {
+				/* Array，push方法返回是数组长度
+                   将索引插入duplicates数组中
+				*/
 				j = duplicates.push( i );
 			}
 		}
 		while ( j-- ) {
+			/* splice，删除操作，2个参数，
+			   第一个参数是要删除第一项的位置，第二个参数是要删除的项数
+			*/
 			results.splice( duplicates[ j ], 1 );
 		}
 	}
