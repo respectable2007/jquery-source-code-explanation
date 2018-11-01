@@ -206,6 +206,17 @@
     console.log([] && true)
     true
     console.log({} && true)*/
+
+    window.name = 'The Window'
+    var obj = {
+      name: 'The Object',
+      getName: function() {
+        return function() {
+          return this.name;
+        }
+      }
+    }
+    console.log(obj.getName()())
   	</script>
   </body>
 </html>
