@@ -3123,6 +3123,7 @@ jQuery.fn.extend({
 	not: function( selector ) {
 		return this.pushStack( winnow(this, selector || [], true) );
 	},
+	/* 当前元素集合中，有一个匹配selector，返回true*/
 	is: function( selector ) {
 		return !!winnow(
 			this,
@@ -3347,6 +3348,7 @@ jQuery.extend({
 });
 
 jQuery.fn.extend({
+	/* 返回当前元素集合中，匹配target的集合*/
 	has: function( target ) {
 		/* 匹配target参数的jQuery对象*/
 		var targets = jQuery( target, this ),
@@ -3362,7 +3364,7 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    /* 在当前元素集合和它们的祖先元素中查找与selectors匹配的最近元素，并返回一个新jQuery对象*/
 	closest: function( selectors, context ) {
 		var cur,
 			i = 0,
