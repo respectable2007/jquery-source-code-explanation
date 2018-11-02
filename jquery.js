@@ -3395,16 +3395,26 @@ jQuery.fn.extend({
         // 若多个，则需要排序去重，一个不需要处理。然后调用pushStack，重构为一个新的jQuery对象
 		return this.pushStack( matched.length > 1 ? jQuery.unique( matched ) : matched );
 	},
-
+    
+    /* 返回elem在当前元素集合的索引位置
+       基础方法：indexOf.call()
+    */
 	// Determine the position of an element within
 	// the matched set of elements
 	index: function( elem ) {
-
+        
+        /*未传入参数
+            若当前元素集合第一个元素有父元素，则返回其在兄弟元素的索引
+            若无，则返回-1*/
 		// No argument, return index in parent
 		if ( !elem ) {
 			return ( this[ 0 ] && this[ 0 ].parentNode ) ? this.first().prevAll().length : -1;
 		}
 
+        /* 字符串
+           先获取与elem匹配的元素集合
+           再返回当前元素集合第一个元素在上一步获取的元素集合中的索引
+        */
 		// index in selector
 		if ( typeof elem === "string" ) {
 			return indexOf.call( jQuery( elem ), this[ 0 ] );
@@ -3412,7 +3422,8 @@ jQuery.fn.extend({
 
 		// Locate the position of the desired element
 		return indexOf.call( this,
-
+            /*若为jQuery对象，返回jQuery对象第一个元素在当前元素集合的索引
+            否则为DOM元素，返回其在当前元素集合的索引*/
 			// If it receives a jQuery object, the first element is used
 			elem.jquery ? elem[ 0 ] : elem
 		);
@@ -3459,6 +3470,7 @@ jQuery.each({
 	nextAll: function( elem ) {
 		return jQuery.dir( elem, "nextSibling" );
 	},
+	/* 当前元素之前的同辈元素*/
 	prevAll: function( elem ) {
 		return jQuery.dir( elem, "previousSibling" );
 	},
