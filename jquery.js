@@ -3370,12 +3370,15 @@ jQuery.fn.extend({
 			i = 0,
 			l = this.length,
 			matched = [],
+			// 获取与selectors匹配的元素集合
 			pos = rneedsContext.test( selectors ) || typeof selectors !== "string" ?
 				jQuery( selectors, context || this.context ) :
 				0;
-
+        // 遍历当前元素集合
 		for ( ; i < l; i++ ) {
+			// 迭代当前元素集合每一项的祖先元素
 			for ( cur = this[i]; cur && cur !== context; cur = cur.parentNode ) {
+				// 若当前元素或其祖先元素不是文档片段，且匹配selectors，则保存在matched中
 				// Always skip document fragments
 				if ( cur.nodeType < 11 && (pos ?
 					pos.index(cur) > -1 :
@@ -3389,7 +3392,7 @@ jQuery.fn.extend({
 				}
 			}
 		}
-
+        // 若多个，则需要排序去重，一个不需要处理。然后调用pushStack，重构为一个新的jQuery对象
 		return this.pushStack( matched.length > 1 ? jQuery.unique( matched ) : matched );
 	},
 
