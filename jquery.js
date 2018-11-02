@@ -1805,6 +1805,7 @@ getText = Sizzle.getText = function( elem ) {
 			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
 				ret += getText( elem );
 			}
+		}
 	// 文本节点、CDATA节点
 	} else if ( nodeType === 3 || nodeType === 4 ) {
 		return elem.nodeValue;
@@ -3013,7 +3014,9 @@ return Sizzle;
 })( window );
 
 
-
+/* 暴露Sizzle给jQuery对象，
+   静态方法或属性
+*/
 jQuery.find = Sizzle;
 jQuery.expr = Sizzle.selectors;
 jQuery.expr[":"] = jQuery.expr.pseudos;
@@ -3023,13 +3026,10 @@ jQuery.isXMLDoc = Sizzle.isXML;
 jQuery.contains = Sizzle.contains;
 
 
-
 var rneedsContext = jQuery.expr.match.needsContext;
 
 // 是否为单个标签
 var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/);
-
-
 
 var risSimple = /^.[^:#\[\.,]*$/;
 
@@ -3078,14 +3078,17 @@ jQuery.filter = function( expr, elems, not ) {
 		}));
 };
 
-// 查找正在处理的元素的后代元素
+/* 在原型对象上，使用extend方法，扩展find、filter、not、is方法*/
 jQuery.fn.extend({
+    /* 当前元素集合中匹配的后代元素集合*/
 	find: function( selector ) {
 		var i,
 			len = this.length,
 			ret = [],
 			self = this;
-
+        /* 若selector是jQuery对象或DOM元素，则检查其是否是当前元素集合中某个元素的后代元素，是则保留，不是则丢弃
+           最终返回一个新的jQuery对象
+        */
 		if ( typeof selector !== "string" ) {
 			return this.pushStack( jQuery( selector ).filter(function() {
 				for ( i = 0; i < len; i++ ) {
@@ -3095,7 +3098,7 @@ jQuery.fn.extend({
 				}
 			}) );
 		}
-
+        // 若为string，则遍历当前元素集合，查找匹配的后代元素
 		for ( i = 0; i < len; i++ ) {
 			jQuery.find( selector, self[ i ], ret );
 		}
