@@ -3070,14 +3070,17 @@ function winnow( elements, qualifier, not ) {
 	});
 }
 
-// 返回与指定表达式匹配的集合
+// 返回与指定选择器表达式匹配的集合
 jQuery.filter = function( expr, elems, not ) {
 	var elem = elems[ 0 ];
-
+    
+    /* not是true，保留不匹配元素*/
 	if ( not ) {
 		expr = ":not(" + expr + ")";
 	}
-
+    /* 若elems为1，则检验elem是否匹配表达式，是保留，不是返回空数组
+       若>1,则筛选出elems中的DOM集合，和expr作为参数，调用Sizzle构造函数，返回匹配expr的DOM元素集合
+    */
 	return elems.length === 1 && elem.nodeType === 1 ?
 		jQuery.find.matchesSelector( elem, expr ) ? [ elem ] : [] :
 		jQuery.find.matches( expr, jQuery.grep( elems, function( elem ) {
