@@ -9201,12 +9201,20 @@ jQuery.fn.extend({
 	}
 });
 
-
+/* 判断DOM元素是否占据布局空间，
+   返回true，不占据布局空间
+   返回false，占据布局空间
+*/
 jQuery.expr.filters.hidden = function( elem ) {
 	// Support: Opera <= 12.12
 	// Opera reports offsetWidths and offsetHeights less than zero on some elements
 	return elem.offsetWidth <= 0 && elem.offsetHeight <= 0;
 };
+
+/* 判断DOM元素是否占据布局空间
+   返回true，占据布局空间
+   返回false，不占据布局空间
+*/
 jQuery.expr.filters.visible = function( elem ) {
 	return !jQuery.expr.filters.hidden( elem );
 };
@@ -9691,9 +9699,11 @@ jQuery.fn.load = function( url, params, callback ) {
 
 
 
-
+/* 用于检测DOM元素是否有正在执行动画*/
 jQuery.expr.filters.animated = function( elem ) {
+	/* 遍历全局动画函数数组*/
 	return jQuery.grep(jQuery.timers, function( fn ) {
+		/* 检测每个动画函数的属性elem是否是当前元素*/
 		return elem === fn.elem;
 	}).length;
 };
