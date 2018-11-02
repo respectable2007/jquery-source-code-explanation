@@ -3339,12 +3339,14 @@ jQuery.extend({
 
 jQuery.fn.extend({
 	has: function( target ) {
+		/* 匹配target参数的jQuery对象*/
 		var targets = jQuery( target, this ),
 			l = targets.length;
 
 		return this.filter(function() {
 			var i = 0;
 			for ( ; i < l; i++ ) {
+				/* 判断当前集合元素是否包含匹配target对象，若包含则保留*/
 				if ( jQuery.contains( this, targets[i] ) ) {
 					return true;
 				}
