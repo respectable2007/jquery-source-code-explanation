@@ -3428,7 +3428,8 @@ jQuery.fn.extend({
 			elem.jquery ? elem[ 0 ] : elem
 		);
 	},
-
+    
+    /*当前元素集合与匹配selector元素集合合并去重，返回一个新的jQuery对象*/
 	add: function( selector, context ) {
 		return this.pushStack(
 			jQuery.unique(
