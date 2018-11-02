@@ -3033,8 +3033,13 @@ var rsingleTag = (/^<(\w+)\s*\/?>(?:<\/\1>|)$/);
 
 var risSimple = /^.[^:#\[\.,]*$/;
 
+/* filter、not都调用winnow函数，对当前匹配元素集合进行过滤
+   参数not：false--filter，true--not
+*/
 // Implement the identical functionality for filter and not
 function winnow( elements, qualifier, not ) {
+
+	/*函数*/
 	if ( jQuery.isFunction( qualifier ) ) {
 		return jQuery.grep( elements, function( elem, i ) {
 			/* jshint -W018 */
@@ -3042,14 +3047,16 @@ function winnow( elements, qualifier, not ) {
 		});
 
 	}
-
+    
+    /*DOM元素*/
 	if ( qualifier.nodeType ) {
 		return jQuery.grep( elements, function( elem ) {
 			return ( elem === qualifier ) !== not;
 		});
 
 	}
-
+    
+    /*字符串*/
 	if ( typeof qualifier === "string" ) {
 		if ( risSimple.test( qualifier ) ) {
 			return jQuery.filter( qualifier, elements, not );
@@ -3108,9 +3115,11 @@ jQuery.fn.extend({
 		ret.selector = this.selector ? this.selector + " " + selector : selector;
 		return ret;
 	},
+	/* 当前元素集合中，只保留与selector匹配的元素*/
 	filter: function( selector ) {
 		return this.pushStack( winnow(this, selector || [], false) );
 	},
+	/* 当前元素集合中，只保留与selector不匹配的元素*/
 	not: function( selector ) {
 		return this.pushStack( winnow(this, selector || [], true) );
 	},
