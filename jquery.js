@@ -3973,29 +3973,37 @@ jQuery.extend({
 		return deferred;
 	},
      
-    /* 提供一种方法来执行一个或多个对象的回调函数，延迟对象通常表示异步事件
-       如果单一延迟传递给when，它是通过这个方法或延迟对象附件的其他方法来访问绑
-       定的回调函数返回的，如deferred.then。当延迟得到解决或拒绝，通常的代码创建
-       了原来的延迟，适当的回调将被调用。
-       如果一个参数被传递给when，这不是延迟，将被视为延迟解决，并立即执行附件任何
-       doneCallbacks。该doneCallbacks传递原始的参数。在这种情况下，任何failCallbacks
-       您可能会设置是永远不会被调用，因为延迟从不拒绝
+    /* 提供一种方法来执行一个或多个对象的回调函数；
+       如果传入多个异步队列，该方法将返回一个新的主异步队列的只读副本，这个副本将
+       跟踪所传入的异步队列的最终状态。一旦所有异步队列都变成成功状态，主异步队列
+       的成功回调函数将被调用，参数是包含了所有异步队列成功参数的数组；如果其中一
+       个异步队列变成失败状态，主异步队列的失败回调函数将被调用，参数是失败异步队
+       列的失败参数；
+       如果传入单个异步队列，该方法将返回只读副本，可在只读副本上继续调用添加回调
+       函数的方法（如deferred.then），当异步队列进入成功或失败状态时，相应状态的
+       回调函数被执行，通常是由创建异步队列的代码触发执行；
+       如果传入一个非异步队列参数，非异步队列将被当作一个成功状态的异步队列，所有
+       的成功回调函数会被立即执行，参数是这个非异步队列参数；
+       如果没有传入参数，则创建一个异步队列并返回它的只读副本，立即执行所有成功回
+       调函数
     */
 	// Deferred helper
 	when: function( subordinate /* , ..., subordinateN */ ) {
 		var i = 0,
-		    // resolveValues为对象数组
+		    // resolveValues为传参数组
 			resolveValues = slice.call( arguments ),
 			length = resolveValues.length,
             
-            /* length不是1，remaining是0
+            /* length不是1
                length是1，判断subordinate.promise是否为function，若是，remaining等于1
+               也就是说remaining等于1时，subordinate一定是Deferred对象
             */
 			// the count of uncompleted subordinates
 			remaining = length !== 1 || ( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
 
             /* 如果resolveValues只有一个Deferred对象，deferred为subordinate
                如果不只有一个，deferred为jQuery.Deferred()
+               建立主异步队列对象
             */
 			// the master Deferred. If resolveValues consist of only a single Deferred, just use that.
 			deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
@@ -4012,14 +4020,13 @@ jQuery.extend({
 					*/
 					values[ i ] = arguments.length > 1 ? slice.call( arguments ) : value;
 
-					/* 相等操作符
-                       两次为对象，比较两者是否为同一个实例对象，即是不是同一个对象引用地址
+					/* 全等操作符
 					*/
 					if ( values === progressValues ) {
-						// 当访问deferred对象并生成进度通知添加处理程序
+						// 触发主异步队列对象进度通知回调函数
 						deferred.notifyWith( contexts, values );
 					} else if ( !( --remaining ) ) {
-						// 执行回调函数
+						/* 当remaining为0时，表明子异步队列全部触发完成，此时触发主异步队列对象成功回调函数*/
 						deferred.resolveWith( contexts, values );
 					}
 				};
