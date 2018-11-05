@@ -3530,7 +3530,7 @@ var rnotwhite = (/\S+/g);
 /* 声明optionsCache变量，缓存option
    once：确保这个回调列表只执行一次
    memory：保持以前的值和将添加到这个列表的后面的最新的值立即执行任何回调
-           也就是说：保持以前的值并立即执行新添加的回调，然后用最新的值执行回调列表
+           也就是说：记录上一次触发回调函数列表时的参数，之后添加的任何回调函数都将用记录的参数值立即调用
            主要用来实现Deferred的异步收集与pipe管道风格的数据传递的
    unique：确保一次只能添加一个回调，回调列表中无重复的回调
    stopOnFalse：当一个回调返回false时中断调用
@@ -3548,7 +3548,6 @@ function createOptions( options ) {
 	return object;
 }
 
-// 回调函数
 /*
  * Create a callback list using the following parameters:
  *
@@ -3596,12 +3595,13 @@ jQuery.Callbacks = function( options ) {
 		// 回调是否被发布fire过
 		// Flag to know if list was already fired
 		fired,
-		// 回调是否正在被fire中
+		// 回调是否正在执行中
 		// Flag to know if list is currently firing
 		firing,
 		// option为memory时，开始fire的回调列表索引位置
 		// First callback to fire (used internally by add and fireWith)
 		firingStart,
+		// 待执行的最后一个回调函数的下标
 		// End of the loop when firing
 		firingLength,
 		// Index of currently firing callback (modified by remove if needed)
@@ -3617,7 +3617,7 @@ jQuery.Callbacks = function( options ) {
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],
 
-		// 用给定的参数调用所有的回调
+		// 用给定的参数调用所有的回调--实际触发回调函数的工具函数
 		// Fire callbacks
 		fire = function( data ) {
             /*在上一次fire中，保存上一次的值，用于memory为true时fire
@@ -3665,10 +3665,13 @@ jQuery.Callbacks = function( options ) {
 		// Actual Callbacks object
 		self = {
 
-			// 添加一个回调函数或回调集合到变量list
+			/* 添加一个回调函数或回调集合到变量list，
+			   若为unique模式，若回调列表中存在，则不添加
+			*/
 			// Add a callback or a collection of callbacks to the list
 			add: function() {
 				if ( list ) {
+					/* 保存之前回调函数列表的长度*/
 					// First, we save the current length
 					var start = list.length;
 					(function add( args ) {
@@ -3749,7 +3752,7 @@ jQuery.Callbacks = function( options ) {
 				return this;
 			},
 
-			// 禁用回调列表中的回调
+			// 禁用回调列表中的回调，不再做任何事情
 			// Have the list do nothing anymore
 			disable: function() {
 				list = stack = memory = undefined;
@@ -3778,7 +3781,7 @@ jQuery.Callbacks = function( options ) {
 				return !stack;
 			},
 
-			// 访问给定的上下文和参数列表中的所有回调
+			// 使用给定的上下文和参数触发回调函数列表中的所有回调函数
 			// Call all callbacks with the given context and arguments
 			fireWith: function( context, args ) {
 				if ( list && ( !fired || stack ) ) {
@@ -3794,20 +3797,20 @@ jQuery.Callbacks = function( options ) {
 				return this;
 			},
             
-            // 用给定的参数调用所有的回调
+            // 用给定的参数触发回调函数列表中的所有的回调函数
 			// Call all the callbacks with the given arguments
 			fire: function() {
 				self.fireWith( this, arguments );
 				return this;
 			},
 
-			// 访问给定的上下文和参数列表中的所有回调
+			// 判断回调函数列表是否被触发过
 			// To know if the callbacks have already been called at least once
 			fired: function() {
 				return !!fired;
 			}
 		};
-
+    /* 返回回调函数列表*/
 	return self;
 };
 
