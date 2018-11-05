@@ -3818,8 +3818,9 @@ jQuery.Callbacks = function( options ) {
 jQuery.extend({
     /* Defered提供了一个抽象的非阻塞的解决方案（如异步请求的响应），它创建一个promise对象
        其目的是在未来某个时间点返回一个响应。简单来说就是一个异步/同步回调函数的处理方案
-       说白了就是：一个可链式操作的对象，提供多个回调函数的注册，以及回调列队的会滴，并转达
+       说白了就是：一个可链式操作的对象，提供多个回调函数的注册，以及回调列队的回执，并转达
        任何异步操作成功或失败的消息
+       在此，该对象称之为“异步队列”
        promise方法、DOM ready、Ajax模块及动画模块使用了Deferred模块
        jQuery.Deferred遵循Promise/A规范
        Deferred也可认为是一种观察者模式，
@@ -3840,42 +3841,54 @@ jQuery.extend({
 				[ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
 				[ "notify", "progress", jQuery.Callbacks("memory") ]
 			],
+            /*异步队列状态 待定pending、成功resolved、失败rejected*/
 			state = "pending",
 			/* 内部promise对象
 			   不包括resolve、reject、notify和resolveWith、rejectWith、notifyWith等能改变deferred对象状态的方法
 			   只包括done、fail、progress
 			*/
 			promise = {
+				/* 获取异步队列的状态*/
 				state: function() {
 					return state;
 				},
+				/* 添加回调函数，当异步队列处于成功或失败状态时被调用*/
 				always: function() {
 					deferred.done( arguments ).fail( arguments );
 					return this;
 				},
-				// then方法
+				// then方法，同时添加成功回调函数、失败回调函数、消息回调函数
 				then: function( /* fnDone, fnFail, fnProgress */ ) {
 					var fns = arguments;
+					/* 以function(newDefer){...}作为参数，调用jQuery.Deferred方法；
+					   当参数为函数时，则以Deferred为上下文、Deferred为参数，执行函数；
+					   返回promise对象，以支持链式用法
+					*/
 					return jQuery.Deferred(function( newDefer ) {
-						// newDefer就是外部接口对象deferred
+						// 遍历tuples，newDefer就是之前已经定义的deferred对象
 						jQuery.each( tuples, function( i, tuple ) {
 							// 取出传入的回调函数
 							var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
-							/* 添加done、fail、progress(Callbacks.add)的处理方法
+
+							/* 为done、fail、progress(Callbacks.add)添加回调函数
 							   针对deferred对象直接做处理
+							   当回调函数被触发时，执行回调函数
 							*/
 							// deferred[ done | fail | progress ] for forwarding actions to newDefer
 							deferred[ tuple[1] ](function() {
-								// 若fn存在，则调用fn
+								/* 若fn存在，则调用fn
+								   this一般为Deferred对象，arguments一般为触发时传入的参数
+								*/
 								var returned = fn && fn.apply( this, arguments );
-								// 若returned不为null
+								// fn返回一个异步队列对象，则在该对象上添加之前deferred对象的resolve、reject和notify函数
 								if ( returned && jQuery.isFunction( returned.promise ) ) {
-									// 在原来的deferred对象上添加新处理方法
 									returned.promise()
 										.done( newDefer.resolve )
 										.fail( newDefer.reject )
 										.progress( newDefer.notify );
 								} else {
+								/* fn不返回一个异步队列对象，则执行回调函数
+								*/
 									newDefer[ tuple[ 0 ] + "With" ]( this === promise ? newDefer.promise() : this, fn ? [ returned ] : arguments );
 								}
 							});
@@ -3890,19 +3903,20 @@ jQuery.extend({
 			       如果target是提供，promise()将附加到它的方法，然后返回这个对象，而不是创建一个新的。
 			       这对在已经存在的对象上附加Promise的行为非常有用
 			       type是需要处理的字符串，target是附加promise方法的Object
+			       返回当前Deferred对象的只读副本，或为普通对象增加异步队列的功能
 			    */
 				// Get a promise for this deferred
 				// If obj is provided, the promise aspect is added to the object
 				promise: function( obj ) {
 					/* 若obj不为null，则使用jQuery.extend，
-					   将promise的属性和方法挂在obj对象上
+					   将promise的属性和方法挂在obj对象上，即为普通对象增加异步队列的功能
 					*/
 					return obj != null ? jQuery.extend( obj, promise ) : promise;
 				}
 			},
 			// 外部接口对象
 			deferred = {};
-        // promise管道
+        /* 返回一个异步队列的副本，通过过滤函数过滤当前异步队列的状态和值*/
 		// Keep pipe for back-compat
 		promise.pipe = promise.then;
 
@@ -3932,7 +3946,7 @@ jQuery.extend({
 				// [ reject_list | resolve_list ].disable; progress_list.lock
 				}, tuples[ i ^ 1 ][ 2 ].disable, tuples[ 2 ][ 2 ].lock );
 			}
-            /* 定义上下文的接口 resolveWith | rejectWith | notifyWith（jQuery.Callbacks的fireWith
+            /* 定义调用方法 resolveWith | rejectWith | notifyWith（jQuery.Callbacks的fireWith）
             */
 			// deferred[ resolve | reject | notify ]
 			deferred[ tuple[0] ] = function() {
@@ -3951,7 +3965,7 @@ jQuery.extend({
 
 		// Call given func if any
 		if ( func ) {
-			// 修改this值，使function指向deferred
+			//func函数this为deferred，且以deferred为参数，执行func函数
 			func.call( deferred, deferred );
 		}
 
