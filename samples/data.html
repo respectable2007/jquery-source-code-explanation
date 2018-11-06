@@ -10,18 +10,20 @@
 
 <div id="aaron">缓存接口测试</div></br>
 
+<embed id='respect'>不支持Data？</embed>
+
 <script type="text/javascript">
 
 var ele1 = $("#aaron");
 var ele2 = $("#aaron");
 
-ele1.data('a',1111);
+/*ele1.data('a',1111);
 ele2.data('a',2222);
 console.log(ele1)
 console.log(ele2)
 show('第一组,通过$().data()的方式,只取到最后一个a值,之前的被覆盖')
 show(ele1.data('a'))
-show(ele2.data('a'))
+show(ele2.data('a'))*/
 
 
 show()
@@ -29,13 +31,16 @@ show()
 show('第二组,通过$.data的方式,取到2组b值，未覆盖')
 $.data(ele1,"b","1111")
 $.data(ele2,"b","2222")
-console.log(ele1)
-console.log(ele2)
+/*console.log(ele1)
+console.log(ele2)*/
 
 show($.data(ele1,"b"))
 show($.data(ele2,"b") )
 
-
+var ele3 = $('#respect')
+ele3.data('c', '4444')
+// $.data(ele3,'c', '3333')
+console.log(ele3)
 
 function show(data) {
     if (arguments.length == 2) {
@@ -59,7 +64,6 @@ function show(data) {
 	}
 }
 
-console.log(jQuery)
 </script>
 
 </body>

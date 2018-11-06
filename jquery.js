@@ -4287,7 +4287,6 @@ Data.prototype = {
 		    // 判断对象是否已经存在uid
 			// Check if the owner object already has a cache key
 			unlock = owner[ this.expando ];
-        
         /* 若unlock为空，则生成uid，即owner[this.expando] = unlock = Data.uid++
            这样，在cache对象中，保持了数据的唯一性
         */
@@ -4395,11 +4394,12 @@ Data.prototype = {
 		var i, name, camel,
 			unlock = this.key( owner ),
 			cache = this.cache[ unlock ];
-
+        /* 若未传入key，则DOM元素或js对象缓存数据全部清除*/
 		if ( key === undefined ) {
 			this.cache[ unlock ] = {};
 
 		} else {
+			/* 若key为字符串数组，则转为驼峰式，并遍历删除*/
 			// Support array or space separated string of keys
 			if ( jQuery.isArray( key ) ) {
 				// If "name" is an array of keys...
@@ -4410,11 +4410,16 @@ Data.prototype = {
 				// This will only penalize the array argument path.
 				name = key.concat( key.map( jQuery.camelCase ) );
 			} else {
+				/* key是字符串(或带空格字符串），转为驼峰式*/
 				camel = jQuery.camelCase( key );
+				/* 若key存在于缓存对象中，则name为数组*/
 				// Try the string as a key before any manipulation
 				if ( key in cache ) {
 					name = [ key, camel ];
 				} else {
+					/* 若在数据对象中，则创建数组，
+                       若不在，则匹配rnotwhite正则表达式，返回的数组，进行缓存数据删除
+					*/
 					// If a key with the spaces exists, use it.
 					// Otherwise, create an array by matching non-whitespace
 					name = camel;
@@ -4460,7 +4465,7 @@ var data_user = new Data();
 */
 var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
 	rmultiDash = /([A-Z])/g;
-
+/* 解析HTML5属性，data-*/
 function dataAttr( elem, key, data ) {
 	var name;
 
@@ -4497,11 +4502,13 @@ jQuery.extend({
 		return data_user.hasData( elem ) || data_priv.hasData( elem );
 	},
     
-    // $.data()，两次使用jQuery获取相同DOM节点，并使用$.data()和相同key存储不同的数据，两者不覆盖
+    /* 用户自定义数据缓存，
+       $.data()，两次使用jQuery获取相同DOM节点，并使用$.data()和相同key存储不同的数据，两者不覆盖
+    */
 	data: function( elem, name, data ) {
 		return data_user.access( elem, name, data );
 	},
-
+    /* 删除缓存数据*/
 	removeData: function( elem, name ) {
 		data_user.remove( elem, name );
 	},
@@ -4521,16 +4528,18 @@ jQuery.extend({
 jQuery.fn.extend({
 
 	/* 在元素上存放或读取数据，返回jQuery对象 
-	   两次使用jQuery获取相同DOM节点，并使用$().data()和相同key存储不同的数据，后者会覆盖前者
+	   两次使用jQuery获取相同DOM节点，并使用$().data()、相同的uid存储不同的数据，后者会覆盖前者
 	*/
 	data: function( key, value ) {
 		var i, name, data,
 			elem = this[ 0 ],
 			attrs = elem && elem.attributes;
-
+        /* 未传入参数*/
 		// Gets all values
 		if ( key === undefined ) {
+			/* this指向$()(jQuery实例对象)*/
 			if ( this.length ) {
+				/* 获取缓存数据*/
 				data = data_user.get( elem );
 
 				if ( elem.nodeType === 1 && !data_priv.get( elem, "hasDataAttrs" ) ) {
@@ -4542,19 +4551,22 @@ jQuery.fn.extend({
 						if ( attrs[ i ] ) {
 							name = attrs[ i ].name;
 							if ( name.indexOf( "data-" ) === 0 ) {
+								/* data-转为驼峰式*/
 								name = jQuery.camelCase( name.slice(5) );
 								dataAttr( elem, name, data[ name ] );
 							}
 						}
 					}
+					/* 将HTML5属性data-进行内部数据缓存*/
 					data_priv.set( elem, "hasDataAttrs", true );
 				}
 			}
-
+            
+            /* 返回第一个DOM元素的缓存数据*/
 			return data;
 		}
         
-        /* 设置多个值*/
+        /* 若key为对象，为每个DOM元素设置数据缓存*/
 		// Sets multiple values
 		if ( typeof key === "object" ) {
 			return this.each(function() {
@@ -4571,6 +4583,9 @@ jQuery.fn.extend({
 			// `value` parameter was not undefined. An empty jQuery object
 			// will result in `undefined` for elem = this[ 0 ] which will
 			// throw an exception if an attempt to read a data cache is made.
+			/* 若只传入key，value未传入；
+               获取对应的缓存数据，若无，则返回undefined
+			*/
 			if ( elem && value === undefined ) {
 				// Attempt to get data from the cache
 				// with the key as-is
@@ -4596,7 +4611,7 @@ jQuery.fn.extend({
 				// We tried really hard, but the data doesn't exist.
 				return;
 			}
-
+            /* 若key和value均传入，则进行数据缓存*/
 			// Set the data...
 			this.each(function() {
 				// First, attempt to store a copy or reference of any
@@ -4617,8 +4632,9 @@ jQuery.fn.extend({
 			});
 		}, null, value, arguments.length > 1, null, true );
 	},
-
+    /* 删除缓存数据*/
 	removeData: function( key ) {
+		/* 遍历DOM元素，删除对应的缓存数据*/
 		return this.each(function() {
 			data_user.remove( this, key );
 		});

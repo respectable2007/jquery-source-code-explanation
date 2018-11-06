@@ -33,7 +33,7 @@
       
       /*[^>]匹配除>字符*/
       var rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/gi;
-      console.log(string.replace(rxhtmlTag,'<$1><$2>'))
+      // console.log(string.replace(rxhtmlTag,'<$1><$2>'))
       // var code = /\d{5}|\d{5}-\d{4}/;
       // var code = /\d{5}-\d{4}|\d{5}/;
       // var string = '12345ymmm'
@@ -44,6 +44,11 @@
       console.log(document.getElementById('p1').compareDocumentPosition)
       true
       console.log(rnative.test(document.getElementById('p1').compareDocumentPosition))*/
+
+      /*var rnotwhite = (/\S+/g)
+      string = 'a b abbb'
+      console.log(rnotwhite.exec(string))==>['a',index:0,input:'a b abbb',length:1]
+      console.log(string.match(rnotwhite))===>['a', 'b', 'abbb']*/
   	</script>
   </body>
 </html>
