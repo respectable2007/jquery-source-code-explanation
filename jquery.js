@@ -4390,6 +4390,7 @@ Data.prototype = {
 		// return the expected data based on which path was taken[*]
 		return value !== undefined ? value : key;
 	},
+	/* 删除缓存数据*/
 	remove: function( owner, key ) {
 		var i, name, camel,
 			unlock = this.key( owner ),
@@ -4498,6 +4499,7 @@ function dataAttr( elem, key, data ) {
    $.data()代码中，elem是jQuery的实例对象，不同的实例对象，uid不同，分配了不同的缓存区，因此不覆盖。
 */
 jQuery.extend({
+	/* 判断DOM元素或js对象是否有缓存数据*/
 	hasData: function( elem ) {
 		return data_user.hasData( elem ) || data_priv.hasData( elem );
 	},
@@ -5963,16 +5965,18 @@ jQuery.extend({
 
 		return fragment;
 	},
-
+    /* 删除多个DOM元素的缓存数据和事件，并没有移除DOM元素上的expando属性*/
 	cleanData: function( elems ) {
 		var data, elem, type, key,
 			special = jQuery.event.special,
 			i = 0;
 
 		for ( ; (elem = elems[ i ]) !== undefined; i++ ) {
+			/* 判断是否可以设置缓存数据*/
 			if ( jQuery.acceptData( elem ) ) {
+				/*uid*/
 				key = elem[ data_priv.expando ];
-
+                /*若uid存在，则删除事件及缓存数据*/
 				if ( key && (data = data_priv.cache[ key ]) ) {
 					if ( data.events ) {
 						for ( type in data.events ) {
@@ -5985,12 +5989,14 @@ jQuery.extend({
 							}
 						}
 					}
+					/* 删除内部缓存对象数据及uid*/
 					if ( data_priv.cache[ key ] ) {
 						// Discard any remaining `private` data
 						delete data_priv.cache[ key ];
 					}
 				}
 			}
+		    /* 删除用户自定义缓存对象数据及uid*/
 			// Discard any remaining `user` data
 			delete data_user.cache[ elem[ data_user.expando ] ];
 		}
@@ -6049,12 +6055,15 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    /* 删除DOM元素*/
 	remove: function( selector, keepData /* Internal Use Only */ ) {
 		var elem,
 			elems = selector ? jQuery.filter( selector, this ) : this,
 			i = 0;
-
+        /* 遍历DOM元素，
+           若keepData为false，则删除每个DOM元素及后代元素的缓存数据和事件
+           之后删除每个DOM元素（除顶级文档节点外）
+        */
 		for ( ; (elem = elems[i]) != null; i++ ) {
 			if ( !keepData && elem.nodeType === 1 ) {
 				jQuery.cleanData( getAll( elem ) );
@@ -6074,10 +6083,11 @@ jQuery.fn.extend({
 	empty: function() {
 		var elem,
 			i = 0;
-
+        /* 遍历DOM元素*/
 		for ( ; (elem = this[i]) != null; i++ ) {
 			if ( elem.nodeType === 1 ) {
-
+                
+                /* 删除当前元素的后代元素的缓存数据和事件*/
 				// Prevent memory leaks
 				jQuery.cleanData( getAll( elem, false ) );
 
@@ -6117,7 +6127,8 @@ jQuery.fn.extend({
 				try {
 					for ( ; i < l; i++ ) {
 						elem = this[ i ] || {};
-
+                        
+                        /* 设置文本内容前，先移除当前元素后代元素的缓存数据和事件*/
 						// Remove element nodes and prevent memory leaks
 						if ( elem.nodeType === 1 ) {
 							jQuery.cleanData( getAll( elem, false ) );
