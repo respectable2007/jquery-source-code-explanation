@@ -4249,8 +4249,8 @@ jQuery.acceptData = function( owner ) {
 // Data类，用于数据缓存--构造函数+原型模式
 function Data() {
 
-	/* 设置cache对象的访问器属性
-	   0属性只设置了[[Get]]，只能读取
+	/* 设置cache对象中属性0的访问器属性
+	   属性0只设置了[[Get]]，因此，该属性只能读取
 	*/
 	// Support: Android < 4,
 	// Old WebKit does not have Object.preventExtensions/freeze method,
@@ -4269,7 +4269,7 @@ function Data() {
 	this.expando = jQuery.expando + Math.random();
 }
 
-// 设置uid的默认初始值
+// 设置uid的默认初始值,该值被jQuery对象expando属性保存着
 Data.uid = 1;
 Data.accepts = jQuery.acceptData;
 
@@ -4284,7 +4284,7 @@ Data.prototype = {
 		}
 
 		var descriptor = {},
-		    // 判断对象是否已经存在cache key
+		    // 判断对象是否已经存在uid
 			// Check if the owner object already has a cache key
 			unlock = owner[ this.expando ];
         
@@ -4296,7 +4296,7 @@ Data.prototype = {
 			// 后置++，先赋值给unlock，uid再自增1
 			unlock = Data.uid++;
             
-            // 为对象定义[this.expando]属性，其值为unlock
+            // 为DOM对象或js对象定义[this.expando]属性，其值为unlock
 			// Secure it in a non-enumerable, non-writable property
 			try {
 				descriptor[ this.expando ] = { value: unlock };
@@ -4319,7 +4319,7 @@ Data.prototype = {
         // 返回唯一标识uid
 		return unlock;
 	},
-	// 保存数据
+	// 保存缓存数据
 	set: function( owner, data, value ) {
 		var prop,
 			// There may be an unlock assigned to this node,
@@ -4346,6 +4346,7 @@ Data.prototype = {
 		}
 		return cache;
 	},
+	/* 获取缓存数据*/
 	get: function( owner, key ) {
 		// Either a valid cache is found, or will be created.
 		// New caches will be created and the unlock returned,
@@ -4428,6 +4429,7 @@ Data.prototype = {
 			}
 		}
 	},
+	/* 判断DOM对象或js对象是否有缓存数据*/
 	hasData: function( owner ) {
 		return !jQuery.isEmptyObject(
 			this.cache[ owner[ this.expando ] ] || {}
@@ -4444,8 +4446,6 @@ var data_priv = new Data();
 
 // 用户自定义的数据
 var data_user = new Data();
-
-
 
 /*
 	Implementation Summary
@@ -4506,7 +4506,7 @@ jQuery.extend({
 		data_user.remove( elem, name );
 	},
 
-    // 数据缓存系统，在元素上存放数据，返回jQuery对象
+    // 内部数据缓存
 	// TODO: Now that all calls to _data and _removeData have been replaced
 	// with direct calls to data_priv methods, these can be deprecated.
 	_data: function( elem, name, data ) {
@@ -4553,7 +4553,8 @@ jQuery.fn.extend({
 
 			return data;
 		}
-
+        
+        /* 设置多个值*/
 		// Sets multiple values
 		if ( typeof key === "object" ) {
 			return this.each(function() {

@@ -211,7 +211,29 @@
     true
     console.log({} && true)*/
 
-    /*window.name = 'The Window'
+ 
+
+
+    /* compareDocumentPosition
+    var A = document.getElementById('p1')
+    var B = document.getElementById('p2')
+    console.log(A.compareDocumentPosition(B))
+    console.log(typeof (A.compareDocumentPosition))*/
+    
+   /* // 普通函数在全局环境下，this指向window
+    function a(){
+      console.log(this)
+    }
+    
+    // 构造函数在全局环境下，this指向对应的实例对象
+    function A(){
+      console.log(this)
+    }
+
+    a()
+    var b = new A()
+
+    window.name = 'The Window'
     var obj = {
       name: 'The Object',
       getName: function() {
@@ -220,16 +242,20 @@
         }
       }
     }
+    // 返回The Window
+    console.log(obj.getName()())
+
+    function a() {
+      var name = 'a';
+      return function() {
+        console.log(this)
+        console.log(name)
+        return this.name
+      }
+    }
     返回The Window
-    console.log(obj.getName()())*/
-
-
-    /* compareDocumentPosition
-    var A = document.getElementById('p1')
-    var B = document.getElementById('p2')
-    console.log(A.compareDocumentPosition(B))
-    console.log(typeof (A.compareDocumentPosition))*/
-
+    console.log(a()())*/
+    
   	</script>
   </body>
 </html>
