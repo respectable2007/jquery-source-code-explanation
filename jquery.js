@@ -4782,11 +4782,18 @@ jQuery.fn.extend({
 	// are emptied (fx is the type by default)
 	promise: function( type, obj ) {
 		var tmp,
+		    /* 计数器*/
 			count = 1,
+			/* 异步队列*/
 			defer = jQuery.Deferred(),
 			elements = this,
 			i = this.length,
+			/* 计数器-1的回调函数--特殊函数*/
 			resolve = function() {
+				/* 计数器为0时，即所有函数队列都被执行完毕时，
+				   可以自动销毁每个DOM元素上的函数队列的缓存对象，
+				   不需要用户手动每个去销毁
+				*/
 				if ( !( --count ) ) {
 					defer.resolveWith( elements, [ elements ] );
 				}
@@ -4797,15 +4804,18 @@ jQuery.fn.extend({
 			type = undefined;
 		}
 		type = type || "fx";
-
+        
+        /* 遍历DOM元素*/
 		while ( i-- ) {
 			tmp = data_priv.get( elements[ i ], type + "queueHooks" );
 			if ( tmp && tmp.empty ) {
 				count++;
+				/* 为每个DOM项缓存对象empty回调函数列表添加特殊函数*/
 				tmp.empty.add( resolve );
 			}
 		}
 		resolve();
+		/* 返回异步队列的只读副本*/
 		return defer.promise( obj );
 	}
 });
