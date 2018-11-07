@@ -4718,8 +4718,7 @@ jQuery.extend({
 		}
 	},
     
-	/* 返回一个包含empty方法的缓存对象
-	*/
+	/* 返回一个包含empty方法的缓存对象*/
 	// not intended for public consumption - generates a queueHooks object, or returns the current one
 	_queueHooks: function( elem, type ) {
 		var key = type + "queueHooks";
@@ -4732,35 +4731,40 @@ jQuery.extend({
 });
 
 jQuery.fn.extend({
-	/* 取出函数队列，或函数入队*/
+	/* 读取函数队列，或函数入队*/
 	queue: function( type, data ) {
 		var setter = 2;
-
+        
+        /* 若type不为string，则type为fx默认值，将type赋值给data*/
 		if ( typeof type !== "string" ) {
 			data = type;
 			type = "fx";
 			setter--;
 		}
 
+        /* 只传入type，则获取第一个DOM元素的函数队列*/
 		if ( arguments.length < setter ) {
 			return jQuery.queue( this[0], type );
 		}
 
 		return data === undefined ?
 			this :
+			/* 遍历DOM元素，修改每个DOM项的函数队列*/
 			this.each(function() {
 				var queue = jQuery.queue( this, type, data );
 
 				// ensure a hooks for this queue
 				jQuery._queueHooks( this, type );
-
+                
+                /*fx，且不为inprogress，则出队，执行函数*/
 				if ( type === "fx" && queue[0] !== "inprogress" ) {
 					jQuery.dequeue( this, type );
 				}
 			});
 	},
-	/* 函数出队，并被执行*/
+	/* 用于出队并执行匹配元素关联的函数队列中的下一个函数*/
 	dequeue: function( type ) {
+		/* 遍历DOM元素*/
 		return this.each(function() {
 			jQuery.dequeue( this, type );
 		});
