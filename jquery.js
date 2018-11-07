@@ -4702,7 +4702,8 @@ jQuery.extend({
 			if ( type === "fx" ) {
 				queue.unshift( "inprogress" );
 			}
-
+            
+            /* 删除上一个函数队列的stop函数*/
 			// clear up the last queue stop function
 			delete hooks.stop;
 			/* 执行函数
@@ -4769,8 +4770,9 @@ jQuery.fn.extend({
 			jQuery.dequeue( this, type );
 		});
 	},
-	/* 清空函数队列*/
+	/* 移除匹配元素的函数队列中所有未执行的函数*/
 	clearQueue: function( type ) {
+		/* 将缓存对象中的值置为空数组*/
 		return this.queue( type || "fx", [] );
 	},
 
@@ -7738,7 +7740,10 @@ jQuery.fx.speeds = {
 jQuery.fn.delay = function( time, type ) {
 	time = jQuery.fx ? jQuery.fx.speeds[ time ] || time : time;
 	type = type || "fx";
-
+    
+    /* 调用.queue，向函数队列添加一个定时器函数，用来延迟下一个函数的出队时间。
+       定时器延迟了next函数的执行时间（这段代码与jQuery.dequeue代码有关）
+    */
 	return this.queue( type, function( next, hooks ) {
 		var timeout = setTimeout( next, time );
 		hooks.stop = function() {
