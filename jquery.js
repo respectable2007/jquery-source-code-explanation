@@ -4643,8 +4643,10 @@ jQuery.fn.extend({
 	}
 });
 
-// 队列模块
+
+/* 队列Queue模块*/
 jQuery.extend({
+	/* 函数入队，并返回队列*/
 	queue: function( elem, type, data ) {
 		var queue;
 
@@ -4663,7 +4665,7 @@ jQuery.extend({
 			return queue || [];
 		}
 	},
-
+    /* 函数出队，并执行*/
 	dequeue: function( elem, type ) {
 		type = type || "fx";
 
@@ -4699,7 +4701,7 @@ jQuery.extend({
 		}
 	},
     
-    /*队列模块
+    /*
     */
 	// not intended for public consumption - generates a queueHooks object, or returns the current one
 	_queueHooks: function( elem, type ) {
@@ -4713,6 +4715,7 @@ jQuery.extend({
 });
 
 jQuery.fn.extend({
+	/* 取出函数队列，或函数入队*/
 	queue: function( type, data ) {
 		var setter = 2;
 
@@ -4739,16 +4742,18 @@ jQuery.fn.extend({
 				}
 			});
 	},
+	/* 函数出队，并被执行*/
 	dequeue: function( type ) {
 		return this.each(function() {
 			jQuery.dequeue( this, type );
 		});
 	},
+	/* 清空函数队列*/
 	clearQueue: function( type ) {
 		return this.queue( type || "fx", [] );
 	},
 
-	/**异步链式
+	/* 观察函数队列是否完成，返回异步队列只读副本
 	*/
 	// Get a promise resolved when queues of a certain type
 	// are emptied (fx is the type by default)
@@ -4781,6 +4786,9 @@ jQuery.fn.extend({
 		return defer.promise( obj );
 	}
 });
+
+
+
 var pnum = (/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/).source;
 
 var cssExpand = [ "Top", "Right", "Bottom", "Left" ];
@@ -4820,8 +4828,6 @@ var rcheckableType = (/^(?:checkbox|radio)$/i);
 	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 })();
 var strundefined = typeof undefined;
-
-
 
 support.focusinBubbles = "onfocusin" in window;
 
