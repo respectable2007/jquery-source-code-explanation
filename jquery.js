@@ -4644,21 +4644,30 @@ jQuery.fn.extend({
 });
 
 
-/* 队列Queue模块*/
+/* 队列Queue模块，基于数据缓存模块和数组实现的*/
 jQuery.extend({
-	/* 函数入队，并返回队列*/
+	/* 函数入队，并返回队列
+	   只传入elem，返回匹配元素的默认函数队列
+	   只传入elem、type，返回匹配元素用户自定义的函数队列
+	   传入elem、type、data，修改匹配元素的函数队列：
+	       data是函数数组，用函数数组替换原函数队列
+	       data是函数，则将函数队列添加到原函数队列
+	*/
 	queue: function( elem, type, data ) {
 		var queue;
 
 		if ( elem ) {
 			type = ( type || "fx" ) + "queue";
+			/* 从缓存对象中，读取队列*/
 			queue = data_priv.get( elem, type );
 
 			// Speed up dequeue by getting out quickly if this is just a lookup
 			if ( data ) {
+				/*queue是undefined，或data是数组，则data覆盖原来的缓存队列，并将data返回queue*/
 				if ( !queue || jQuery.isArray( data ) ) {
 					queue = data_priv.access( elem, type, jQuery.makeArray(data) );
 				} else {
+					/* data被添加到原来的缓存队列*/
 					queue.push( data );
 				}
 			}
@@ -4672,11 +4681,13 @@ jQuery.extend({
 		var queue = jQuery.queue( elem, type ),
 			startLength = queue.length,
 			fn = queue.shift(),
+			/* hooks为包含empty方法的缓存对象*/
 			hooks = jQuery._queueHooks( elem, type ),
 			next = function() {
 				jQuery.dequeue( elem, type );
 			};
-
+        
+        /* 若是inprogress站位符，则直接忽略跳过，获取下一个队列中的函数*/
 		// If the fx queue is dequeued, always remove the progress sentinel
 		if ( fn === "inprogress" ) {
 			fn = queue.shift();
@@ -4684,7 +4695,8 @@ jQuery.extend({
 		}
 
 		if ( fn ) {
-
+            
+            /* 若为默认队列，添加inprogress占位符*/
 			// Add a progress sentinel to prevent the fx queue from being
 			// automatically dequeued
 			if ( type === "fx" ) {
@@ -4693,16 +4705,21 @@ jQuery.extend({
 
 			// clear up the last queue stop function
 			delete hooks.stop;
+			/* 执行函数
+               next封装了jQuery.dequeue的函数，不会自动执行，要在出队的函数返回前手动调用next，以使下一个函数得以顺序执行
+               hooks为包含empty方法的缓存对象
+			*/
 			fn.call( elem, next, hooks );
 		}
 
 		if ( !startLength && hooks ) {
+			/* 函数队列全部执行，删除队列缓存对象*/
 			hooks.empty.fire();
 		}
 	},
     
-    /*
-    */
+	/* 返回一个包含empty方法的缓存对象
+	*/
 	// not intended for public consumption - generates a queueHooks object, or returns the current one
 	_queueHooks: function( elem, type ) {
 		var key = type + "queueHooks";
