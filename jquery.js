@@ -66,6 +66,7 @@ var toString = class2type.toString;
 
 var hasOwn = class2type.hasOwnProperty;
 
+/* jQuery浏览器功能测试*/
 var support = {};
 
 
@@ -713,13 +714,14 @@ jQuery.extend({
 	},
     /* 返回当前时间的毫秒数*/
 	now: Date.now,
-
+    
+    /* jQuery静态方法，在jQuery库内未被使用，用于其他工程或项目保存浏览器功能测试*/
 	// jQuery.support is not used in Core but other projects attach their
 	// properties to it so it needs to exist.
 	support: support
 });
 
-// 生成各数据类型对象
+// 保存原生对象toString字符串，用于判断原生对象类型
 // Populate the class2type map
 jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
@@ -764,6 +766,7 @@ var Sizzle =
 (function( window ) {
 
 var i,
+    /* Sizzle引擎浏览器功能测试，未暴露给jQuery，尽在内部使用*/
 	support,
 	Expr,
 	getText,
@@ -1247,6 +1250,7 @@ function testContext( context ) {
 	return context && typeof context.getElementsByTagName !== strundefined && context;
 }
 
+/* 语法简洁*/
 // Expose support vars for convenience
 support = Sizzle.support = {};
 
@@ -4851,10 +4855,12 @@ var rcheckableType = (/^(?:checkbox|radio)$/i);
 
 	div.appendChild( input );
 
+    /* 检验当前浏览器在复制check元素时，是否可以复制checked状态*/
 	// Support: Safari 5.1, iOS 5.1, Android 4.x, Android 2.3
 	// old WebKit doesn't clone checked state correctly in fragments
 	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
 
+    /* 检验当前浏览器在复制DOM元素时，是否可以复制textarea元素和check元素的defaultValue*/
 	// Make sure textarea (and checkbox) defaultValue is properly cloned
 	// Support: IE9-IE11+
 	div.innerHTML = "<textarea>x</textarea>";
@@ -7769,15 +7775,23 @@ jQuery.fn.delay = function( time, type ) {
 		opt = select.appendChild( document.createElement( "option" ) );
 
 	input.type = "checkbox";
-
+    
+    /* Safari默认值为空字符串，其他默认值为on
+       检验check、radio元素的默认值
+    */
 	// Support: iOS 5.1, Android 4.x, Android 2.3
 	// Check the default checkbox/radio value ("" on old WebKit; "on" elsewhere)
 	support.checkOn = input.value !== "";
 
+    /* 检验当前浏览器选择框默认选择项selected的值*/
 	// Must access the parent to make an option select properly
 	// Support: IE9, IE10
 	support.optSelected = opt.selected;
 
+    /* 检验当前浏览器选择框被禁用，其选择项是否被自动禁用
+       早期Safari，会自动禁用，值为true
+       其他浏览器，则不会自动禁用，值为false
+    */
 	// Make sure that the options inside disabled selects aren't marked as disabled
 	// (WebKit marks them as disabled)
 	select.disabled = true;
@@ -8323,6 +8337,7 @@ jQuery.each([ "radio", "checkbox" ], function() {
 			}
 		}
 	};
+	/* radio、checkbox元素未指定value时，统一返回on*/
 	if ( !support.checkOn ) {
 		jQuery.valHooks[ this ].get = function( elem ) {
 			// Support: Webkit

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>support</title>
+  </head>
+  <body>
+  	<input type='checkbox' id='cb' onchange='cbChange()'/>
+  	<div id='clone'>
+  	  <input type='checkbox'/>
+  	</div>
+  	<select id='sel'>
+  		<option>1</option>
+  	</select>
+  	<script type="text/javascript">
+  	  function cbChange() {
+  	    console.log(document.getElementById('cb').value)
+  	  }
+
+  	  /* 克隆*/
+  	  var div = document.getElementById('clone')
+  	  // var elems = div.cloneNode(true)
+  	  // console.log(elems)
+
+      /* 替换*/
+  	  div.innerHTML = '<div></div>'
+  	  // console.log(div)
+      
+      /* 默认选择项selected为true*/
+      // console.log(document.getElementsByTagName('option')[0].selected)
+      
+      /* className和class不是公认特性（HTML属性），所以不能以DOM元素属性来读取或设置
+         id和align是div的公认特性，所以可以以属性来读取或设置
+      */
+      // div.className = 'i'
+      // div.class = 'i'
+      // div.align = 'i'
+      // console.log(div.getAttribute('align'))
+
+
+
+  	</script>
+  </body>
+</html>
