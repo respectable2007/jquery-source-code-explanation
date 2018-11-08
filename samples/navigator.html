@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>navigator</title>
+</head>
+<body>
+   <script type="text/javascript">
+   	  window.onload = function () {
+   	  	console.log(navigator.plugins)
+   	  	var i = navigator.plugins.length-1;
+   	  	for(i;navigator.plugins[i] != undefined;i--){
+   	  	  console.log(navigator.plugins[i].name)
+   	  	}
+   	  }
+   </script>
+</body>
+</html>
