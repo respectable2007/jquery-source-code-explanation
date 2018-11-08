@@ -1307,7 +1307,10 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 	/* Attributes
 	---------------------------------------------------------------------- */
-
+    
+    /* 检验当前浏览器设置属性时，是否需要传入DOM属性参数
+       true，不需要传入；false，需要传入
+    */
 	// Support: IE<8
 	// Verify that getAttribute really returns attributes and not properties (excepting IE8 booleans)
 	support.attributes = assert(function( div ) {
@@ -7802,6 +7805,10 @@ jQuery.fn.delay = function( time, type ) {
 	input = document.createElement( "input" );
 	input.value = "t";
 	input.type = "radio";
+
+	/* 检验当前浏览器设置type为radio时，其value值是否会丢失
+       IE10-会丢失
+	*/
 	support.radioValue = input.value === "t";
 })();
 
@@ -7897,6 +7904,7 @@ jQuery.extend({
 	attrHooks: {
 		type: {
 			set: function( elem, value ) {
+				/* 若自动丢失，则本地缓存，设置type后，再重新设置value*/
 				if ( !support.radioValue && value === "radio" &&
 					jQuery.nodeName( elem, "input" ) ) {
 					// Setting the type on a radio button after the value resets the value in IE6-9
