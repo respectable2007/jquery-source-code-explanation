@@ -3,6 +3,18 @@
   <head>
   	<meta charset="utf-8">
   	<title>support</title>
+  	<style type="text/css">
+  		#p{
+  		  width: 200px;
+  		  height: 200px;
+  		  border: 1px solid black;
+  		}
+  		#c{
+  		  width: 100px;
+  		  height: 100px;
+  		  border: 1px solid #fff;
+  		}
+  	</style>
   </head>
   <body>
   	<input type='checkbox' id='cb' onchange='cbChange()'/>
@@ -12,6 +24,9 @@
   	<select id='sel'>
   		<option>1</option>
   	</select>
+  	<div id='p' style="background-color: red">
+  	  <div id='c' style="background-color: blue"></div>
+  	</div>
   	<script type="text/javascript">
   	  function cbChange() {
   	    console.log(document.getElementById('cb').value)
@@ -36,8 +51,15 @@
       // div.class = 'i'
       // div.align = 'i'
       // console.log(div.getAttribute('align'))
+      
+      var p = document.getElementById('p')
+      var pStyle = document.defaultView.getComputedStyle(p, null)
+      console.log(pStyle)
 
-
+     var c = document.getElementById('c')
+     var cStyle = document.defaultView.getComputedStyle(c, null)
+     console.log(cStyle.marginRight)
+     console.log(pStyle.marginRight)
 
   	</script>
   </body>

@@ -6526,6 +6526,10 @@ function addGetHookIf( conditionFn, hookFn ) {
 				}
 				return boxSizingReliableVal;
 			},
+			/* 检验当前浏览器是否返回正确的计算样式marginRight（右外边距）
+               true，返回正确的计算样式
+               false，返回错误的计算样式
+			*/
 			reliableMarginRight: function() {
 				// Support: Android 2.3
 				// Check if div with explicit width and no margin-right incorrectly
@@ -6929,6 +6933,7 @@ jQuery.each([ "height", "width" ], function( i, name ) {
 jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
 	function( elem, computed ) {
 		if ( computed ) {
+			/* 通过将元素设置为inline-block，获取正确的marginRight*/
 			// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
 			// Work around by temporarily setting element display to inline-block
 			return jQuery.swap( elem, { "display": "inline-block" },
