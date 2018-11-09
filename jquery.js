@@ -4870,7 +4870,7 @@ var rcheckableType = (/^(?:checkbox|radio)$/i);
 	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 })();
 var strundefined = typeof undefined;
-
+/* 检验当前浏览器是否支持onfocusin事件*/
 support.focusinBubbles = "onfocusin" in window;
 
 
@@ -5588,6 +5588,7 @@ jQuery.each({
 	};
 });
 
+/* 若当前浏览器不支持focusin事件，则创建focus和blur事件*/
 // Create "bubbling" focus and blur events
 // Support: Firefox, Chrome, Safari
 if ( !support.focusinBubbles ) {
@@ -9461,6 +9462,7 @@ var xhrId = 0,
 		// #1450: sometimes IE returns 1223 when it should be 204
 		1223: 204
 	},
+	/* 若当前浏览器可创建XMLHttpRequest对象，则返回XMLHttpRequest对象，否则，返回undefined*/
 	xhrSupported = jQuery.ajaxSettings.xhr();
 
 // Support: IE9
@@ -9474,6 +9476,7 @@ if ( window.ActiveXObject ) {
 }
 
 support.cors = !!xhrSupported && ( "withCredentials" in xhrSupported );
+/* 检验当前浏览器能否创建XMLHttpRequest对象*/
 support.ajax = xhrSupported = !!xhrSupported;
 
 jQuery.ajaxTransport(function( options ) {
