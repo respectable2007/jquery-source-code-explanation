@@ -7836,7 +7836,7 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
-	/*静态方法，DOM元素设置属性*/
+	/*静态方法，用于获取或设置DOM元素的HTML属性*/
 	attr: function( elem, name, value ) {
 		var hooks, ret,
 			nType = elem.nodeType;
@@ -9475,6 +9475,7 @@ if ( window.ActiveXObject ) {
 	});
 }
 
+/* 检验当前浏览器是否支持跨域资源共享*/
 support.cors = !!xhrSupported && ( "withCredentials" in xhrSupported );
 /* 检验当前浏览器能否创建XMLHttpRequest对象*/
 support.ajax = xhrSupported = !!xhrSupported;
