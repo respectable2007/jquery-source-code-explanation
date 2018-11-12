@@ -8092,6 +8092,11 @@ jQuery.each([
 var rclass = /[\t\r\n\f]/g;
 
 jQuery.fn.extend({
+	/*为当前DOM元素集合中每个元素添加一个或多个类
+      addClass(value):一个或多个以空格分隔的类样式，这些类样式将被添加到当前类样式之后
+      addClass(fn):返回一个或多个以空格分隔的类样式，这些类样式将被添加到当前类样式中
+                   fn有有2个参数：当前元素在集合中的下标位置、当前类样式
+	*/
 	addClass: function( value ) {
 		var classes, elem, cur, clazz, j, finalValue,
 			proceed = typeof value === "string" && value,
@@ -8099,6 +8104,7 @@ jQuery.fn.extend({
 			len = this.length;
 
 		if ( jQuery.isFunction( value ) ) {
+			/*若为函数，循环以fn调用返回结果，调用addClass*/
 			return this.each(function( j ) {
 				jQuery( this ).addClass( value.call( this, j, this.className ) );
 			});
@@ -8107,9 +8113,10 @@ jQuery.fn.extend({
 		if ( proceed ) {
 			// The disjunction here is for better compressibility (see removeClass)
 			classes = ( value || "" ).match( rnotwhite ) || [];
-
+            /*遍历当前DOM元素集合*/
 			for ( ; i < len; i++ ) {
 				elem = this[ i ];
+				/*获取每个元素的类样式*/
 				cur = elem.nodeType === 1 && ( elem.className ?
 					( " " + elem.className + " " ).replace( rclass, " " ) :
 					" "
@@ -8117,6 +8124,7 @@ jQuery.fn.extend({
 
 				if ( cur ) {
 					j = 0;
+					/*循环添加类样式*/
 					while ( (clazz = classes[j++]) ) {
 						if ( cur.indexOf( " " + clazz + " " ) < 0 ) {
 							cur += clazz + " ";
