@@ -7987,10 +7987,17 @@ jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( i, name ) 
 var rfocusable = /^(?:input|select|textarea|button)$/i;
 
 jQuery.fn.extend({
+	/*获取或设置DOM元素的DOM属性
+      .prop(name):获取当前DOM元素集合中第一个元素的DOM属性值
+      .prop(name,value):为当前DOM元素集合中每个元素设置DOM属性
+      .prop({...}):为当前DOM元素集合中每个元素设置一个或多个DOM属性
+      .prop(name,fn):为当前DOM元素集合中每个元素设置DOM属性，其值为fn函数的返回值，若为null或undefined，则不进行设置
+      这个方法应用了access方法和jQuery.prop方法
+	*/
 	prop: function( name, value ) {
 		return access( this, jQuery.prop, name, value, arguments.length > 1 );
 	},
-
+    /*为当前DOM元素集合中每个元素删除一个DOM属性*/
 	removeProp: function( name ) {
 		return this.each(function() {
 			delete this[ jQuery.propFix[ name ] || name ];
@@ -8004,7 +8011,8 @@ jQuery.extend({
 		"for": "htmlFor",
 		"class": "className"
 	},
-
+    
+    /*获取或设置DOM元素的DOM属性*/
 	prop: function( elem, name, value ) {
 		var ret, hooks, notxml,
 			nType = elem.nodeType;
@@ -8017,26 +8025,29 @@ jQuery.extend({
 		notxml = nType !== 1 || !jQuery.isXMLDoc( elem );
 
 		if ( notxml ) {
+			/*获取修正后的属性名和对象*/
 			// Fix name and attach hooks
 			name = jQuery.propFix[ name ] || name;
 			hooks = jQuery.propHooks[ name ];
 		}
-
+        /*若传入value，则设置DOM属性*/
 		if ( value !== undefined ) {
+			/*先调用hooks的set方法，若不成功，则在elem上直接设置DOM属性*/
 			return hooks && "set" in hooks && (ret = hooks.set( elem, value, name )) !== undefined ?
 				ret :
 				( elem[ name ] = value );
-
+        /*未传入value，则获取DOM属性*/
 		} else {
 			return hooks && "get" in hooks && (ret = hooks.get( elem, name )) !== null ?
 				ret :
 				elem[ name ];
 		}
 	},
-
+    /*保存需要修正的DOM属性和对应的修正对象*/
 	propHooks: {
 		tabIndex: {
 			get: function( elem ) {
+				/*当设置了tabindex，为可获得焦点的元素，为a标签是，通过属性节点获取tabIndex并返回；其他返回-1*/
 				return elem.hasAttribute( "tabindex" ) || rfocusable.test( elem.nodeName ) || elem.href ?
 					elem.tabIndex :
 					-1;

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>attr</title>
+  </head>
+  <body>
+  	<div id='attr' zidingyi='renren'></div>
+  	<script type="text/javascript">
+  	  var div = document.getElementById('attr')
+  	  // id是HTML属性也是DOM属性
+  	  console.log(div.id)
+  	  // zidingyi只是HTML属性
+  	  console.log(div.zidingyi)
+  	  console.log(div.getAttribute('zidingyi'))
+  	</script>
+  </body>
+</html>
