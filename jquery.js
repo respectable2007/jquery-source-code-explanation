@@ -7841,42 +7841,48 @@ jQuery.extend({
 		var hooks, ret,
 			nType = elem.nodeType;
         
-        /*若为属性、文本和注释类型，则不做处理*/
+        /*忽略文本节点、注释节点、属性节点，不在这些节点上获取或设置HTML属性*/
 		// don't get/set attributes on text, comment and attribute nodes
 		if ( !elem || nType === 3 || nType === 8 || nType === 2 ) {
 			return;
 		}
         
-        /*若不支持getAttributes，则使用jQuery.prop*/
+        /*若不支持getAttributes，则使用jQuery.prop，获取或设置DOM属性*/
 		// Fallback to prop when attributes are not supported
 		if ( typeof elem.getAttribute === strundefined ) {
 			return jQuery.prop( elem, name, value );
 		}
 
+        /*不是XML*/
 		// All attributes are lowercase
 		// Grab necessary hook if one is defined
 		if ( nType !== 1 || !jQuery.isXMLDoc( elem ) ) {
+			/*HTML属性为小写*/
 			name = name.toLowerCase();
+			/*获取特殊HTML属性*/
 			hooks = jQuery.attrHooks[ name ] ||
+			    /*boolHook-布尔属性修正对象；nodeHook-通用HTML属性修正对象*/
 				( jQuery.expr.match.bool.test( name ) ? boolHook : nodeHook );
 		}
 
+        /*若传入参数value，则为设置HTML属性*/
 		if ( value !== undefined ) {
-
+            /*值为null，则删除对应的HTML属性*/
 			if ( value === null ) {
 				jQuery.removeAttr( elem, name );
-
+            /*值不为null，且修正对象hooks存在，包含set方法，返回值不为undefined，设置HTML属性成功*/
 			} else if ( hooks && "set" in hooks && (ret = hooks.set( elem, value, name )) !== undefined ) {
 				return ret;
-
+            /*值不为null，hooks对象等不适合，则调用原生方法setAttribute，设置HTML属性*/
 			} else {
 				elem.setAttribute( name, value + "" );
 				return value;
 			}
-
+        /*若不传入参数value，则为获取HTML属性*/
+        /*修正对象hooks存在，返回值不为null，获取HTML属性成功*/
 		} else if ( hooks && "get" in hooks && (ret = hooks.get( elem, name )) !== null ) {
 			return ret;
-
+        /*Sizzle引擎Sizzle获取HTML属性*/
 		} else {
 			ret = jQuery.find.attr( elem, name );
 
