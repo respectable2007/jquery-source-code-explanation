@@ -914,6 +914,7 @@ var i,
 		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
 			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
 			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+		/*判断当前HTML属性是否为布尔型*/
 		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
 		// For use in libraries implementing .is()
 		// We use this for POS matching in `select`
@@ -7823,7 +7824,13 @@ var nodeHook, boolHook,
 	attrHandle = jQuery.expr.attrHandle;
 
 jQuery.fn.extend({
-	/*实例方法，DOM元素设置属性*/
+	/*获取或设置属性，有四种情况，如下：
+      .attr(name):获取当前DOM元素集合中第一个元素的HTML属性值
+      .attr(name,value):为当前DOM元素集合中每个元素设置HTML属性
+      .attr({...}):为当前DOM元素集合中每个元素设置一个或多个HTML属性
+      .attr(name,fn):为当前DOM元素集合中每个元素设置HTML属性，其值为fn函数的返回值，若为null或undefined，则不进行设置
+      这个方法应用了access方法和jQuery.attr方法
+	*/
 	attr: function( name, value ) {
 		return access( this, jQuery.attr, name, value, arguments.length > 1 );
 	},
@@ -7861,7 +7868,8 @@ jQuery.extend({
 			name = name.toLowerCase();
 			/*获取特殊HTML属性*/
 			hooks = jQuery.attrHooks[ name ] ||
-			    /*boolHook-布尔属性修正对象；nodeHook-通用HTML属性修正对象*/
+			    /*判断属性是否为布尔型，若是则返回boolHook
+			      否则返回nodeHook-通用HTML属性修正对象*/
 				( jQuery.expr.match.bool.test( name ) ? boolHook : nodeHook );
 		}
 
@@ -7912,7 +7920,10 @@ jQuery.extend({
 			}
 		}
 	},
-
+    
+    /*存放需要修正的HTML属性和对应的修正对象，每个修正对象包含set方法
+      当前版本只存放type方法，用于修正radio元素value被覆盖的问题
+    */
 	attrHooks: {
 		type: {
 			set: function( elem, value ) {
@@ -7933,12 +7944,15 @@ jQuery.extend({
 	}
 });
 
+/*若某个HTML属性对应的DOM属性的值为布尔型，则该HTML属性为布尔型HTML属性，属性名为小写*/
 // Hooks for boolean attributes
 boolHook = {
 	set: function( elem, value, name ) {
+		/*若当前HTML属性值为false，则删除该属性*/
 		if ( value === false ) {
 			// Remove boolean attributes when set to false
 			jQuery.removeAttr( elem, name );
+		/*若为true，则调用原生setAttribute方法，设置属性*/
 		} else {
 			elem.setAttribute( name, name );
 		}
