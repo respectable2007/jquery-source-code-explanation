@@ -8142,7 +8142,12 @@ jQuery.fn.extend({
 
 		return this;
 	},
-
+    /*为当前DOM元素集合中每个元素删除一个或多个类
+      removeClass(value):一个或多个以空格分隔的类样式，这些类样式将从当前类样式被删除
+      removeClass(fn):返回一个或多个以空格分隔的类样式，这些类样式将从当前类样式被删除
+                   fn有有2个参数：当前元素在集合中的下标位置、当前类样式
+      removeClass():删除当前类样式
+	*/
 	removeClass: function( value ) {
 		var classes, elem, cur, clazz, j, finalValue,
 			proceed = arguments.length === 0 || typeof value === "string" && value,
@@ -8150,6 +8155,7 @@ jQuery.fn.extend({
 			len = this.length;
 
 		if ( jQuery.isFunction( value ) ) {
+			/*若为函数，则遍历当前元素数组，调用removeClass*/
 			return this.each(function( j ) {
 				jQuery( this ).removeClass( value.call( this, j, this.className ) );
 			});
@@ -8168,12 +8174,13 @@ jQuery.fn.extend({
 				if ( cur ) {
 					j = 0;
 					while ( (clazz = classes[j++]) ) {
+						/*使用replace方法，替换掉classes里的项*/
 						// Remove *all* instances
 						while ( cur.indexOf( " " + clazz + " " ) >= 0 ) {
 							cur = cur.replace( " " + clazz + " ", " " );
 						}
 					}
-
+                    /*若未传入参数，则直接赋值为空字符串*/
 					// only assign if different to avoid unneeded rendering.
 					finalValue = value ? jQuery.trim( cur ) : "";
 					if ( elem.className !== finalValue ) {
@@ -8185,7 +8192,12 @@ jQuery.fn.extend({
 
 		return this;
 	},
-
+    /*为当前DOM元素集合中每个元素删除或添加一个或多个类
+      .toggleClass(value):若每个元素中含有指定的类，则删除，若没有则添加
+      .toggleClass()、.toggleClass(boolean):若当前无类或为false，则删除当前类样式；否则设置为最近一次缓存的类
+      .toggleClass(value,boolean):true为添加，false为删除
+      .toggleClass(fn,boolean):以每个元素类、boolean为参数调用fn，其返回值和boolean循环调用toggleClass，true为添加，false为删除
+    */
 	toggleClass: function( value, stateVal ) {
 		var type = typeof value;
 
