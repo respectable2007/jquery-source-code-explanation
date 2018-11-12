@@ -7834,7 +7834,7 @@ jQuery.fn.extend({
 	attr: function( name, value ) {
 		return access( this, jQuery.attr, name, value, arguments.length > 1 );
 	},
-
+    /*删除HTML属性，应用了jQuery.removeAttr方法*/
 	removeAttr: function( name ) {
 		return this.each(function() {
 			jQuery.removeAttr( this, name );
@@ -7900,22 +7900,26 @@ jQuery.extend({
 				ret;
 		}
 	},
-
+    
+    /*删除HTML属性*/
 	removeAttr: function( elem, value ) {
 		var name, propName,
 			i = 0,
+			/*获取属性名（value中以空格为分隔符）*/
 			attrNames = value && value.match( rnotwhite );
-
+        /*只对元素节点进行删除*/
 		if ( attrNames && elem.nodeType === 1 ) {
+			/*循环删除属性*/
 			while ( (name = attrNames[i++]) ) {
 				propName = jQuery.propFix[ name ] || name;
-
+                
+                /*若为布尔型属性，则先置为false*/
 				// Boolean attributes get special treatment (#10870)
 				if ( jQuery.expr.match.bool.test( name ) ) {
 					// Set corresponding property to false
 					elem[ propName ] = false;
 				}
-
+                /*调用原生removeAttribute方法删除属性*/
 				elem.removeAttribute( name );
 			}
 		}
@@ -7995,6 +7999,7 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
+	/*HTML属性名修正对象*/
 	propFix: {
 		"for": "htmlFor",
 		"class": "className"
@@ -8054,6 +8059,7 @@ if ( !support.optSelected ) {
 	};
 }
 
+/*添加其他需要修正的HTML属性*/
 jQuery.each([
 	"tabIndex",
 	"readOnly",
