@@ -8243,7 +8243,9 @@ jQuery.fn.extend({
 			}
 		});
 	},
-
+    /*检测当前DOM元素集合中是否含有指定的样式，只要有一个元素含有就返回true
+      使用空格分隔类，并使用string.indexOf进行判断
+    */
 	hasClass: function( selector ) {
 		var className = " " + selector + " ",
 			i = 0,
@@ -8264,10 +8266,15 @@ jQuery.fn.extend({
 var rreturn = /\r/g;
 
 jQuery.fn.extend({
+	/*为当前DOM元素集合，获取或设置当前值
+	  .val():获取第一个元素的值
+	  .val(value):为当前DOM元素集合每个元素设置当前值
+	  .val(fn):为当前DOM元素集合每个元素用fn（当前元素的值为参数）返回值设置当前值
+	*/
 	val: function( value ) {
 		var hooks, ret, isFunction,
 			elem = this[0];
-
+        /*获取第一个元素的值*/
 		if ( !arguments.length ) {
 			if ( elem ) {
 				hooks = jQuery.valHooks[ elem.type ] || jQuery.valHooks[ elem.nodeName.toLowerCase() ];
@@ -8311,6 +8318,7 @@ jQuery.fn.extend({
 				val += "";
 
 			} else if ( jQuery.isArray( val ) ) {
+				/*将null或undefined置空*/
 				val = jQuery.map( val, function( value ) {
 					return value == null ? "" : value + "";
 				});
@@ -8327,6 +8335,7 @@ jQuery.fn.extend({
 });
 
 jQuery.extend({
+	/*保存需要修正的节点和修正对象，包含option、select、radio、checkbox*/
 	valHooks: {
 		option: {
 			get: function( elem ) {
