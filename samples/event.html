@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>event</title>
+  </head>
+  <body>
+  	<button id='btn'></button>
+  	<script type="text/javascript">
+  	  var btn = document.getElementById('btn')
+  	  /*DOM0*/
+  	  /*btn.onclick = function (e) {
+  	  	console.log(e)
+  	  }*/
+  	  /*DOM2*/
+  	  btn.addEventListener('click', function(e){
+  	  	console.log(e.timeStamp)
+  	  })
+  	</script>
+  </body>
+</html>

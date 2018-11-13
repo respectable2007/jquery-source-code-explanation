@@ -5360,8 +5360,11 @@ jQuery.event = {
 			return event;
 		}
 	},
-    /*把原生事件对象封装为jQuery事件对象，并修正不兼容属性*/
+    /*把原生事件对象封装为jQuery事件对象，并修正不兼容属性
+      event可以是原生事件对象或jQuery对象
+    */
 	fix: function( event ) {
+		/**/
 		if ( event[ jQuery.expando ] ) {
 			return event;
 		}
@@ -5484,20 +5487,27 @@ jQuery.removeEvent = function( elem, type, handle ) {
 	}
 };
 
-/*事件对象*/
+/*事件对象
+  为构造函数，2个参数：
+  src：原生事件类型、自定义事件类型、原生事件对象或jQuery事件对象
+  props：可选的JS对象，其中的属性将被设置到新创建jQuery事件对象上
+*/
 jQuery.Event = function( src, props ) {
 	// Allow instantiation without the 'new' keyword
 	if ( !(this instanceof jQuery.Event) ) {
 		return new jQuery.Event( src, props );
 	}
-
+    /*若为原生事件对象，则备份原生事件对象*/
 	// Event object
 	if ( src && src.type ) {
+		/*原生事件对象*/
 		this.originalEvent = src;
+		/*事件类型*/
 		this.type = src.type;
 
 		// Events bubbling up the document may have been marked as prevented
 		// by a handler lower down the tree; reflect the correct value.
+		/*检验跨浏览器默认行为是否被取消*/
 		this.isDefaultPrevented = src.defaultPrevented ||
 				src.defaultPrevented === undefined &&
 				// Support: Android < 4.0
@@ -5506,18 +5516,24 @@ jQuery.Event = function( src, props ) {
 			returnFalse;
 
 	// Event type
+	/*若为事件类型，则备份事件类型*/
 	} else {
 		this.type = src;
 	}
 
+    /*扩展自定义事件属性*/
 	// Put explicitly provided properties onto the event object
 	if ( props ) {
+		/*将JS对象添加到事件对象上*/
 		jQuery.extend( this, props );
 	}
-
+    /*修正时间戳
+      若为原生事件对象，返回事件对象事件戳
+      若为事件类型，返回当前时间
+    */
 	// Create a timestamp if incoming event doesn't have one
 	this.timeStamp = src && src.timeStamp || jQuery.now();
-
+    /*为当前jQuery事件对象设置标记jQuery.expando*/
 	// Mark it as fixed
 	this[ jQuery.expando ] = true;
 };
@@ -5539,7 +5555,7 @@ jQuery.Event.prototype = {
 			e.preventDefault();
 		}
 	},
-	/*停止事件传播*/
+	/*停止事件捕获和冒泡*/
 	stopPropagation: function() {
 		var e = this.originalEvent;
 
@@ -5549,7 +5565,7 @@ jQuery.Event.prototype = {
 			e.stopPropagation();
 		}
 	},
-	/*立即停止事件执行和事件传播*/
+	/*停止事件捕获和冒泡，也阻止执行任何事件处理程序*/
 	stopImmediatePropagation: function() {
 		var e = this.originalEvent;
 
