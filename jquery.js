@@ -4899,10 +4899,11 @@ function safeActiveElement() {
  * Helper functions for managing events -- not part of the public interface.
  * Props to Dean Edwards' addEvent library for many of the ideas.
  */
+ /*事件模块底层方法*/
 jQuery.event = {
 
 	global: {},
-
+    /*绑定一个或多个类型的事件监听函数*/
 	add: function( elem, types, handler, data, selector ) {
 
 		var handleObjIn, eventHandle, tmp,
@@ -5007,7 +5008,7 @@ jQuery.event = {
 		}
 
 	},
-
+    /*移除一个或多个类型的事件监听函数*/
 	// Detach an event or set of events from an element
 	remove: function( elem, types, handler, selector, mappedTypes ) {
 
@@ -5078,7 +5079,7 @@ jQuery.event = {
 			data_priv.remove( elem, "events" );
 		}
 	},
-
+    /*手动触发事件，执行绑定的事件监听函数和默认行为，且会模拟冒泡过程*/
 	trigger: function( event, data, elem, onlyHandlers ) {
 
 		var i, cur, tmp, bubbleType, ontype, handle, special,
@@ -5210,7 +5211,7 @@ jQuery.event = {
 
 		return event.result;
 	},
-
+    /*分发事件，执行事件监听函数*/
 	dispatch: function( event ) {
 
 		// Make a writable jQuery.Event from the native event object
@@ -5315,12 +5316,12 @@ jQuery.event = {
 
 		return handlerQueue;
 	},
-
+    /*事件对象的公共属性*/
 	// Includes some event props shared by KeyEvent and MouseEvent
 	props: "altKey bubbles cancelable ctrlKey currentTarget eventPhase metaKey relatedTarget shiftKey target timeStamp view which".split(" "),
-
+    /*事件属性修正对象集*/
 	fixHooks: {},
-
+    /*键盘事件对象的属性和修正方法*/
 	keyHooks: {
 		props: "char charCode key keyCode".split(" "),
 		filter: function( event, original ) {
@@ -5333,7 +5334,7 @@ jQuery.event = {
 			return event;
 		}
 	},
-
+    /*鼠标事件对象的属性和修正方法*/
 	mouseHooks: {
 		props: "button buttons clientX clientY offsetX offsetY pageX pageY screenX screenY toElement".split(" "),
 		filter: function( event, original ) {
@@ -5359,7 +5360,7 @@ jQuery.event = {
 			return event;
 		}
 	},
-
+    /*把原生事件对象封装为jQuery事件对象，并修正不兼容属性*/
 	fix: function( event ) {
 		if ( event[ jQuery.expando ] ) {
 			return event;
@@ -5401,7 +5402,7 @@ jQuery.event = {
 
 		return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
 	},
-
+    /*事件修正对象集*/
 	special: {
 		load: {
 			// Prevent triggered image.load events from bubbling to window.load
@@ -5452,7 +5453,7 @@ jQuery.event = {
 			}
 		}
 	},
-
+    /*模拟事件*/
 	simulate: function( type, elem, event, bubble ) {
 		// Piggyback on a donor event to simulate a different one.
 		// Fake originalEvent to avoid donor's stopPropagation, but if the
@@ -5476,14 +5477,14 @@ jQuery.event = {
 		}
 	}
 };
-
+/*移除主监听函数*/
 jQuery.removeEvent = function( elem, type, handle ) {
 	if ( elem.removeEventListener ) {
 		elem.removeEventListener( type, handle, false );
 	}
 };
 
-/*事件模块*/
+/*事件对象*/
 jQuery.Event = function( src, props ) {
 	// Allow instantiation without the 'new' keyword
 	if ( !(this instanceof jQuery.Event) ) {
@@ -5523,11 +5524,12 @@ jQuery.Event = function( src, props ) {
 
 // jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
 // http://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
+/*事件对象原型对象*/
 jQuery.Event.prototype = {
 	isDefaultPrevented: returnFalse,
 	isPropagationStopped: returnFalse,
 	isImmediatePropagationStopped: returnFalse,
-
+    /*阻止浏览器默认行为*/
 	preventDefault: function() {
 		var e = this.originalEvent;
 
@@ -5537,6 +5539,7 @@ jQuery.Event.prototype = {
 			e.preventDefault();
 		}
 	},
+	/*停止事件传播*/
 	stopPropagation: function() {
 		var e = this.originalEvent;
 
@@ -5546,6 +5549,7 @@ jQuery.Event.prototype = {
 			e.stopPropagation();
 		}
 	},
+	/*立即停止事件执行和事件传播*/
 	stopImmediatePropagation: function() {
 		var e = this.originalEvent;
 
@@ -5561,6 +5565,7 @@ jQuery.Event.prototype = {
 
 // Create mouseenter/leave events using mouseover/out and event-time checks
 // Support: Chrome 15+
+/*初始化事件mouseenter/leave pointerover/out对应的修正对象*/
 jQuery.each({
 	mouseenter: "mouseover",
 	mouseleave: "mouseout",
@@ -5625,11 +5630,10 @@ if ( !support.focusinBubbles ) {
 		};
 	});
 }
-
+/*实例事件对象的方法*/
 jQuery.fn.extend({
     
-    /**绑定事件，为异步链式，用来完成一些阻塞进程的操作
-    */
+    /*统一的事件绑定方法，为异步链式，用来完成一些阻塞进程的操作*/
 	on: function( types, selector, data, fn, /*INTERNAL*/ one ) {
 		var origFn, type;
 
@@ -5683,9 +5687,11 @@ jQuery.fn.extend({
 			jQuery.event.add( this, types, fn, data, selector );
 		});
 	},
+	/*绑定最多执行一次的事件监听函数*/
 	one: function( types, selector, data, fn ) {
 		return this.on( types, selector, data, fn, 1 );
 	},
+	/*统一的事件移除方法*/
 	off: function( types, selector, fn ) {
 		var handleObj, type;
 		if ( types && types.preventDefault && types.handleObj ) {
@@ -5717,12 +5723,13 @@ jQuery.fn.extend({
 			jQuery.event.remove( this, types, fn, selector );
 		});
 	},
-
+    /*手动触发事件监听函数和默认行为*/
 	trigger: function( type, data ) {
 		return this.each(function() {
 			jQuery.event.trigger( type, data, this );
 		});
 	},
+	/*手动触发事件监听函数*/
 	triggerHandler: function( type, data ) {
 		var elem = this[0];
 		if ( elem ) {
@@ -8432,11 +8439,11 @@ jQuery.each([ "radio", "checkbox" ], function() {
 
 // Return jQuery for attributes-only inclusion
 
-
+/*事件便捷方法*/
 jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblclick " +
 	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
 	"change select submit keydown keypress keyup error contextmenu").split(" "), function( i, name ) {
-
+    /*初始化事件便捷方法click(data,fn)等*/
 	// Handle event binding
 	jQuery.fn[ name ] = function( data, fn ) {
 		return arguments.length > 0 ?
@@ -8444,12 +8451,13 @@ jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblcl
 			this.trigger( name );
 	};
 });
-
+/*实例事件方法*/
 jQuery.fn.extend({
+	/*绑定鼠标指针进入和离开时执行的事件监听函数*/
 	hover: function( fnOver, fnOut ) {
 		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
 	},
-
+    /*遗留方法*/
 	bind: function( types, data, fn ) {
 		return this.on( types, null, data, fn );
 	},
