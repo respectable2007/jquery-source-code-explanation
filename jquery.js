@@ -4905,36 +4905,71 @@ function safeActiveElement() {
 jQuery.event = {
 
 	global: {},
-    /*绑定一个或多个类型的事件监听函数*/
+    /*绑定一个或多个类型的事件监听函数
+      elem是绑定的DOM元素
+      types是事件类型
+      handler是监听函数
+      data是自定义数据
+      selector是选择器表达式
+      实际上只是在DOM元素上绑定主监听函数，其他函数被封装为监听对象，存入缓存对象handle内
+    */
 	add: function( elem, types, handler, data, selector ) {
-
+        /* elemData：DOM元素关联的缓存对象
+           eventHandle：主监听函数
+           events：DOM元素关联的事件缓存对象
+           t：遍历事件类型计数器
+           handleObj：封装了事件函数的监听对象
+           handleObjIn：传入的监听对象
+           handlers：事件类型对应的监听对象数组
+           type：单个事件类型
+           namespaces：命名空间数组
+           special：特殊事件类型对应的修正对象
+           tmp：数组，用于存放正则rtypenamespace对事件类型的匹配结果
+           origType：原始的事件类型，tmp中通过正则表达式获得的事件类型
+        */
 		var handleObjIn, eventHandle, tmp,
 			events, t, handleObj,
 			special, handlers, type, namespaces, origType,
+			/*获取缓存数据*/
 			elemData = data_priv.get( elem );
-
+        
+        /*过滤文本节点、注释节点*/
 		// Don't attach events to noData or text/comment nodes (but allow plain objects)
 		if ( !elemData ) {
 			return;
 		}
-
+        
+        /*待绑定监听函数是自定义监听对象，且含有handler属性时*/
 		// Caller can pass in an object of custom data in lieu of the handler
 		if ( handler.handler ) {
+			/*备份传入的监听对象*/
 			handleObjIn = handler;
+			/*handle定义为一个监听函数*/
 			handler = handleObjIn.handler;
+			/*选择器表达式重新赋值*/
 			selector = handleObjIn.selector;
 		}
-
+        
+        /*为监听函数分配一个唯一标识guid*/
 		// Make sure that the handler has a unique ID, used to find/remove it later
 		if ( !handler.guid ) {
 			handler.guid = jQuery.guid++;
 		}
-
+        /*取出或初始化事件缓存对象
+          events保存着不同事件类型的监听对象数组
+        */
 		// Init the element's event structure and main handler, if this is the first
 		if ( !(events = elemData.events) ) {
 			events = elemData.events = {};
 		}
+		/*取出或初始化主监听函数
+		  handle保存着主监听函数
+          对于一个DOM元素，只会为她分配一个主监听函数，且所有类型的事件在被绑定时，真正会绑定到元素上的只有这个主监听函数
+		*/
 		if ( !(eventHandle = elemData.handle) ) {
+			/*若不存在，表示从未在当前元素上绑定过事件，则为当前元素初始化一个主监听函数，并把它存储到事件缓存对象handle上
+              主监听函数是dispatch的封装
+			*/
 			eventHandle = elemData.handle = function( e ) {
 				// Discard the second event of a jQuery.event.trigger() and
 				// when an event is called after a page has unloaded
@@ -4942,46 +4977,59 @@ jQuery.event = {
 					jQuery.event.dispatch.apply( elem, arguments ) : undefined;
 			};
 		}
-
+        /*事件类型转为数组*/
 		// Handle multiple events separated by a space
 		types = ( types || "" ).match( rnotwhite ) || [ "" ];
 		t = types.length;
+		/*遍历事件类型*/
 		while ( t-- ) {
+			/*解析事件类型和命名空间*/
 			tmp = rtypenamespace.exec( types[t] ) || [];
+			/*事件类型*/
 			type = origType = tmp[1];
+			/*命名空间，并排序，是为了在移除事件时简化对命名空间的匹配过程*/
 			namespaces = ( tmp[2] || "" ).split( "." ).sort();
 
 			// There *must* be a type, no attaching namespace-only handlers
 			if ( !type ) {
 				continue;
 			}
-
+            
+            /*尝试从修正对象集中获取当前事件类型对应的修正对象，若未取到，则默认为一个空对象*/
 			// If event changes its type, use the special event handlers for the changed type
 			special = jQuery.event.special[ type ] || {};
 
+            /*修正type为实际使用的事件类型
+              如果传入了参数selector，则绑定的是代理事件，可能需要把当前事件类型修正为可冒泡的事件类型
+              如果未传入，则是普通的事件绑定，但也可能因为浏览器对某些特殊事件不支持或支持得不完整，需要
+              修正为支持度更好的事件类型
+            */
 			// If selector defined, determine special event api type, otherwise given type
 			type = ( selector ? special.delegateType : special.bindType ) || type;
 
 			// Update special based on newly reset type
 			special = jQuery.event.special[ type ] || {};
-
+            
+            /*封装传入的监听函数为对象，并添加一些属性*/
 			// handleObj is passed to all event handlers
 			handleObj = jQuery.extend({
-				type: type,
-				origType: origType,
-				data: data,
-				handler: handler,
-				guid: handler.guid,
-				selector: selector,
-				needsContext: selector && jQuery.expr.match.needsContext.test( selector ),
-				namespace: namespaces.join(".")
+				type: type, //修正后实际事件类型
+				origType: origType,//为修正的原始事件类型
+				data: data,//自定义数据
+				handler: handler,//主监听函数
+				guid: handler.guid,//主监听函数id
+				selector: selector,//选择器表达式
+				needsContext: selector && jQuery.expr.match.needsContext.test( selector ),//是否需要context
+				namespace: namespaces.join(".")//命名空间
 			}, handleObjIn );
-
+            
+            /*若是第一个绑定该类型的事件，则初始化监听对象数组，并绑定主监听函数*/
 			// Init the event handler queue if we're the first
 			if ( !(handlers = events[ type ]) ) {
 				handlers = events[ type ] = [];
+				/*代理监听对象的位置计数器*/
 				handlers.delegateCount = 0;
-
+                /*为DOM元素绑定主监听函数*/
 				// Only use addEventListener if the special events handler returns false
 				if ( !special.setup || special.setup.call( elem, data, namespaces, eventHandle ) === false ) {
 					if ( elem.addEventListener ) {
@@ -4989,7 +5037,7 @@ jQuery.event = {
 					}
 				}
 			}
-
+            /*若修正对象存在add，则调用add方法，绑定监听函数*/
 			if ( special.add ) {
 				special.add.call( elem, handleObj );
 
@@ -4997,14 +5045,15 @@ jQuery.event = {
 					handleObj.handler.guid = handler.guid;
 				}
 			}
-
+            /*将监听对象插入到监听对象数组*/
 			// Add to the element's handler list, delegates in front
 			if ( selector ) {
+				/*若传入selector，则将监听对象插入代理事件位置上*/
 				handlers.splice( handlers.delegateCount++, 0, handleObj );
 			} else {
 				handlers.push( handleObj );
 			}
-
+            /*记录绑定过的事件类型*/
 			// Keep track of which events have ever been used, for event optimization
 			jQuery.event.global[ type ] = true;
 		}
@@ -5871,6 +5920,7 @@ function setGlobalEval( elems, refElements ) {
 	}
 }
 
+/*将原始元素关联的事件逐个绑定到副本元素上*/
 function cloneCopyEvent( src, dest ) {
 	var i, l, type, pdataOld, pdataCur, udataOld, udataCur, events;
 
