@@ -6,16 +6,79 @@
   </head>
   <body>
   	<button id='btn'></button>
+  	<input type='text' id='txt'/>
+  	<div id='div' style="width: 1000px;height: 2000px;background-color: green">
+  	  <button id='divBtn' style="width: 100px;height: 100px"></button>
+  	</div>
   	<script type="text/javascript">
-  	  var btn = document.getElementById('btn')
+  	  // var btn = document.getElementById('btn')
   	  /*DOM0*/
   	  /*btn.onclick = function (e) {
   	  	console.log(e)
   	  }*/
   	  /*DOM2*/
-  	  btn.addEventListener('click', function(e){
+  	  /*btn.addEventListener('click', function(e){
   	  	console.log(e.timeStamp)
-  	  })
+  	  })*/
+
+  	  /*键盘事件*/
+  	  /*var txt = document.getElementById('txt')
+  	  txt.onkeydown = function(e) {
+  	  	console.log(e.key)
+  	  }
+  	  txt.onkeypress = function(e) {
+  	  	console.log('press')
+  	  }
+  	  txt.onkeyup = function(e) {
+  	  	console.log('up')
+  	  }*/
+  	  /*在可编辑区域触发；只有输入实际字符键时才触发*/
+  	  /*txt.addEventListener('textInput',function(e){
+  	  	console.log(e.inputMethod)
+  	  })*/
+
+  	  /*鼠标事件
+        mouseenter是冒泡的
+        mouseleave是不冒泡的
+  	  */
+  	  /*var body = document.getElementsByTagName('body')[0]
+      var div = document.getElementById('div')
+      var divBtn = document.getElementById('divBtn')*/
+      /*body.onmouseenter = function(){
+      	body.style.backgroundColor = 'yellow'
+      }
+      div.onmouseenter = function(){
+         div.style.backgroundColor = 'red'
+      }
+      divBtn.onmouseenter = function(){
+      	divBtn.style.backgroundColor = 'green'
+      }*/
+      /*body.onmouseleave = function(){
+      	body.style.backgroundColor = 'yellow'
+      }
+      div.onmouseleave = function(){
+         div.style.backgroundColor = 'red'
+      }
+      divBtn.onmouseleave = function(){
+      	divBtn.style.backgroundColor = 'green'
+      }*/
+
+      /*鼠标事件对象属性*/
+      var div = document.getElementById('div')
+      div.onclick = function(e){
+      	var clientY = e.clientY,
+            pageY,
+            screenY = e.screenY
+            scroll = document.body || document.documentElement;
+        if (e.pageY) {
+        	pageY = e.pageY
+        } else {
+            pageY = clientY + scroll.scrollTop
+        }
+        console.log(clientY)
+        console.log(pageY)
+        console.log(screenY)
+      }
   	</script>
   </body>
 </html>

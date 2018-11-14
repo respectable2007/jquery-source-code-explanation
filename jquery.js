@@ -4875,9 +4875,11 @@ var strundefined = typeof undefined;
 support.focusinBubbles = "onfocusin" in window;
 
 
-var
+var /*键盘事件类型*/
 	rkeyEvent = /^key/,
+	/*鼠标事件类型*/
 	rmouseEvent = /^(?:mouse|pointer|contextmenu)|click/,
+	/*焦点事件类型*/
 	rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
 	rtypenamespace = /^([^.]*)(?:\.(.+)|)$/;
 
@@ -5323,9 +5325,10 @@ jQuery.event = {
 	fixHooks: {},
     /*键盘事件对象的属性和修正方法*/
 	keyHooks: {
+		/*键盘事件对象专有属性*/
 		props: "char charCode key keyCode".split(" "),
 		filter: function( event, original ) {
-
+            /*跨浏览器获取keypress事件中字符编码*/
 			// Add which for key events
 			if ( event.which == null ) {
 				event.which = original.charCode != null ? original.charCode : original.keyCode;
@@ -5336,6 +5339,7 @@ jQuery.event = {
 	},
     /*鼠标事件对象的属性和修正方法*/
 	mouseHooks: {
+		/*鼠标事件对象专有属性*/
 		props: "button buttons clientX clientY offsetX offsetY pageX pageY screenX screenY toElement".split(" "),
 		filter: function( event, original ) {
 			var eventDoc, doc, body,
@@ -5346,11 +5350,12 @@ jQuery.event = {
 				eventDoc = event.target.ownerDocument || document;
 				doc = eventDoc.documentElement;
 				body = eventDoc.body;
-
+                /*页面x等于客户区x+滚动左边距-视口左边距*/
 				event.pageX = original.clientX + ( doc && doc.scrollLeft || body && body.scrollLeft || 0 ) - ( doc && doc.clientLeft || body && body.clientLeft || 0 );
 				event.pageY = original.clientY + ( doc && doc.scrollTop  || body && body.scrollTop  || 0 ) - ( doc && doc.clientTop  || body && body.clientTop  || 0 );
 			}
-
+            
+            /*jQuery事件对象，鼠标事件中1是左键，2是中键，3是右键*/
 			// Add which for click: 1 === left; 2 === middle; 3 === right
 			// Note: button is not normalized, so don't use it
 			if ( !event.which && button !== undefined ) {
@@ -5364,28 +5369,31 @@ jQuery.event = {
       event可以是原生事件对象或jQuery对象
     */
 	fix: function( event ) {
-		/**/
+		/*若为jQuery事件对象，则直接返回，不进行封装*/
 		if ( event[ jQuery.expando ] ) {
 			return event;
 		}
-
+        
+        /*若为原生事件对象，则合并公共事件属性和专属事件属性，最终生成一个可读写的事件对象*/
 		// Create a writable copy of the event object and normalize some properties
 		var i, prop, copy,
 			type = event.type,
 			originalEvent = event,
 			fixHook = this.fixHooks[ type ];
-
+        /*添加鼠标或键盘事件修正对象*/
 		if ( !fixHook ) {
 			this.fixHooks[ type ] = fixHook =
 				rmouseEvent.test( type ) ? this.mouseHooks :
 				rkeyEvent.test( type ) ? this.keyHooks :
 				{};
 		}
+		/*整合公共属性和专有属性*/
 		copy = fixHook.props ? this.props.concat( fixHook.props ) : this.props;
 
 		event = new jQuery.Event( originalEvent );
 
 		i = copy.length;
+		/*添加事件对象属性到新创建的jQuery事件对象*/
 		while ( i-- ) {
 			prop = copy[ i ];
 			event[ prop ] = originalEvent[ prop ];
@@ -5393,16 +5401,19 @@ jQuery.event = {
 
 		// Support: Cordova 2.5 (WebKit) (#13255)
 		// All events should have a target; Cordova deviceready doesn't
+		/*若事件目标不存在，则其事件目标设置为document*/
 		if ( !event.target ) {
 			event.target = document;
 		}
-
+        /*事件目标必须为元素类型*/
 		// Support: Safari 6.0+, Chrome < 28
 		// Target should not be a text node (#504, #13143)
 		if ( event.target.nodeType === 3 ) {
 			event.target = event.target.parentNode;
 		}
-
+        /*若修正方法存在，则调用该方法，并返回修正后的事件对象
+          若不存在，则直接返回新创建的jQuery事件对象
+        */
 		return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
 	},
     /*事件修正对象集*/
@@ -5649,10 +5660,23 @@ if ( !support.focusinBubbles ) {
 /*实例事件对象的方法*/
 jQuery.fn.extend({
     
-    /*统一的事件绑定方法，为异步链式，用来完成一些阻塞进程的操作*/
+    /*统一的事件绑定方法，为异步链式，用来完成一些阻塞进程的操作
+      types是事件类型
+      selector是选择器表达式
+      data是传递给监听函数的自定义数据
+      fn是待绑定的监听函数
+      one是仅在on方法内部使用，为one方法提供支持
+    */
 	on: function( types, selector, data, fn, /*INTERNAL*/ one ) {
 		var origFn, type;
+        
+        /*事件类型是对象，遍历对象并调用on方法
+          selector为字符串
+          转为（事件类型，表达式，自定义数据）
+          selector不为字符串时，data存在则为本身，否则为selector，selector被强制为undefiend。
+          转为（事件类型，自定义数据）
 
+        */
 		// Types can be a map of types/handlers
 		if ( typeof types === "object" ) {
 			// ( types-Object, selector, data )
@@ -5666,17 +5690,31 @@ jQuery.fn.extend({
 			}
 			return this;
 		}
-
+        /*事件类型不是对象，
+          当没有传入自定义数据和监听函数时，
+          则将fn强制为selector，selector为undefined
+          最终转为（事件类型，监听函数）
+        */
 		if ( data == null && fn == null ) {
 			// ( types, fn )
 			fn = selector;
 			data = selector = undefined;
 		} else if ( fn == null ) {
+			/*事件类型不是对象，
+	          当没有传入监听函数时，传入自定义数据，字符串形表达式
+	          则将fn强制为data，data为undefined
+	          最终转为（事件类型，表达式，监听函数）
+	        */
 			if ( typeof selector === "string" ) {
 				// ( types, selector, fn )
 				fn = data;
 				data = undefined;
 			} else {
+				/*事件类型不是对象，
+		          当没有传入监听函数时，传入自定义数据，不是字符串形表达式
+		          则将fn强制为data，data为selector，selector为undefined
+		          最终转为（事件类型，自定义数据，监听函数）
+		        */
 				// ( types, data, fn )
 				fn = data;
 				data = selector;
@@ -5688,7 +5726,8 @@ jQuery.fn.extend({
 		} else if ( !fn ) {
 			return this;
 		}
-
+        
+        /*one为1时，将fn进行封装，先移除所有监听函数，再调用待绑定的监听函数*/
 		if ( one === 1 ) {
 			origFn = fn;
 			fn = function( event ) {
@@ -5696,9 +5735,11 @@ jQuery.fn.extend({
 				jQuery().off( event );
 				return origFn.apply( this, arguments );
 			};
+			/*将封装的fn和原来的fn统一为一个函数*/
 			// Use same guid so caller can remove using origFn
 			fn.guid = origFn.guid || ( origFn.guid = jQuery.guid++ );
 		}
+		/*遍历当前DOM元素集合，调用jQuery.event.add方法添加监听函数*/
 		return this.each( function() {
 			jQuery.event.add( this, types, fn, data, selector );
 		});
