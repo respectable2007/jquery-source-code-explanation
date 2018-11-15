@@ -5893,13 +5893,13 @@ jQuery.fn.extend({
 			jQuery.event.remove( this, types, fn, selector );
 		});
 	},
-    /*手动触发事件监听函数和默认行为*/
+    /*手动触发当前DOM元素集合中每个DOM元素的事件监听函数，并模拟冒泡过程，触发默认行为*/
 	trigger: function( type, data ) {
 		return this.each(function() {
 			jQuery.event.trigger( type, data, this );
 		});
 	},
-	/*手动触发事件监听函数*/
+	/*手动触发第一个匹配元素上绑定的事件监听函数，并模拟冒泡过程，但不触发默认行为*/
 	triggerHandler: function( type, data ) {
 		var elem = this[0];
 		if ( elem ) {
