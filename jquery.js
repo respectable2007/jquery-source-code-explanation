@@ -5800,9 +5800,12 @@ jQuery.fn.extend({
 	/*统一的事件移除方法*/
 	off: function( types, selector, fn ) {
 		var handleObj, type;
+		/*被分发的jQuery事件对象，表示types所代表的事件正在被触发*/
 		if ( types && types.preventDefault && types.handleObj ) {
 			// ( event )  dispatched jQuery.Event
+			/*监听对象*/
 			handleObj = types.handleObj;
+			/*delegateTarget表示监听函数被绑定的元素*/
 			jQuery( types.delegateTarget ).off(
 				handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType,
 				handleObj.selector,
