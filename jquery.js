@@ -5059,19 +5059,25 @@ jQuery.event = {
 		}
 
 	},
-    /*移除一个或多个类型的事件监听函数*/
+    /*移除一个或多个类型的事件监听函数
+      mappedTypes是布尔值，指解除事件时是否严格检测事件的类型。
+      若未传入该参数，则需要检测已绑定事件的原始类型与传入的事件类型types是否匹配
+      如果未true，则不执行检测
+    */
 	// Detach an event or set of events from an element
 	remove: function( elem, types, handler, selector, mappedTypes ) {
 
 		var j, origCount, tmp,
 			events, t, handleObj,
 			special, handlers, type, namespaces, origType,
+			/*数据缓存对象*/
 			elemData = data_priv.hasData( elem ) && data_priv.get( elem );
-
+        /*过滤没有数据缓存或事件缓存对象的情况*/
 		if ( !elemData || !(events = elemData.events) ) {
 			return;
 		}
-
+        
+        /*事件类型转数组*/
 		// Once for each type.namespace in types; type may be omitted
 		types = ( types || "" ).match( rnotwhite ) || [ "" ];
 		t = types.length;
@@ -5079,7 +5085,7 @@ jQuery.event = {
 			tmp = rtypenamespace.exec( types[t] ) || [];
 			type = origType = tmp[1];
 			namespaces = ( tmp[2] || "" ).split( "." ).sort();
-
+            /*type不存在时，解除所有的绑定监听函数*/
 			// Unbind all events (on this namespace, if provided) for the element
 			if ( !type ) {
 				for ( type in events ) {
@@ -5087,26 +5093,37 @@ jQuery.event = {
 				}
 				continue;
 			}
-
+            /*修正事件类型*/
 			special = jQuery.event.special[ type ] || {};
 			type = ( selector ? special.delegateType : special.bindType ) || type;
+			/*获取监听对象数组*/
 			handlers = events[ type ] || [];
+			/*若存在命名空间，则创建命名空间正则表达式，用于检测*/
 			tmp = tmp[2] && new RegExp( "(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)" );
 
 			// Remove matching events
 			origCount = j = handlers.length;
+			/*遍历监听对象数组*/
 			while ( j-- ) {
+				/*取出监听对象*/
 				handleObj = handlers[ j ];
-
+                /*从事件原始类型、guid、命名空间、选择器表达式进行判断是否调用移除方法
+                  若同时满足以下条件，则调用移除方法：
+                  1、不需要检测原始事件类型或监听对象原始事件类型与传入的相等
+                  2、未传入监听函数或监听对象函数唯一标识与传入的相等
+                  3、没有命名空间或监听对象命名空间符合传入的命名空间的规则
+                  4、未传入选择器表达式或监听对象选择器表达式与传入的相等或者（选择器表达式为通配符和监听对象有选择器表达式）
+                */
 				if ( ( mappedTypes || origType === handleObj.origType ) &&
 					( !handler || handler.guid === handleObj.guid ) &&
 					( !tmp || tmp.test( handleObj.namespace ) ) &&
 					( !selector || selector === handleObj.selector || selector === "**" && handleObj.selector ) ) {
 					handlers.splice( j, 1 );
-
+                    /*selector存在，则是代理事件，代理计时器自减*/
 					if ( handleObj.selector ) {
 						handlers.delegateCount--;
 					}
+					/*修正对象存在remove方法，则调用该方法，解除监听对象*/
 					if ( special.remove ) {
 						special.remove.call( elem, handleObj );
 					}
@@ -5115,7 +5132,9 @@ jQuery.event = {
 
 			// Remove generic event handler if we removed something and no more handlers exist
 			// (avoids potential for endless recursion during removal of special event handlers)
+			/*当当前监听对象数组变为空时，表示对应的所有事件都已经被移除，因此，应该从当前DOM元素解除主监听函数*/
 			if ( origCount && !handlers.length ) {
+				/*优先调用修正对象的teardown方法，若不存在或返回为false时，则调用jQuery静态方法removeEvent，移除主监听函数*/
 				if ( !special.teardown || special.teardown.call( elem, namespaces, elemData.handle ) === false ) {
 					jQuery.removeEvent( elem, type, elemData.handle );
 				}
@@ -5123,7 +5142,8 @@ jQuery.event = {
 				delete events[ type ];
 			}
 		}
-
+        
+        /*若事件缓存对象为空对象，则移除主监听函数和events属性*/
 		// Remove the expando if it's no longer used
 		if ( jQuery.isEmptyObject( events ) ) {
 			delete elemData.handle;
@@ -5828,6 +5848,7 @@ jQuery.fn.extend({
 		if ( fn === false ) {
 			fn = returnFalse;
 		}
+		/*遍历当前DOM元素集合*/
 		return this.each(function() {
 			jQuery.event.remove( this, types, fn, selector );
 		});
