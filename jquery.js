@@ -5322,23 +5322,34 @@ jQuery.event = {
         /*执行后代元素的代理监听对象数组和代理元素上的普通监听对象数组*/
 		// Run delegates first; they may want to stop propagation beneath us
 		i = 0;
+		/*遍历带有监听对象的元素
+          若某个元素的监听函数调用了stopPropagation则终止第一层while循环
+		*/
 		while ( (matched = handlerQueue[ i++ ]) && !event.isPropagationStopped() ) {
 			event.currentTarget = matched.elem;
 
 			j = 0;
+			/*遍历监听对象，并执行监听对象函数
+              若某个元素的监听函数调用了stopImmediatePropagation则终止第二层和第一层while循环
+			*/
 			while ( (handleObj = matched.handlers[ j++ ]) && !event.isImmediatePropagationStopped() ) {
-
+                
+                /*触发监听函数满足以下条件之一：
+                  事件对象没有命名空间正则表达式；
+                  监听对象命名空间符合事件对象命名空间的正则规则
+                */
 				// Triggered event must either 1) have no namespace, or
 				// 2) have namespace(s) a subset or equal to those in the bound event (both can have no namespace).
 				if ( !event.namespace_re || event.namespace_re.test( handleObj.namespace ) ) {
 
 					event.handleObj = handleObj;
 					event.data = handleObj.data;
-
+                    /*执行监听函数，ret保存返回结果*/
 					ret = ( (jQuery.event.special[ handleObj.origType ] || {}).handle || handleObj.handler )
 							.apply( matched.elem, args );
 
 					if ( ret !== undefined ) {
+						/*若监听函数返回结果为false，则阻止浏览器默认行为和阻止事件捕获、冒泡*/
 						if ( (event.result = ret) === false ) {
 							event.preventDefault();
 							event.stopPropagation();
@@ -5347,12 +5358,13 @@ jQuery.event = {
 				}
 			}
 		}
-
+        
+        /*修正对象有postDispatch，则调用该函数*/
 		// Call the postDispatch hook for the mapped type
 		if ( special.postDispatch ) {
 			special.postDispatch.call( this, event );
 		}
-
+        /*返回监听函数执行结果*/
 		return event.result;
 	},
     /*提取后代元素匹配的代理监听对象数组和代理元素绑定的普通监听对象数组*/
