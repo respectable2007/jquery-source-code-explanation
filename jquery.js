@@ -5284,14 +5284,26 @@ jQuery.event = {
 	},
     /*分发事件，执行事件监听函数*/
 	dispatch: function( event ) {
-
+		/*若事件由浏览器触发，则参数event是原生事件对象，之后会把event封装成jQuery事件对象
+          若事件是手动触发的，则参数event是jQuery事件对象
+		*/
+        /*构造jQuery事件对象*/
 		// Make a writable jQuery.Event from the native event object
 		event = jQuery.event.fix( event );
-
+        /*handlers是当前事件类型对应的监听对象数组
+          args是将函数参数转为数组
+          handlerQueue是待执行队列，包含了后代元素匹配的代理监听对象数组，以及当前元素上绑定的普通监听对象数组
+          i，j是循环计数器
+          ret是事件监听函数的返回值，会将它赋值给event.result
+          matched是待执行队列handlerQueue中的一个元素，循环遍历时的临时复用变量
+          handleObj是监听对象
+        */
 		var i, j, ret, matched, handleObj,
 			handlerQueue = [],
 			args = slice.call( arguments ),
+			/*监听对象数组*/
 			handlers = ( data_priv.get( this, "events" ) || {} )[ event.type ] || [],
+			/*提取修正对象及方法*/
 			special = jQuery.event.special[ event.type ] || {};
 
 		// Use the fix-ed jQuery.Event rather than the (read-only) native event
@@ -5302,10 +5314,12 @@ jQuery.event = {
 		if ( special.preDispatch && special.preDispatch.call( this, event ) === false ) {
 			return;
 		}
-
+		
+		/*提取后代元素匹配的代理监听对象数组和代理元素上绑定的普通监听对象数组*/
 		// Determine handlers
 		handlerQueue = jQuery.event.handlers.call( this, event, handlers );
-
+        
+        /*执行后代元素的代理监听对象数组和代理元素上的普通监听对象数组*/
 		// Run delegates first; they may want to stop propagation beneath us
 		i = 0;
 		while ( (matched = handlerQueue[ i++ ]) && !event.isPropagationStopped() ) {
@@ -5341,26 +5355,38 @@ jQuery.event = {
 
 		return event.result;
 	},
-
+    /*提取后代元素匹配的代理监听对象数组和代理元素绑定的普通监听对象数组*/
 	handlers: function( event, handlers ) {
+		/*matches是保存某个后代元素或当前元素匹配的事件监听对象数组
+          handleObj是监听对象
+          sel是某个后代元素与代理监听对象选择器表达式的匹配结果
+		*/
 		var i, matches, sel, handleObj,
 			handlerQueue = [],
+			/*代理监听对象的位置计数器*/
 			delegateCount = handlers.delegateCount,
+			/*事件目标元素*/
 			cur = event.target;
 
 		// Find delegate handlers
 		// Black-hole SVG <use> instance trees (#13180)
 		// Avoid non-left-click bubbling in Firefox (#3861)
+        /*提取后代元素匹配的代理监听对象*/
 		if ( delegateCount && cur.nodeType && (!event.button || event.type !== "click") ) {
 
+            /*遍历当前元素this的后代元素*/
 			for ( ; cur !== this; cur = cur.parentNode || this ) {
 
+                /*过滤掉不可用元素和触发click事件类型的元素*/
 				// Don't process clicks on disabled elements (#6911, #8165, #11382, #11764)
 				if ( cur.disabled !== true || event.type !== "click" ) {
 					matches = [];
+
+					/*遍历代理监听对象数组，把后代元素匹配的代理监听对象存储到matches中*/
 					for ( i = 0; i < delegateCount; i++ ) {
 						handleObj = handlers[ i ];
-
+                        
+                        /*记录某个后代元素cur与代理监听对象选择器表达式的匹配结果*/
 						// Don't conflict with Object.prototype properties (#13203)
 						sel = handleObj.selector + " ";
 
@@ -5369,17 +5395,19 @@ jQuery.event = {
 								jQuery( sel, this ).index( cur ) >= 0 :
 								jQuery.find( sel, this, null, [ cur ] ).length;
 						}
+						/*若后代元素cur与代理监听对象选择器表达式的匹配，则将代理监听对象存储到数组matches中*/
 						if ( matches[ sel ] ) {
 							matches.push( handleObj );
 						}
 					}
+				    /*若后代元素有匹配的代理监听对象，则以{elem:cur,handlers:matches}的形式存入待执行队列handlerQueue*/
 					if ( matches.length ) {
 						handlerQueue.push({ elem: cur, handlers: matches });
 					}
 				}
 			}
 		}
-
+        /*提取代理元素绑定的普通监听对象数组*/
 		// Add the remaining (directly-bound) handlers
 		if ( delegateCount < handlers.length ) {
 			handlerQueue.push({ elem: this, handlers: handlers.slice( delegateCount ) });
