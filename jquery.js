@@ -4071,7 +4071,9 @@ jQuery.extend({
 });
 
 
+/*ready模块*/
 // The deferred used on DOM ready
+/*监听函数列表，用于存放ready事件监听函数*/
 var readyList;
 
 jQuery.fn.ready = function( fn ) {
@@ -4082,13 +4084,21 @@ jQuery.fn.ready = function( fn ) {
 };
 
 jQuery.extend({
+
+	/*状态标记*/
 	// Is the DOM ready to be used? Set to true once it occurs.
 	isReady: false,
-
+    
+    /*等待计数器*/
 	// A counter to track how many items to wait for before
 	// the ready event fires. See #6781
 	readyWait: 1,
-
+    
+    /*延迟或恢复ready事件的触发，通常用在ready事件触发之前，由动态脚本加载器加载其他JS脚本。
+      这个方法必须尽早调用，若在ready事件触发后再调用则无任何效果
+      可多次执行holdReady(true)来多次延迟ready事件，但需要执行相同次数的holdReady(false)
+      来恢复ready事件
+    */
 	// Hold (or release) the ready event
 	holdReady: function( hold ) {
 		if ( hold ) {
@@ -4097,26 +4107,31 @@ jQuery.extend({
 			jQuery.ready( true );
 		}
 	},
-    // ready处理方式
+    // 触发ready事件监听函数列表readyList
 	// Handle when the DOM is ready
 	ready: function( wait ) {
 
+        /*判断是否延迟ready事件的触发*/
 		// Abort if there are pending holds or we're already ready
 		if ( wait === true ? --jQuery.readyWait : jQuery.isReady ) {
 			return;
 		}
-
+        
+        /*记录DOM的状态*/
 		// Remember that the DOM is ready
 		jQuery.isReady = true;
 
+        /*判断是否延迟ready事件的触发*/
 		// If a normal DOM Ready event fired, decrement, and wait if need be
 		if ( wait !== true && --jQuery.readyWait > 0 ) {
 			return;
 		}
-
+        
+        /*执行ready事件监听函数列表readyList*/
 		// If there are functions bound, to execute
 		readyList.resolveWith( document, [ jQuery ] );
-
+        
+        /*执行已经绑定的ready事件监听函数，执行完毕后，清除ready事件*/
 		// Trigger any bound ready events
 		if ( jQuery.fn.triggerHandler ) {
 			jQuery( document ).triggerHandler( "ready" );
@@ -4136,6 +4151,7 @@ function completed() {
 }
 
 jQuery.ready.promise = function( obj ) {
+	/*ready未被调用过，则初始化readyList（异步队列）*/
 	if ( !readyList ) {
 
 		readyList = jQuery.Deferred();
@@ -4150,11 +4166,11 @@ jQuery.ready.promise = function( obj ) {
 		    interactive：HTML文档已完成加载，但资源文件在加载
 		    complete：资源文件加载完毕，即将触发load事件
 		*/
-		// 页面加载完毕后的动作
+		// 页面加载完毕后的动作，即文档已就绪，则立即调用jQuery.ready
 		if ( document.readyState === "complete" ) {
 			// Handle it asynchronously to allow scripts the opportunity to delay ready
 			setTimeout( jQuery.ready );
-
+        // 在其他状态下，定义DOMContentLoaded事件，执行completed函数
 		} else {
 			/** DOMContentLoaded事件是HTML文档解析并加载完毕时，被触发的，此时，资源（样式、图片等）文件未加载完，
 			    即document.readyState为interactive时 */
@@ -8706,6 +8722,7 @@ jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblcl
 jQuery.fn.extend({
 	/*绑定鼠标指针进入和离开时执行的事件监听函数*/
 	hover: function( fnOver, fnOut ) {
+		/*使用便捷方法，链式绑定函数*/
 		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
 	},
     /*遗留方法*/
