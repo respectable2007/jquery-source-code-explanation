@@ -3319,7 +3319,8 @@ init.prototype = jQuery.fn;
 // Initialize central reference
 rootjQuery = jQuery( document );
 
-
+/*DOM遍历 Traversing
+*/
 var rparentsprev = /^(?:parents|prev(?:Until|All))/,
 	// methods guaranteed to produce a unique set when starting from a unique set
 	guaranteedUnique = {
@@ -3328,7 +3329,7 @@ var rparentsprev = /^(?:parents|prev(?:Until|All))/,
 		next: true,
 		prev: true
 	};
-
+/*工具函数，是DOM遍历模块实现的核心*/
 jQuery.extend({
 	dir: function( elem, dir, until ) {
 		var matched = [],
@@ -3462,7 +3463,9 @@ function sibling( cur, dir ) {
 	return cur;
 }
 
+/*DOM遍历模块的所有公开方法都指向了同样的但不是同一个模板函数*/
 jQuery.each({
+	/*遍历函数*/
 	parent: function( elem ) {
 		var parent = elem.parentNode;
 		return parent && parent.nodeType !== 11 ? parent : null;
@@ -3502,6 +3505,7 @@ jQuery.each({
 		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
+	/*公开方法，模板函数*/
 	jQuery.fn[ name ] = function( until, selector ) {
 		var matched = jQuery.map( this, fn, until );
 
