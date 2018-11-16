@@ -5579,12 +5579,15 @@ jQuery.event = {
         */
 		return fixHook.filter ? fixHook.filter( event, originalEvent ) : event;
 	},
-    /*事件修正对象集*/
+    /*事件修正对象集，用于修正事件的绑定、代理、触发和移除行为*/
 	special: {
+		/*防止手动触发load事件时，从当前元素冒泡到window对象上的触发load事件*/
 		load: {
 			// Prevent triggered image.load events from bubbling to window.load
+			/*当前事件不允许冒泡*/
 			noBubble: true
 		},
+		/*在为不冒泡的focus、blur应用事件代理时，需要将事件类型更正为支持冒泡的focusin/focusout*/
 		focus: {
 			// Fire native event if possible so blur/focus sequence is correct
 			trigger: function() {
@@ -5593,6 +5596,7 @@ jQuery.event = {
 					return false;
 				}
 			},
+			/*delegateType，绑定代理事件时使用的事件类型*/
 			delegateType: "focusin"
 		},
 		blur: {
@@ -5606,19 +5610,24 @@ jQuery.event = {
 		},
 		click: {
 			// For checkbox, fire native event so checked state will be right
+			/*用于执行特殊的事件响应行为，在触发当前类型的事件时被调用*/
 			trigger: function() {
 				if ( this.type === "checkbox" && this.click && jQuery.nodeName( this, "input" ) ) {
 					this.click();
 					return false;
 				}
 			},
-
+            
+            /*用于执行特殊的默认行为，在触发默认行为时被调用。this指向document对象*/
 			// For cross-browser consistency, don't fire native .click() on links
 			_default: function( event ) {
 				return jQuery.nodeName( event.target, "a" );
 			}
 		},
-
+        /*页面刷新或关闭时被触发，若监听函数返回一个非空字符串，则会弹出一个确认对话框，让
+          用户选择继续or离开。监听函数可以返回除undefined和null外的任意值，在对话框上，会
+          显示返回的字符串
+        */
 		beforeunload: {
 			postDispatch: function( event ) {
 
@@ -5630,11 +5639,15 @@ jQuery.event = {
 			}
 		}
 	},
-    /*模拟事件*/
+    /*模拟事件
+      借助一个原生事件对象或jQuery事件对象，来为不支持冒泡的事件模拟冒泡过程
+      bubble，布尔值，是否模拟冒泡过程
+    */
 	simulate: function( type, elem, event, bubble ) {
 		// Piggyback on a donor event to simulate a different one.
 		// Fake originalEvent to avoid donor's stopPropagation, but if the
 		// simulated event prevents default then we do the same on the donor.
+		/*合并事件对象，创建一个jQuery事件对象*/
 		var e = jQuery.extend(
 			new jQuery.Event(),
 			event,
@@ -5755,7 +5768,9 @@ jQuery.Event.prototype = {
 
 // Create mouseenter/leave events using mouseover/out and event-time checks
 // Support: Chrome 15+
-/*初始化事件mouseenter/leave pointerover/out对应的修正对象*/
+/*初始化事件mouseenter/leave pointerover/out对应的修正对象
+  使用冒泡的mouseover、mouseout模拟不冒泡的mouseenter、mouseleave
+*/
 jQuery.each({
 	mouseenter: "mouseover",
 	mouseleave: "mouseout",
@@ -5764,51 +5779,62 @@ jQuery.each({
 }, function( orig, fix ) {
 	jQuery.event.special[ orig ] = {
 		delegateType: fix,
+		/*bindType，绑定普通事件时使用的事件类型*/
 		bindType: fix,
-
+        /*用于执行特殊的事件响应行为，在每次触发当前类型的事件时被调用*/
 		handle: function( event ) {
 			var ret,
+			    /*目标元素*/
 				target = this,
+				/*mouseover/out的相关元素*/
 				related = event.relatedTarget,
 				handleObj = event.handleObj;
 
 			// For mousenter/leave call the handler if related is outside the target.
 			// NB: No relatedTarget if the mouse left/entered the browser window
+			/*只触发了子元素的mouseover、mouseout事件，禁止了父元素mouseout、mouseenter事件*/
 			if ( !related || (related !== target && !jQuery.contains( target, related )) ) {
 				event.type = handleObj.origType;
 				ret = handleObj.handler.apply( this, arguments );
 				event.type = fix;
 			}
+			/*返回监听函数的返回值*/
 			return ret;
 		}
 	};
 });
 
-/* 若当前浏览器不支持focusin事件，则创建focus和blur事件*/
+/*创建冒泡的focus和blur事件，并兼容FF、Chrome、Safari浏览器*/
 // Create "bubbling" focus and blur events
 // Support: Firefox, Chrome, Safari
 if ( !support.focusinBubbles ) {
 	jQuery.each({ focus: "focusin", blur: "focusout" }, function( orig, fix ) {
 
 		// Attach a single capturing handler on the document while someone wants focusin/focusout
+		/*在document对象上为focus、blur事件绑定一个特殊的捕获阶段的主监听函数，该函数有jQuery.event.simulate的创建*/
 		var handler = function( event ) {
 				jQuery.event.simulate( fix, event.target, jQuery.event.fix( event ), true );
 			};
 
 		jQuery.event.special[ fix ] = {
+			/*setup，用于执行特殊的主监听函数绑定行为，或执行必须的初始化操作，在第一次绑定当前类型的事件时被调用*/
 			setup: function() {
 				var doc = this.ownerDocument || this,
+				    /*记录绑定focusin/out事件的次数*/
 					attaches = data_priv.access( doc, fix );
-
-				if ( !attaches ) {
+                /*计数器为0，绑定主监听函数*/
+ 				if ( !attaches ) {
 					doc.addEventListener( orig, handler, true );
 				}
+				/*次数+1*/
 				data_priv.access( doc, fix, ( attaches || 0 ) + 1 );
 			},
+			/*用于执行特殊的主监听函数移除行为，在当前类型的事件全部移除后被调用*/
 			teardown: function() {
 				var doc = this.ownerDocument || this,
+				    /*次数-1*/
 					attaches = data_priv.access( doc, fix ) - 1;
-
+                /*计数器为0，移除主监听函数，清空缓存数据对象*/
 				if ( !attaches ) {
 					doc.removeEventListener( orig, handler, true );
 					data_priv.remove( doc, fix );
