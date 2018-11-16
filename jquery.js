@@ -5150,96 +5150,137 @@ jQuery.event = {
 			data_priv.remove( elem, "events" );
 		}
 	},
-    /*手动触发事件，执行绑定的事件监听函数和默认行为，且会模拟冒泡过程*/
+    /*手动触发事件，执行绑定的事件监听函数和默认行为，且会模拟冒泡过程
+      onlyHandlers是布尔值，指示是否只执行监听函数，而不会触发默认行为
+                  true是执行监听函数，且不会触发默认行为
+    */
 	trigger: function( event, data, elem, onlyHandlers ) {
 
+        /* type是事件类型，若event含有type属性，表示参数event可能是自定义事件或jQuery对象，从中取出type
+           namespaces是命名空间数组
+           i是while循环的计数器
+           cur是当前元素或for循环中的临时变量
+           ontype是含有前缀on的事件类型，用于调用对应的行内监听函数
+           special是事件类型修正对象
+           hanlde是主监听函数或行内监听函数
+           eventPath是冒泡路径数组，保存冒泡路径上的元素和事件类型
+           bubbleType是当前事件类型所对应的冒泡事件类型
+           tmp是当前元素构造冒泡路径时所达到的最顶层元素
+        */
 		var i, cur, tmp, bubbleType, ontype, handle, special,
 			eventPath = [ elem || document ],
 			type = hasOwn.call( event, "type" ) ? event.type : event,
 			namespaces = hasOwn.call( event, "namespace" ) ? event.namespace.split(".") : [];
 
 		cur = tmp = elem = elem || document;
-
+        
+        /*过滤文本节点和注释节点*/
 		// Don't do events on text and comment nodes
 		if ( elem.nodeType === 3 || elem.nodeType === 8 ) {
 			return;
 		}
 
+        /*过滤focuse/blur事件的默认行为所触发的focusin/focusout事件*/
+        /*jQuery.event.triggered指示正在触发默认行为的事件类型，在触发行为前被设置为事件类型，触发后被设置为undefined*/
 		// focus/blur morphs to focusin/out; ensure we're not firing them right now
 		if ( rfocusMorph.test( type + jQuery.event.triggered ) ) {
 			return;
 		}
-
+        
+        /*解析事件类型和命名空间*/
 		if ( type.indexOf(".") >= 0 ) {
 			// Namespaced trigger; create a regexp to match event type in handle()
 			namespaces = type.split(".");
 			type = namespaces.shift();
 			namespaces.sort();
 		}
+		/*若不含有:,则返回含有on前缀的事件类型*/
 		ontype = type.indexOf(":") < 0 && "on" + type;
-
+        
+        /*创建jQuery事件对象*/
 		// Caller can pass in a jQuery.Event object, Object, or just an event type string
 		event = event[ jQuery.expando ] ?
 			event :
 			new jQuery.Event( type, typeof event === "object" && event );
 
 		// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
+		/*是否阻止默认行为*/
 		event.isTrigger = onlyHandlers ? 2 : 3;
+		/*命名空间及命名空间正则表达式*/
 		event.namespace = namespaces.join(".");
 		event.namespace_re = event.namespace ?
 			new RegExp( "(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)" ) :
 			null;
-
+        
+        /*清空事件返回值*/
 		// Clean up the event in case it is being reused
 		event.result = undefined;
+		/*设置事件目标*/
 		if ( !event.target ) {
 			event.target = elem;
 		}
-
+        
+        /*设置自定义数据*/
 		// Clone any incoming data and prepend the event, creating the handler arg list
 		data = data == null ?
 			[ event ] :
 			jQuery.makeArray( data, [ event ] );
-
+        
+        /*修正事件类型，获取实际的事件类型*/
 		// Allow special events to draw outside the lines
 		special = jQuery.event.special[ type ] || {};
+
+		/*过滤掉修正对象有trigger方法且调用函数返回false的元素*/
 		if ( !onlyHandlers && special.trigger && special.trigger.apply( elem, data ) === false ) {
 			return;
 		}
 
 		// Determine event propagation path in advance, per W3C events spec (#9951)
 		// Bubble up to document, then to window; watch for a global ownerDocument var (#9724)
+		/*构造冒泡路径
+          只有onlyHandler为false，且当前事件冒泡，同时当前元素不是window对象，才会构造冒泡路径
+		*/
 		if ( !onlyHandlers && !special.noBubble && !jQuery.isWindow( elem ) ) {
 
 			bubbleType = special.delegateType || type;
+			/*检测是否为焦点事件，若是，cur为当前elem元素，在随后的代码中把当前elem和事件focusin/focusout放入路径数组eventPath中
+              若不是，cur为当前elem元素的父元素
+			*/
 			if ( !rfocusMorph.test( bubbleType + type ) ) {
 				cur = cur.parentNode;
 			}
+			/*遍历cur元素的父级及以上元素，并保存在eventPath*/
 			for ( ; cur; cur = cur.parentNode ) {
 				eventPath.push( cur );
 				tmp = cur;
 			}
 
 			// Only add window if we got to document (e.g., not plain obj or detached DOM)
+			/*当冒泡路径顶级元素时文档对象时，根据标准事件规范，在冒泡路径内，添加window对象*/
 			if ( tmp === (elem.ownerDocument || document) ) {
 				eventPath.push( tmp.defaultView || tmp.parentWindow || window );
 			}
 		}
-
+        
+        /*触发冒泡路径上的主监听函数和行内监听函数*/
 		// Fire handlers on the event path
 		i = 0;
 		while ( (cur = eventPath[i++]) && !event.isPropagationStopped() ) {
-
+            
+            /*事件类型*/
 			event.type = i > 1 ?
 				bubbleType :
 				special.bindType || type;
 
 			// jQuery handler
+			/*提前当前元素的主监听函数*/
 			handle = ( data_priv.get( cur, "events" ) || {} )[ event.type ] && data_priv.get( cur, "handle" );
+			/*执行当前元素的主监听函数*/
 			if ( handle ) {
 				handle.apply( cur, data );
 			}
-
+            
+            /*执行行内监听函数*/
 			// Native handler
 			handle = ontype && cur[ ontype ];
 			if ( handle && handle.apply && jQuery.acceptData( cur ) ) {
@@ -5251,17 +5292,27 @@ jQuery.event = {
 		}
 		event.type = type;
 
+        /*触发默认行为
+          未阻止默认行为，且未发生默认行为被阻止的情况下，触发默认行为
+        */
 		// If nobody prevented the default action, do it now
 		if ( !onlyHandlers && !event.isDefaultPrevented() ) {
-
+            
+            /*对于允许挂缓存对象的元素，当修正对象未预留默认行为方法，或默认行为方法返回false时，执行以下操作*/
 			if ( (!special._default || special._default.apply( eventPath.pop(), data ) === false) &&
 				jQuery.acceptData( elem ) ) {
 
 				// Call a native DOM method on the target with the same name name as the event.
 				// Don't do default actions on window, that's where global variables be (#6170)
+				/*触发默认行为满足以下所有条件：
+                  存在含有on前缀的事件类型；
+                  当前元素type属性值为函数
+                  当前元素不指向window对象
+				*/
 				if ( ontype && jQuery.isFunction( elem[ type ] ) && !jQuery.isWindow( elem ) ) {
 
 					// Don't re-trigger an onFOO event when we call its FOO() method
+					/*防止重复触发ontype事件，将ontype事件函数保存在tmp内，并且elem对应的属性值置为null*/
 					tmp = elem[ ontype ];
 
 					if ( tmp ) {
@@ -5269,17 +5320,20 @@ jQuery.event = {
 					}
 
 					// Prevent re-triggering of the same event, since we already bubbled it above
+					/*先保存正在触发默认行为的事件类型*/
 					jQuery.event.triggered = type;
+					/*执行对应的事件函数*/
 					elem[ type ]();
+					/*清空之前保存的事件类型*/
 					jQuery.event.triggered = undefined;
-
+                    /*恢复elem元素的ontype属性*/
 					if ( tmp ) {
 						elem[ ontype ] = tmp;
 					}
 				}
 			}
 		}
-
+        /*返回事件执行返回值*/
 		return event.result;
 	},
     /*分发事件，执行事件监听函数*/

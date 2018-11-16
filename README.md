@@ -17,3 +17,7 @@ jQuery.Deferred is based on Promise/A principle(http://wiki.commonjs.org/wiki/Pr
 Sizzle
 ------------------------------
 A pure-JavaScript CSS selector engine(http://sizzlejs.com/)
+
+Event
+------------------------------
+DOM3(http://sizzlejs.com/)

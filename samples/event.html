@@ -7,8 +7,11 @@
   <body>
   	<button id='btn'></button>
   	<input type='text' id='txt'/>
-  	<div id='div' style="width: 1000px;height: 2000px;background-color: green">
+  	<!-- <div id='div' style="width: 1000px;height: 2000px;background-color: green">
   	  <button id='divBtn' style="width: 100px;height: 100px"></button>
+  	</div> -->
+  	<div id='mock'>
+  		<button style="width: 20px;height: 200px" id='mock-btn'></button>
   	</div>
   	<script type="text/javascript">
   	  // var btn = document.getElementById('btn')
@@ -64,7 +67,7 @@
       }*/
 
       /*鼠标事件对象属性*/
-      var div = document.getElementById('div')
+      /*var div = document.getElementById('div')
       div.onclick = function(e){
       	var clientY = e.clientY,
             pageY,
@@ -78,7 +81,17 @@
         console.log(clientY)
         console.log(pageY)
         console.log(screenY)
+      }*/
+      
+      /*模拟鼠标click事件，DOM3级模拟事件*/
+      /*var divMock = document.getElementById('mock')
+      var btnMock = document.getElementById('mock-btn')
+      divMock.onclick = function() {
+      	console.log('div clicked!')
       }
+      var event = document.createEvent('MouseEvent')
+      event.initMouseEvent('click',true,true,document.defaultView,0,0,0,0,0,false,false,false,false,0,null)
+      btnMock.dispatchEvent(event)*/
   	</script>
   </body>
 </html>
