@@ -3462,8 +3462,11 @@ jQuery.fn.extend({
 		);
 	}
 });
-
+/*从一个元素出发，查找某个方向上的第1个节点元素
+  为next、prev的实现提供基础功能
+*/
 function sibling( cur, dir ) {
+	/*循环遍历，获得第一个为元素节点的元素*/
 	while ( (cur = cur[dir]) && cur.nodeType !== 1 ) {}
 	return cur;
 }
