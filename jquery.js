@@ -3331,7 +3331,12 @@ var rparentsprev = /^(?:parents|prev(?:Until|All))/,
 	};
 /*工具函数，是DOM遍历模块实现的核心*/
 jQuery.extend({
+	/*负责从一个元素出发，查找某个方向上的所有元素，直到遇到document对象或匹配参数until的元素为止
+      匹配参数until的元素不会包含在查找结果中
+      为parents、parentsUntil、nextAll、nextUntil、prevAll、prevUntil实现功能的基础函数
+	*/
 	dir: function( elem, dir, until ) {
+		/*dir为查找方向，可选值有parentNode、nextSibling、previousSibling*/
 		var matched = [],
 			truncate = until !== undefined;
 
