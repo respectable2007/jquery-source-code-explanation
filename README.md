@@ -20,4 +20,4 @@ A pure-JavaScript CSS selector engine(http://sizzlejs.com/)
 
 Event
 ------------------------------
-DOM3(http://sizzlejs.com/)
+DOM3(https://www.quirksmode.org/js/contents.html#dom)

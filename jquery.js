@@ -6056,6 +6056,7 @@ var
 	rchecked = /checked\s*(?:[^=]|=\s*.checked.)/i,
 	rscriptType = /^$|\/(?:java|ecma)script/i,
 	rscriptTypeMasked = /^true\/(.*)/,
+	/*CDATA区域*/
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g,
 
 	// We have to close these tags to support XHTML (#13200)
@@ -6080,6 +6081,7 @@ wrapMap.th = wrapMap.td;
 
 // Support: 1.x compatibility
 // Manipulating tables requires a tbody
+/*浏览器兼容性，table元素需要一个tbody元素*/
 function manipulationTarget( elem, content ) {
 	return jQuery.nodeName( elem, "table" ) &&
 		jQuery.nodeName( content.nodeType !== 11 ? content : content.firstChild, "tr" ) ?
@@ -6089,11 +6091,13 @@ function manipulationTarget( elem, content ) {
 		elem;
 }
 
+/*手动失效script文档*/
 // Replace/restore the type attribute of script elements for safe DOM manipulation
 function disableScript( elem ) {
 	elem.type = (elem.getAttribute("type") !== null) + "/" + elem.type;
 	return elem;
 }
+/*手动恢复script文档*/
 function restoreScript( elem ) {
 	var match = rscriptTypeMasked.exec( elem.type );
 
@@ -6152,7 +6156,7 @@ function cloneCopyEvent( src, dest ) {
 		data_user.set( dest, udataCur );
 	}
 }
-
+/*提取context节点中含有tag的元素*/
 function getAll( context, tag ) {
 	var ret = context.getElementsByTagName ? context.getElementsByTagName( tag || "*" ) :
 			context.querySelectorAll ? context.querySelectorAll( tag || "*" ) :
@@ -6531,81 +6535,105 @@ jQuery.fn.extend({
 	detach: function( selector ) {
 		return this.remove( selector, true );
 	},
-
+    /*操作DOM核心方法，为append、prepend、before、after、replaceWith提供了基础功能*/
 	domManip: function( args, callback ) {
-
+      /*args是含有待插入内容的数组，内容可以是DOM元素、HTML代码、函数或jQuery对象*/
 		// Flatten any nested arrays
+		/*args转为数组*/
 		args = concat.apply( [], args );
 
 		var fragment, first, scripts, hasScripts, node, doc,
 			i = 0,
+			/*当前DOM元素集合长度*/
 			l = this.length,
+			/*当前DOM元素集合备份*/
 			set = this,
 			iNoClone = l - 1,
 			value = args[ 0 ],
+			/*待插入内容是否为函数*/
 			isFunction = jQuery.isFunction( value );
 
 		// We can't cloneNode fragments that contain checked, in WebKit
+		/*若当前浏览器在复制check元素时，不能复制checked状态，且传入的HTML代码中含有checked属性，DOM元素集合长度大于1
+          则遍历DOM元素集合，为每个项调用domManip函数，执行一次HTML代码转换
+		*/
 		if ( isFunction ||
 				( l > 1 && typeof value === "string" &&
 					!support.checkClone && rchecked.test( value ) ) ) {
 			return this.each(function( index ) {
+			    /*获取当前项*/
 				var self = set.eq( index );
 				if ( isFunction ) {
+					/*执行回调函数，并将返回值作为domManip函数的参数*/
 					args[ 0 ] = value.call( this, index, self.html() );
 				}
+				/*为每个项调用domManip函数，执行一次HTML代码转换*/
 				self.domManip( args, callback );
 			});
 		}
-
+        /**/
 		if ( l ) {
+			/*将HTML代码转为DOM元素，并保存在fragment*/
 			fragment = jQuery.buildFragment( args, this[ 0 ].ownerDocument, false, this );
 			first = fragment.firstChild;
 
+            /*出于性能考虑，若文档片段只有一个子元素，则将子元素赋值给fragment，这样性能好于插入文档片段*/
 			if ( fragment.childNodes.length === 1 ) {
 				fragment = first;
 			}
-
+            
 			if ( first ) {
 				scripts = jQuery.map( getAll( fragment, "script" ), disableScript );
 				hasScripts = scripts.length;
 
 				// Use the original fragment for the last item instead of the first because it can end up
 				// being emptied incorrectly in certain situations (#8070).
+				/*遍历DOM元素集合，为每个元素上执行回调函数插入元素*/
 				for ( ; i < l; i++ ) {
 					node = fragment;
 
 					if ( i !== iNoClone ) {
+						/*深度复制*/
 						node = jQuery.clone( node, true, true );
 
 						// Keep references to cloned scripts for later restoration
 						if ( hasScripts ) {
 							// Support: QtWebKit
 							// jQuery.merge because push.apply(_, arraylike) throws
+							/*查找script标签，并存入scripts数组*/
 							jQuery.merge( scripts, getAll( node, "script" ) );
 						}
 					}
-
+                    /*执行回调函数*/
 					callback.call( this[ i ], node, i );
 				}
-
+                /*恢复script文档，手动执行script文档*/
 				if ( hasScripts ) {
 					doc = scripts[ scripts.length - 1 ].ownerDocument;
 
+                    /*恢复script文档*/
 					// Reenable scripts
 					jQuery.map( scripts, restoreScript );
-
+                    
+                    /*遍历scripts文档集合，手动执行script文档*/
 					// Evaluate executable scripts on first document insertion
 					for ( i = 0; i < hasScripts; i++ ) {
 						node = scripts[ i ];
+						/*手动执行script文档需要满足以下所有条件：
+                          是javas（ecma）cript文档；
+                          未被缓存；
+                          属于当前文档
+						*/
 						if ( rscriptType.test( node.type || "" ) &&
 							!data_priv.access( node, "globalEval" ) && jQuery.contains( doc, node ) ) {
-
+                            
+                            /*若存在src属性，则同步加载*/
 							if ( node.src ) {
 								// Optional AJAX dependency, but won't run scripts if not present
 								if ( jQuery._evalUrl ) {
 									jQuery._evalUrl( node.src );
 								}
+						    /*若不存在，则过滤掉CDATA区域文档，取出js文档，调用globalEval方法，加载文档*/
 							} else {
 								jQuery.globalEval( node.textContent.replace( rcleanScript, "" ) );
 							}
@@ -6614,7 +6642,7 @@ jQuery.fn.extend({
 				}
 			}
 		}
-
+        /*返回元素集合*/
 		return this;
 	}
 });
@@ -6626,6 +6654,7 @@ jQuery.each({
 	insertAfter: "after",
 	replaceAll: "replaceWith"
 }, function( name, original ) {
+	/*模板函数，闭包机制*/
 	jQuery.fn[ name ] = function( selector ) {
 		var elems,
 			ret = [],
