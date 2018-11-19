@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>traversing</title>
+  </head>
+  <body>
+  	<script type="text/javascript">
+  	 /*slice对字符串本身没影响*/
+  	 /*var str = 'parentsUntil'
+  	 console.log(str.slice(-5))
+  	 console.log(str)*/
+     
+     /*引用类型Array的concat原型方法，可减少数组维度*/
+  	 var concat = Array.prototype.concat
+  	 /*二维降一维*/
+  	 var arr0 = [ [1, 2] , [2, 4]]
+  	 /*三维将二维*/
+  	 var arr1 = [ [[1, 2] , [5, 6]], [2, 4]]
+  	 console.log(concat.apply([], arr))
+
+  	</script>
+  </body>
+</html>

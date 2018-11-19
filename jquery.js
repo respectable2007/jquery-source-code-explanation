@@ -657,7 +657,7 @@ jQuery.extend({
 			}
 		}
         
-        /* 返回新数组
+        /* 返回新数组，二维数组可转为一维数组
         */
 		// Flatten any nested arrays
 		return concat.apply( [], ret );
@@ -3488,7 +3488,7 @@ jQuery.each({
 	parents: function( elem ) {
 		return jQuery.dir( elem, "parentNode" );
 	},
-	/*返回指定DOM元素的祖先元素，直到遇到匹配参数untile的元素为止*/
+	/*返回指定DOM元素的祖先元素，直到遇到匹配参数until的元素为止*/
 	parentsUntil: function( elem, i, until ) {
 		return jQuery.dir( elem, "parentNode", until );
 	},
@@ -3529,30 +3529,39 @@ jQuery.each({
 		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
-	/*公开方法，模板函数*/
+	/*公开方法，模板函数，闭包函数*/
 	jQuery.fn[ name ] = function( until, selector ) {
+		/*查找匹配的元素
+		  当前DOM元素集合中每一项和until为参数，调用fn函数，并将fn函数返回值保存在matched数组中
+		*/
 		var matched = jQuery.map( this, fn, until );
-
+        /*是否以Until为结尾的方法
+          否，则jQuery.fn[name] = function(selector){}
+          时，则jQuery.fn[name] = function(until,selector){}
+        */
 		if ( name.slice( -5 ) !== "Until" ) {
 			selector = until;
 		}
 
 		if ( selector && typeof selector === "string" ) {
+			/*过滤掉与selector选择器表达式不符合的元素*/
 			matched = jQuery.filter( selector, matched );
 		}
 
 		if ( this.length > 1 ) {
 			// Remove duplicates
 			if ( !guaranteedUnique[ name ] ) {
+				/*根据文档的顺序进行排序，并剔除重复元素*/
 				jQuery.unique( matched );
 			}
-
+            
+            /*若为查找父级或之前的元素，则按从顶层到底层排序*/
 			// Reverse order for parents* and prev-derivatives
 			if ( rparentsprev.test( name ) ) {
 				matched.reverse();
 			}
 		}
-
+        /*重新组合jQuery对象，并返回*/
 		return this.pushStack( matched );
 	};
 });
