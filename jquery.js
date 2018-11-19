@@ -3350,10 +3350,12 @@ jQuery.extend({
 		}
 		return matched;
 	},
-
+    /*查找一个元素的所有兄弟，包括起始元素，但不包括参数elem
+      为siblings、children的实现提供基础功能
+    */
 	sibling: function( n, elem ) {
 		var matched = [];
-
+        /*从父节点的第一个子节点开始循环，剔除elem本身，保存在matched数组*/
 		for ( ; n; n = n.nextSibling ) {
 			if ( n.nodeType === 1 && n !== elem ) {
 				matched.push( n );
@@ -3462,6 +3464,7 @@ jQuery.fn.extend({
 		);
 	}
 });
+
 /*从一个元素出发，查找某个方向上的第1个节点元素
   为next、prev的实现提供基础功能
 */
