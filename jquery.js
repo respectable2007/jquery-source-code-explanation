@@ -6042,6 +6042,7 @@ jQuery.fn.extend({
 });
 
 
+/*DOM操作 Manipulation*/
 var 
     // (?!pattern)在任何不匹配pattern的字符串开始处匹配查找字符串
     // 不匹配br等自关闭标签
