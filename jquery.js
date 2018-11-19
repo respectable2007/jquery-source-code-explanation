@@ -3463,44 +3463,57 @@ function sibling( cur, dir ) {
 	return cur;
 }
 
-/*DOM遍历模块的所有公开方法都指向了同样的但不是同一个模板函数*/
+/*DOM遍历模块的所有公开方法都指向了同样的但不是同一个模板函数
+  这一部分基于工具函数jQuery.dir、sibling、jQuery.sibling实现
+*/
 jQuery.each({
 	/*遍历函数*/
+	/*返回指定DOM元素的父元素，并过滤掉文档片段节点*/
 	parent: function( elem ) {
 		var parent = elem.parentNode;
 		return parent && parent.nodeType !== 11 ? parent : null;
 	},
+	/*返回指定DOM元素的所有祖先元素*/
 	parents: function( elem ) {
 		return jQuery.dir( elem, "parentNode" );
 	},
+	/*返回指定DOM元素的祖先元素，直到遇到匹配参数untile的元素为止*/
 	parentsUntil: function( elem, i, until ) {
 		return jQuery.dir( elem, "parentNode", until );
 	},
+	/*返回指定DOM元素之后紧挨着的兄弟元素*/
 	next: function( elem ) {
 		return sibling( elem, "nextSibling" );
 	},
+	/*返回指定DOM元素之前紧挨着的兄弟元素*/
 	prev: function( elem ) {
 		return sibling( elem, "previousSibling" );
 	},
+	/*返回指定DOM元素之后的所有兄弟元素*/
 	nextAll: function( elem ) {
 		return jQuery.dir( elem, "nextSibling" );
 	},
-	/* 当前元素之前的同辈元素*/
+	/*返回指定DOM元素之前的所有兄弟元素*/
 	prevAll: function( elem ) {
 		return jQuery.dir( elem, "previousSibling" );
 	},
+	/*返回指定DOM元素之后的所有兄弟元素，直到遇到untile元素结束*/
 	nextUntil: function( elem, i, until ) {
 		return jQuery.dir( elem, "nextSibling", until );
 	},
+	/*返回指定DOM元素之前的所有兄弟元素，直到遇到untile元素结束*/
 	prevUntil: function( elem, i, until ) {
 		return jQuery.dir( elem, "previousSibling", until );
 	},
+	/*返回指定DOM元素的所有兄弟元素*/
 	siblings: function( elem ) {
 		return jQuery.sibling( ( elem.parentNode || {} ).firstChild, elem );
 	},
+	/*返回指定DOM元素的所有子元素，但不包含文本节点和注释节点*/
 	children: function( elem ) {
 		return jQuery.sibling( elem.firstChild );
 	},
+	/*返回指定DOM元素的子元素，且包含文本节点和注释节点，或返回iframe元素的document对象*/
 	contents: function( elem ) {
 		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
 	}
