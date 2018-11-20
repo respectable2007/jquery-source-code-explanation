@@ -6430,6 +6430,7 @@ jQuery.fn.extend({
     /* 删除DOM元素*/
 	remove: function( selector, keepData /* Internal Use Only */ ) {
 		var elem,
+		    /*若selector传入，保留与selector匹配的元素*/
 			elems = selector ? jQuery.filter( selector, this ) : this,
 			i = 0;
         /* 遍历DOM元素，
@@ -6464,7 +6465,7 @@ jQuery.fn.extend({
 				jQuery.cleanData( getAll( elem, false ) );
 
 				// Remove any remaining nodes
-				/**/
+				/*textContent为DOM属性，获取或设置节点文本内容，若设置节点内容，其子元素会被删除*/
 				elem.textContent = "";
 			}
 		}
