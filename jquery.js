@@ -6427,7 +6427,7 @@ jQuery.fn.extend({
 			}
 		});
 	},
-    /* 删除DOM元素*/
+    /*删除当前DOM元素集合*/
 	remove: function( selector, keepData /* Internal Use Only */ ) {
 		var elem,
 		    /*若selector传入，保留与selector匹配的元素*/
@@ -6452,7 +6452,7 @@ jQuery.fn.extend({
 
 		return this;
 	},
-
+    /*从文档中移除当前DOM元素集合的所有子元素*/
 	empty: function() {
 		var elem,
 			i = 0;
