@@ -9702,8 +9702,9 @@ jQuery._evalUrl = function( url ) {
 	});
 };
 
-
+/*工具方法--包裹元素*/
 jQuery.fn.extend({
+	/*将包裹元素插入第一个DOM元素之前，并将当前DOM元素集合插入包裹元素最内层元素内*/
 	wrapAll: function( html ) {
 		var wrap;
 
@@ -9714,14 +9715,15 @@ jQuery.fn.extend({
 		}
 
 		if ( this[ 0 ] ) {
-
+            
 			// The elements to wrap the target around
+			/*获取包裹元素*/
 			wrap = jQuery( html, this[ 0 ].ownerDocument ).eq( 0 ).clone( true );
-
+            /*在当前DOM元素集合第一项前插入wrap*/
 			if ( this[ 0 ].parentNode ) {
 				wrap.insertBefore( this[ 0 ] );
 			}
-
+            /*遍历包裹元素，在每个包裹元素的最内层元素节点插入当前DOM元素集合*/
 			wrap.map(function() {
 				var elem = this;
 
