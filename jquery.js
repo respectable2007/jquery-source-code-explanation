@@ -6230,7 +6230,7 @@ jQuery.extend({
 		if ( destElements.length > 0 ) {
 			setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
 		}
-		
+
         /*返回复制的DOM元素*/
 		// Return the cloned set
 		return clone;
@@ -6544,17 +6544,18 @@ jQuery.fn.extend({
 			}
 		}, null, value, arguments.length );
 	},
-
+    /*当前DOM元素集合被新内容替换掉*/
 	replaceWith: function() {
 		var arg = arguments[ 0 ];
 
 		// Make the changes, replacing each context element with the new content
 		this.domManip( arguments, function( elem ) {
 			arg = this.parentNode;
-
+            /*清除掉当前元素关联的事件和数据*/
 			jQuery.cleanData( getAll( this ) );
 
 			if ( arg ) {
+				/*替换当前元素*/
 				arg.replaceChild( elem, this );
 			}
 		});
