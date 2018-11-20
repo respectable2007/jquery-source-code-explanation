@@ -3524,7 +3524,7 @@ jQuery.each({
 	children: function( elem ) {
 		return jQuery.sibling( elem.firstChild );
 	},
-	/*返回指定DOM元素的子元素，且包含文本节点和注释节点，或返回iframe元素的document对象*/
+	/*返回指定DOM元素的子元素，且包含文本节点和注释节点，或返回当前元素的作为HTML对象的框架文档*/
 	contents: function( elem ) {
 		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
 	}
@@ -9704,7 +9704,9 @@ jQuery._evalUrl = function( url ) {
 
 /*工具方法--包裹元素*/
 jQuery.fn.extend({
-	/*将包裹元素插入第一个DOM元素之前，并将当前DOM元素集合插入包裹元素最内层元素内*/
+	/*将包裹元素插入第一个DOM元素之前，并将当前DOM元素集合插入包裹元素最内层元素内
+      相当于整体包裹DOM元素集合
+	*/
 	wrapAll: function( html ) {
 		var wrap;
 
@@ -9737,8 +9739,9 @@ jQuery.fn.extend({
 
 		return this;
 	},
-
+    /*为当前DOM元素集合每一项子元素集合前后包裹一段HTML代码*/
 	wrapInner: function( html ) {
+		/*参数为函数，遍历当前DOM元素集合，以函数返回值为参数，调用wrapInner方法*/
 		if ( jQuery.isFunction( html ) ) {
 			return this.each(function( i ) {
 				jQuery( this ).wrapInner( html.call(this, i) );
@@ -9747,17 +9750,19 @@ jQuery.fn.extend({
 
 		return this.each(function() {
 			var self = jQuery( this ),
+			    /*获取当前元素的子元素*/
 				contents = self.contents();
-
+            /*存在子元素，则wrapAll子元素集合
+              若不存在，当前元素插入html
+            */
 			if ( contents.length ) {
 				contents.wrapAll( html );
-
 			} else {
 				self.append( html );
 			}
 		});
 	},
-
+    /*为当前DOM元素集合每一项前后包裹一段HTML代码*/
 	wrap: function( html ) {
 		var isFunction = jQuery.isFunction( html );
 
@@ -9765,7 +9770,7 @@ jQuery.fn.extend({
 			jQuery( this ).wrapAll( isFunction ? html.call(this, i) : html );
 		});
 	},
-
+    /*移除当前DOM元素集合每一项的父元素，保留每一项元素在父元素的位置上*/
 	unwrap: function() {
 		return this.parent().each(function() {
 			if ( !jQuery.nodeName( this, "body" ) ) {
