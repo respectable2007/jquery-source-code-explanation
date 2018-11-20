@@ -6548,7 +6548,10 @@ jQuery.fn.extend({
 		// Force removal if there was no new content (e.g., from empty arguments)
 		return arg && (arg.length || arg.nodeType) ? this : this.remove();
 	},
-
+    
+    /*从文档中移除当前DOM元素集合，但保留后代元素和匹配元素关联的数据和事件
+      常用于移除的元素稍后再次插入文档的场景
+    */
 	detach: function( selector ) {
 		return this.remove( selector, true );
 	},
