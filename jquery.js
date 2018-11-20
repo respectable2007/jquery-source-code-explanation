@@ -6472,11 +6472,15 @@ jQuery.fn.extend({
 
 		return this;
 	},
-
+    /*创建当前DOM元素集合的深度复制副本
+      dataAndEvents：可选布尔值，指示是否复制数据和事件
+      deepDataAndEvents：可选的布尔值，指示是否深度复制数据和事件。若为true，则把
+                         原始元素的后代元素关联的数据和事件复制到副本元素的后代元素上
+    */
 	clone: function( dataAndEvents, deepDataAndEvents ) {
 		dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
 		deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
-
+        /*遍历当前DOM元素集合，在回调函数中调用方法jQuery.clone复制每个匹配元素，并返回副本元素*/
 		return this.map(function() {
 			return jQuery.clone( this, dataAndEvents, deepDataAndEvents );
 		});
