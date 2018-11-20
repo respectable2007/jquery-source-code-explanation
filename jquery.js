@@ -6394,7 +6394,7 @@ jQuery.fn.extend({
 		});
 	},
     
-    // 向每个匹配的元素内部前置内容
+    // 向每个匹配的元素内部头部插入内容
 	prepend: function() {
 		return this.domManip( arguments, function( elem ) {
 			if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
@@ -6647,6 +6647,7 @@ jQuery.fn.extend({
 	}
 });
 
+/*将当前DOM元素集合的每一项插入到目标元素对应位置*/
 jQuery.each({
 	appendTo: "append",
 	prependTo: "prepend",
@@ -6658,19 +6659,23 @@ jQuery.each({
 	jQuery.fn[ name ] = function( selector ) {
 		var elems,
 			ret = [],
+			/*获取目标元素*/
 			insert = jQuery( selector ),
 			last = insert.length - 1,
 			i = 0;
-
+        /*遍历目标元素*/
 		for ( ; i <= last; i++ ) {
+			/*待插入元素，遍历到最后一个目标元素时，插入待插入元素集合，其他插入带插入元素集合副本*/
 			elems = i === last ? this : this.clone( true );
+			/*执行操作函数*/
 			jQuery( insert[ i ] )[ original ]( elems );
 
 			// Support: QtWebKit
 			// .get() because push.apply(_, arraylike) throws
+			/*待插入元素保存在ret中*/
 			push.apply( ret, elems.get() );
 		}
-
+        /*创建新的jQuery对象，并被返回*/
 		return this.pushStack( ret );
 	};
 });
