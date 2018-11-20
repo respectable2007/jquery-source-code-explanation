@@ -6130,7 +6130,7 @@ function cloneCopyEvent( src, dest ) {
 	if ( dest.nodeType !== 1 ) {
 		return;
 	}
-
+    /*复制内部事件和数据*/
 	// 1. Copy private data: events, handlers, etc.
 	if ( data_priv.hasData( src ) ) {
 		pdataOld = data_priv.access( src );
@@ -6148,7 +6148,7 @@ function cloneCopyEvent( src, dest ) {
 			}
 		}
 	}
-
+    /*复制用户自定义数据*/
 	// 2. Copy user data
 	if ( data_user.hasData( src ) ) {
 		udataOld = data_user.access( src );
@@ -6183,18 +6183,24 @@ function fixInput( src, dest ) {
 }
 
 jQuery.extend({
+	/*复制DOM元素，并修正不兼容属性*/
 	clone: function( elem, dataAndEvents, deepDataAndEvents ) {
 		var i, l, srcElements, destElements,
+		    /*深度复制当前元素*/
 			clone = elem.cloneNode( true ),
+			/*是否在当前文档*/
 			inPage = jQuery.contains( elem.ownerDocument, elem );
 
 		// Support: IE >= 9
 		// Fix Cloning issues
+		/*修正checkbox元素浏览器兼容问题*/
 		if ( !support.noCloneChecked && ( elem.nodeType === 1 || elem.nodeType === 11 ) &&
 				!jQuery.isXMLDoc( elem ) ) {
 
 			// We eschew Sizzle here for performance reasons: http://jsperf.com/getall-vs-sizzle/2
+		    /*存放副本元素的后代元素集合*/
 			destElements = getAll( clone );
+			/*存放原始元素的后代元素集合*/
 			srcElements = getAll( elem );
 
 			for ( i = 0, l = srcElements.length; i < l; i++ ) {
@@ -6204,6 +6210,7 @@ jQuery.extend({
 
 		// Copy the events from the original to the clone
 		if ( dataAndEvents ) {
+			/*把当前元素后代元素的数据和事件复制到副本元素后代元素上*/
 			if ( deepDataAndEvents ) {
 				srcElements = srcElements || getAll( elem );
 				destElements = destElements || getAll( clone );
@@ -6212,16 +6219,19 @@ jQuery.extend({
 					cloneCopyEvent( srcElements[ i ], destElements[ i ] );
 				}
 			} else {
+				/*把原始元素关联的数据和事件复制到副本元素上*/
 				cloneCopyEvent( elem, clone );
 			}
 		}
 
 		// Preserve script evaluation history
+		/*缓存script文档*/
 		destElements = getAll( clone, "script" );
 		if ( destElements.length > 0 ) {
 			setGlobalEval( destElements, !inPage && getAll( elem, "script" ) );
 		}
-
+		
+        /*返回复制的DOM元素*/
 		// Return the cloned set
 		return clone;
 	},
