@@ -6060,6 +6060,7 @@ var
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g,
 
 	// We have to close these tags to support XHTML (#13200)
+	/**/
 	wrapMap = {
 
 		// Support: IE 9
@@ -6473,31 +6474,40 @@ jQuery.fn.extend({
 			return jQuery.clone( this, dataAndEvents, deepDataAndEvents );
 		});
 	},
-
+    /*获取匹配元素集合中第一个元素的HTML内容或设置每个元素的HTML内容*/
 	html: function( value ) {
 		return access( this, function( value ) {
 			var elem = this[ 0 ] || {},
 				i = 0,
 				l = this.length;
-
+            /*未传入value，读取第一个DOM元素的HTML内容*/
 			if ( value === undefined && elem.nodeType === 1 ) {
 				return elem.innerHTML;
 			}
 
 			// See if we can take a shortcut and just use innerHTML
+			/*满足以下全部条件进行DOM元素内容替换
+              字符串；
+              不是script、style、link标签；
+              不需要包裹父标签（如select等）
+			*/
 			if ( typeof value === "string" && !rnoInnerhtml.test( value ) &&
 				!wrapMap[ ( rtagName.exec( value ) || [ "", "" ] )[ 1 ].toLowerCase() ] ) {
-
+                
+                /*将HTML代码修正为标准闭合标签*/
 				value = value.replace( rxhtmlTag, "<$1></$2>" );
 
 				try {
+					/*遍历当前DOM元素集合*/
 					for ( ; i < l; i++ ) {
 						elem = this[ i ] || {};
                         
                         /* 设置文本内容前，先移除当前元素后代元素的缓存数据和事件*/
 						// Remove element nodes and prevent memory leaks
 						if ( elem.nodeType === 1 ) {
+							/*清空当前DOM元素内挂载的缓存数据和事件*/
 							jQuery.cleanData( getAll( elem, false ) );
+							/*替换当前元素内容*/
 							elem.innerHTML = value;
 						}
 					}
@@ -6507,7 +6517,7 @@ jQuery.fn.extend({
 				// If using innerHTML throws an exception, use the fallback method
 				} catch( e ) {}
 			}
-
+            /*以上2种情况均不符合，则移除后代元素关联的数据和事件、移除子元素，调用append插入HTML内容*/
 			if ( elem ) {
 				this.empty().append( value );
 			}
