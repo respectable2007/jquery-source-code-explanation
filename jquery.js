@@ -6371,10 +6371,15 @@ jQuery.extend({
 });
 
 jQuery.fn.extend({
+	/*获取匹配元素集合中所有元素合并后的文本内容，
+	  或设置每个元素的文本内容
+	*/
 	text: function( value ) {
 		return access( this, function( value ) {
 			return value === undefined ?
+                /*获取当前DOM元素集合中所有元素合并后的文本内容--Sizzle.getText*/
 				jQuery.text( this ) :
+				/*清空当前DOM元素每一项的缓存，然后设置每一项的文本内容*/
 				this.empty().each(function() {
 					if ( this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9 ) {
 						this.textContent = value;
@@ -6459,6 +6464,7 @@ jQuery.fn.extend({
 				jQuery.cleanData( getAll( elem, false ) );
 
 				// Remove any remaining nodes
+				/**/
 				elem.textContent = "";
 			}
 		}
