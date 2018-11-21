@@ -6788,7 +6788,9 @@ var getStyles = function( elem ) {
 	};
 
 
-/*读取计算样式*/
+/*读取计算样式
+  该函数是对getComputedStyle方法的封装和扩展
+*/
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
 		style = elem.style;
@@ -7271,27 +7273,33 @@ jQuery.extend({
     */
     /*读取计算样式*/
 	css: function( elem, name, extra, styles ) {
+	    /*extra:字符串，用于指示获取高度、宽度的计算公式*/
 		var val, num, hooks,
+		    /*转为驼峰式样式名*/
 			origName = jQuery.camelCase( name );
-
 		// Make sure that we're working with the right name
+		/*修正样式名*/
 		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( elem.style, origName ) );
 
 		// gets hook for the prefixed version
 		// followed by the unprefixed version
+		/*获取修正对象*/
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
 
 		// If a hook was provided get the computed value from there
+		/*有修正对象，且有get方法*/
 		if ( hooks && "get" in hooks ) {
 			val = hooks.get( elem, true, extra );
 		}
 
 		// Otherwise, if a way to get the computed value exists, use that
+		/*无修正对象，或无get方法，或get方法无返回值，则调用curCss方法读取计算样式*/
 		if ( val === undefined ) {
 			val = curCSS( elem, name, styles );
 		}
 
 		//convert "normal" to computed value
+		/*转换字符串值为数值型值*/
 		if ( val === "normal" && name in cssNormalTransform ) {
 			val = cssNormalTransform[ name ];
 		}
