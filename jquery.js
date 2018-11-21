@@ -6716,6 +6716,7 @@ jQuery.each({
 });
 
 
+/*样式操作 CSS*/
 var iframe,
 	elemdisplay = {};
 
@@ -6781,12 +6782,13 @@ var rmargin = (/^margin/);
 
 var rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" );
 
+/*获取某个DOM元素的计算样式*/
 var getStyles = function( elem ) {
 		return elem.ownerDocument.defaultView.getComputedStyle( elem, null );
 	};
 
 
-
+/*读取计算样式*/
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
 		style = elem.style;
@@ -6944,6 +6946,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 
 
 // A method for quickly swapping in/out CSS properties to get correct calculations.
+/*快速换进换出样式*/
 jQuery.swap = function( elem, options, callback, args ) {
 	var ret, name,
 		old = {};
@@ -7148,6 +7151,7 @@ function showHide( elements, show ) {
 jQuery.extend({
 	// Add in style property hooks for overriding the default
 	// behavior of getting and setting a style property
+	/*样式修正对象集*/
 	cssHooks: {
 		opacity: {
 			get: function( elem, computed ) {
@@ -7161,6 +7165,7 @@ jQuery.extend({
 	},
 
 	// Don't automatically add "px" to these possibly-unitless properties
+	/*无单位的数值型样式*/
 	cssNumber: {
 		"columnCount": true,
 		"fillOpacity": true,
@@ -7178,12 +7183,14 @@ jQuery.extend({
 
 	// Add in properties whose names you wish to fix before
 	// setting or getting the value
+	/*样式名修正*/
 	cssProps: {
 		// normalize float css property
 		"float": "cssFloat"
 	},
 
 	// Get and set the style property on a DOM Node
+	/*读取或设置内联样式*/
 	style: function( elem, name, value, extra ) {
 		// Don't set styles on text and comment nodes
 		if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
@@ -7248,6 +7255,7 @@ jQuery.extend({
        逆向解析时，子节点只有一个父节点，先找到匹配的目标子节点集合，在根据选择器规则，
        对父节点进行验证，进行过滤，最终找到最终匹配集合，降低了搜索步骤，较正向解析效率高
     */
+    /*读取计算样式*/
 	css: function( elem, name, extra, styles ) {
 		var val, num, hooks,
 			origName = jQuery.camelCase( name );
@@ -7283,6 +7291,7 @@ jQuery.extend({
 	}
 });
 
+/*覆盖样式height、width的默认读取和设置行为*/
 jQuery.each([ "height", "width" ], function( i, name ) {
 	jQuery.cssHooks[ name ] = {
 		get: function( elem, computed, extra ) {
@@ -7313,6 +7322,7 @@ jQuery.each([ "height", "width" ], function( i, name ) {
 });
 
 // Support: Android 2.3
+/*覆盖样式marginRight的默认读取行为*/
 jQuery.cssHooks.marginRight = addGetHookIf( support.reliableMarginRight,
 	function( elem, computed ) {
 		if ( computed ) {
