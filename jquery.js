@@ -7186,33 +7186,42 @@ jQuery.extend({
 	/*样式名修正*/
 	cssProps: {
 		// normalize float css property
+		/*float为保留字，不能作为属性名。因此，其在style对象上对应的属性名为cssFloat*/
 		"float": "cssFloat"
 	},
 
 	// Get and set the style property on a DOM Node
-	/*读取或设置内联样式*/
+	/*读取或设置内联样式
+      内联样式是指行内样式，在标签的style（既时HTML属性，也是DOM属性）上设置的样式
+	*/
 	style: function( elem, name, value, extra ) {
 		// Don't set styles on text and comment nodes
+		/*过滤掉文本和注释节点，这些节点不设置样式*/
 		if ( !elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style ) {
 			return;
 		}
 
 		// Make sure that we're working with the right name
 		var ret, type, hooks,
+		    /*样式名转为驼峰式，而样式名不一定存在*/
 			origName = jQuery.camelCase( name ),
 			style = elem.style;
 
+        /*获取修正的样式名*/
 		name = jQuery.cssProps[ origName ] || ( jQuery.cssProps[ origName ] = vendorPropName( style, origName ) );
 
 		// gets hook for the prefixed version
 		// followed by the unprefixed version
+		/*获取修正对象*/
 		hooks = jQuery.cssHooks[ name ] || jQuery.cssHooks[ origName ];
 
 		// Check if we're setting a value
+		/*传入了value参数，则设置内联样式*/
 		if ( value !== undefined ) {
 			type = typeof value;
 
 			// convert relative number strings (+= or -=) to relative numbers. #7345
+			/*字符串型数字转为数值型数字*/
 			if ( type === "string" && (ret = rrelNum.exec( value )) ) {
 				value = ( ret[1] + 1 ) * ret[2] + parseFloat( jQuery.css( elem, name ) );
 				// Fixes bug #9237
@@ -7220,11 +7229,13 @@ jQuery.extend({
 			}
 
 			// Make sure that null and NaN values aren't set. See: #7116
+			/*null或nan性参数，不设置内联样式*/
 			if ( value == null || value !== value ) {
 				return;
 			}
 
 			// If a number was passed in, add 'px' to the (except for certain CSS properties)
+			/*数值型参数，且不为无单位数值型样式时，则为数值追加px*/
 			if ( type === "number" && !jQuery.cssNumber[ origName ] ) {
 				value += "px";
 			}
@@ -7236,17 +7247,20 @@ jQuery.extend({
 			}
 
 			// If a hook was provided, use that value, otherwise just set the specified value
+			/*无修正对象，或无修正方法，或修正方法有返回值，则设置内联样式*/
 			if ( !hooks || !("set" in hooks) || (value = hooks.set( elem, value, extra )) !== undefined ) {
 				style[ name ] = value;
 			}
-
+        /*未传入value参数，则读取内联样式*/
 		} else {
 			// If a hook was provided get the non-computed value from there
+			/*存在修正对象，且有get方法，且get方法有返回值，则返回get方法返回值*/
 			if ( hooks && "get" in hooks && (ret = hooks.get( elem, false, extra )) !== undefined ) {
 				return ret;
 			}
-
+             
 			// Otherwise just get the value from the style object
+			/*否则，返回style[name]属性值*/
 			return style[ name ];
 		}
 	},

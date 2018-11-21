@@ -49,6 +49,17 @@
       string = 'a b abbb'
       console.log(rnotwhite.exec(string))==>['a',index:0,input:'a b abbb',length:1]
       console.log(string.match(rnotwhite))===>['a', 'b', 'abbb']*/
+      /*正则表达式字符串形式--字面量形式的字符串*/
+      var pnum = (/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/).source;
+      console.log(pnum)
+
+      var rRelNum = new RegExp( "^([+-])=(" + pnum + ")", "i" )
+      var num = '+=1234'
+      console.log(rRelNum.exec(num))
+      console.log(typeof rRelNum.exec(num)[1])
+      console.log(typeof rRelNum.exec(num)[2])
+      /*乘法操作符，如果有一个不是数值，则调用Number()函数转为数值，再进行乘法运算*/
+      console.log(( rRelNum.exec(num)[1] + 1 ) * rRelNum.exec(num)[2])
   	</script>
   </body>
 </html>
