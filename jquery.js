@@ -6794,17 +6794,19 @@ var getStyles = function( elem ) {
 function curCSS( elem, name, computed ) {
 	var width, minWidth, maxWidth, ret,
 		style = elem.style;
-
+    
+    /*样式对象*/
 	computed = computed || getStyles( elem );
 
 	// Support: IE9
 	// getPropertyValue is only needed for .css('filter') in IE9, see #12537
+	/*读取样式，为了兼容IE9*/
 	if ( computed ) {
 		ret = computed.getPropertyValue( name ) || computed[ name ];
 	}
 
 	if ( computed ) {
-
+        /*未取到计算样式，且不在当前文档，则调用jQuery.style方法获取计算样式*/
 		if ( ret === "" && !jQuery.contains( elem.ownerDocument, elem ) ) {
 			ret = jQuery.style( elem, name );
 		}
@@ -6813,18 +6815,22 @@ function curCSS( elem, name, computed ) {
 		// A tribute to the "awesome hack by Dean Edwards"
 		// iOS < 6 (at least) returns percentage for a larger set of values, but width seems to be reliably pixels
 		// this is against the CSSOM draft spec: http://dev.w3.org/csswg/cssom/#resolved-values
+		/*百分比等数值，且为外边距样式*/
 		if ( rnumnonpx.test( ret ) && rmargin.test( name ) ) {
 
 			// Remember the original values
+			/*备份原始宽度样式*/
 			width = style.width;
 			minWidth = style.minWidth;
 			maxWidth = style.maxWidth;
 
 			// Put in the new values to get a computed value out
+			/*获取以px为单位的宽度计算样式*/
 			style.minWidth = style.maxWidth = style.width = ret;
 			ret = computed.width;
 
 			// Revert the changed values
+			/*恢复宽度样式*/
 			style.width = width;
 			style.minWidth = minWidth;
 			style.maxWidth = maxWidth;
