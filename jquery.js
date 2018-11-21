@@ -7364,12 +7364,20 @@ jQuery.each({
 });
 
 jQuery.fn.extend({
+	/*用于获取当前DOM元素集合中第一个元素的计算样式；
+	  或在每个匹配元素上设置一个或多个内联样式，其功能有如下5种：
+	  .css(name):获取当前DOM元素集合中第一个元素的计算样式
+	  .css([n1,n2..]):获取当前DOM元素集合中第一个元素的多个计算样式
+	  .css(name,value):在每个DOM元素上设置一个内联样式
+	  .css(name,fn):在每个DOM元素以函数返回值为属性值，设置一个内联样式
+	  .css({}):在每个DOM元素上设置多个内联样式
+	*/
 	css: function( name, value ) {
 		return access( this, function( elem, name, value ) {
 			var styles, len,
 				map = {},
 				i = 0;
-
+            /*name参数是数组，则遍历name，读取其对应的计算样式，保存在map对象中，并被返回*/
 			if ( jQuery.isArray( name ) ) {
 				styles = getStyles( elem );
 				len = name.length;
@@ -7382,7 +7390,9 @@ jQuery.fn.extend({
 			}
 
 			return value !== undefined ?
+			    /*设置内联样式*/
 				jQuery.style( elem, name, value ) :
+				/*读取计算样式*/
 				jQuery.css( elem, name );
 		}, name, value, arguments.length > 1 );
 	},
