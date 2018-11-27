@@ -7027,7 +7027,7 @@ function setPositiveNumber( elem, value, subtract ) {
 		Math.max( 0, matches[ 1 ] - ( subtract || 0 ) ) + ( matches[ 2 ] || "px" ) :
 		value;
 }
-/*读取额外的宽度或高度*/
+/*读取额外的宽度或高度，例如外边距、内容、内边距、边框宽度*/
 function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 	var i = extra === ( isBorderBox ? "border" : "content" ) ?
 		// If we already have the right measurement, avoid augmentation
@@ -10360,6 +10360,7 @@ function getWindow( elem ) {
 }
 
 jQuery.offset = {
+	/*设置文档坐标*/
 	setOffset: function( elem, options, i ) {
 		var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
 			position = jQuery.css( elem, "position" ),
@@ -10409,6 +10410,7 @@ jQuery.offset = {
 };
 
 jQuery.fn.extend({
+	/*读取文档坐标*/
 	offset: function( options ) {
 		if ( arguments.length ) {
 			return options === undefined ?
@@ -10445,7 +10447,7 @@ jQuery.fn.extend({
 			left: box.left + win.pageXOffset - docElem.clientLeft
 		};
 	},
-
+    /*读取坐标，相对于定位祖先元素*/
 	position: function() {
 		if ( !this[ 0 ] ) {
 			return;
@@ -10481,7 +10483,7 @@ jQuery.fn.extend({
 			left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
 		};
 	},
-
+    /*读取最近的定位祖先元素*/
 	offsetParent: function() {
 		return this.map(function() {
 			var offsetParent = this.offsetParent || docElem;
@@ -10524,6 +10526,7 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 // Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
 // getComputedStyle returns percent when specified for top/left/bottom/right
 // rather than make the css module depend on the offset module, we just check for it here
+/*读取或设置滚动条的水平、垂直偏移*/
 jQuery.each( [ "top", "left" ], function( i, prop ) {
 	jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
 		function( elem, computed ) {
