@@ -6958,7 +6958,7 @@ function addGetHookIf( conditionFn, hookFn ) {
 jQuery.swap = function( elem, options, callback, args ) {
 	var ret, name,
 		old = {};
-
+    /*备份旧样式属性，设置新样式属性*/
 	// Remember the old values, and insert the new ones
 	for ( name in options ) {
 		old[ name ] = elem.style[ name ];
@@ -6966,12 +6966,13 @@ jQuery.swap = function( elem, options, callback, args ) {
 	}
 
 	ret = callback.apply( elem, args || [] );
-
+    
+    /*恢复属性设置*/
 	// Revert the old values
 	for ( name in options ) {
 		elem.style[ name ] = old[ name ];
 	}
-
+    /*返回属性值*/
 	return ret;
 };
 
@@ -6979,10 +6980,14 @@ jQuery.swap = function( elem, options, callback, args ) {
 var
 	// swappable if display is none or starts with table except "table", "table-cell", or "table-caption"
 	// see here for display values: https://developer.mozilla.org/en-US/docs/CSS/display
+	/*检验是否是display属性（table/table-cell/table-caption除外）*/
 	rdisplayswap = /^(none|table(?!-c[ea]).+)/,
 	rnumsplit = new RegExp( "^(" + pnum + ")(.*)$", "i" ),
 	rrelNum = new RegExp( "^([+-])=(" + pnum + ")", "i" ),
-
+    /*position为absolute，以避免引起文档布局流变化
+      visibility为hidden，使得当前元素在保持不可见的同时进行文档布局流
+      display为block，强制当前元素为块级元素，使得样式height、width生效，以获取不可见元素的高度、宽度
+    */
 	cssShow = { position: "absolute", visibility: "hidden", display: "block" },
 	cssNormalTransform = {
 		letterSpacing: "0",
@@ -7014,6 +7019,7 @@ function vendorPropName( style, name ) {
 	return origName;
 }
 
+/*设置整数值，且无单位的，添加px单位*/
 function setPositiveNumber( elem, value, subtract ) {
 	var matches = rnumsplit.exec( value );
 	return matches ?
@@ -7021,7 +7027,7 @@ function setPositiveNumber( elem, value, subtract ) {
 		Math.max( 0, matches[ 1 ] - ( subtract || 0 ) ) + ( matches[ 2 ] || "px" ) :
 		value;
 }
-
+/*读取额外的宽度或高度*/
 function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 	var i = extra === ( isBorderBox ? "border" : "content" ) ?
 		// If we already have the right measurement, avoid augmentation
@@ -7061,12 +7067,14 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 	return val;
 }
 
+/*读取宽度或高度*/
 function getWidthOrHeight( elem, name, extra ) {
 
 	// Start with offset property, which is equivalent to the border-box value
 	var valueIsBorderBox = true,
 		val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 		styles = getStyles( elem ),
+		/*是否是盒模型*/
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
 	// some non-html elements return undefined for offsetWidth, so check for null/undefined
@@ -7080,6 +7088,7 @@ function getWidthOrHeight( elem, name, extra ) {
 		}
 
 		// Computed unit is not pixels. Stop here and return.
+		/*是非px单位的值，则返回属性值*/
 		if ( rnumnonpx.test(val) ) {
 			return val;
 		}
@@ -7159,7 +7168,7 @@ function showHide( elements, show ) {
 jQuery.extend({
 	// Add in style property hooks for overriding the default
 	// behavior of getting and setting a style property
-	/*样式修正对象集*/
+	/*样式修正对象集，用于兼容浏览器差异，覆盖默认的样式读取和设置行为*/
 	cssHooks: {
 		opacity: {
 			get: function( elem, computed ) {
