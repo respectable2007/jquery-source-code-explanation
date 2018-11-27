@@ -10355,6 +10355,7 @@ var docElem = window.document.documentElement;
 /**
  * Gets a window from an element
  */
+/*读取当前元素对应的window*/
 function getWindow( elem ) {
 	return jQuery.isWindow( elem ) ? elem : elem.nodeType === 9 && elem.defaultView;
 }
@@ -10410,8 +10411,9 @@ jQuery.offset = {
 };
 
 jQuery.fn.extend({
-	/*读取文档坐标*/
+	/*读取或设置文档坐标*/
 	offset: function( options ) {
+		/*遍历当前DOM集合，设置文档坐标*/
 		if ( arguments.length ) {
 			return options === undefined ?
 				this :
@@ -10419,12 +10421,12 @@ jQuery.fn.extend({
 					jQuery.offset.setOffset( this, options, i );
 				});
 		}
-
+        /*读取第一个DOM元素在文档中的坐标*/
 		var docElem, win,
 			elem = this[ 0 ],
 			box = { top: 0, left: 0 },
 			doc = elem && elem.ownerDocument;
-
+        /*过滤不在当前文档的元素*/
 		if ( !doc ) {
 			return;
 		}
@@ -10432,18 +10434,23 @@ jQuery.fn.extend({
 		docElem = doc.documentElement;
 
 		// Make sure it's not a disconnected DOM node
+		/*不在当前文档内，则返回（0,0）*/
 		if ( !jQuery.contains( docElem, elem ) ) {
 			return box;
 		}
 
 		// If we don't have gBCR, just use 0,0 rather than error
 		// BlackBerry 5, iOS 3 (original iPhone)
+		/*存在getBoundingClientRect元素方法，则调用该方法*/
 		if ( typeof elem.getBoundingClientRect !== strundefined ) {
 			box = elem.getBoundingClientRect();
 		}
+		/*读取window对象*/
 		win = getWindow( doc );
 		return {
+			/*元素距窗口上边距+垂直滚动距离-文档距视口上边距*/
 			top: box.top + win.pageYOffset - docElem.clientTop,
+			/*元素距窗口左边距+水平滚动距离-文档距视口左边距*/
 			left: box.left + win.pageXOffset - docElem.clientLeft
 		};
 	},
