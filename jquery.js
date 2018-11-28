@@ -10522,17 +10522,20 @@ jQuery.fn.extend({
 });
 
 // Create scrollLeft and scrollTop methods
+/*创建scrollLeft、scrollTop方法
+  scrollLeft是
+*/
 jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( method, prop ) {
 	var top = "pageYOffset" === prop;
 
 	jQuery.fn[ method ] = function( val ) {
 		return access( this, function( elem, method, val ) {
 			var win = getWindow( elem );
-
+            /*读取当前DOM集合中第一个元素的滚动条的水平或垂直偏移*/
 			if ( val === undefined ) {
 				return win ? win[ prop ] : elem[ method ];
 			}
-
+            /*设置当前DOM集合中每个元素的滚动条的水平或垂直偏移*/
 			if ( win ) {
 				win.scrollTo(
 					!top ? val : window.pageXOffset,
