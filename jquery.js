@@ -8911,7 +8911,7 @@ var nonce = jQuery.now();
 
 var rquery = (/\?/);
 
-// ajax交互模块
+/*数据转换*/
 
 /* 字符串转JavaScript值*/
 // Support: Android 2.3
@@ -8951,7 +8951,7 @@ jQuery.parseXML = function( data ) {
 	return xml;
 };
 
-
+/*异步请求Ajax模块*/
 var
 	// Document location
 	ajaxLocParts,
@@ -9304,6 +9304,7 @@ jQuery.extend({
 			context: true
 		}
 	},
+	/*异步请求-底层方法*/
     // ajax全局配置方法
 	// Creates a full fledged settings object into target
 	// with both ajaxSettings and settings fields.
@@ -9321,8 +9322,7 @@ jQuery.extend({
 	ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
 	ajaxTransport: addToPrefiltersOrTransports( transports ),
     
-    /*ajax模块
-    */
+
 	// Main method
 	ajax: function( url, options ) {
 
@@ -9712,6 +9712,7 @@ jQuery.extend({
 		return jqXHR;
 	},
 
+    /*异步请求-便捷方法*/
 	getJSON: function( url, data, callback ) {
 		return jQuery.get( url, data, callback, "json" );
 	},
@@ -9720,7 +9721,8 @@ jQuery.extend({
 		return jQuery.get( url, undefined, callback, "script" );
 	}
 });
-// 添加ajax快捷方法
+
+/*异步请求-便捷方法*/
 jQuery.each( [ "get", "post" ], function( i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
 		// shift arguments if data argument was omitted
@@ -9739,7 +9741,8 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 		});
 	};
 });
-// 使用each方法添加ajax门面接口
+
+/*异步请求-全局事件*/
 // Attach a bunch of functions for handling common AJAX events
 jQuery.each( [ "ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend" ], function( i, type ) {
 	jQuery.fn[ type ] = function( fn ) {
@@ -9857,7 +9860,7 @@ jQuery.expr.filters.visible = function( elem ) {
 
 
 
-
+/*异步请求-工具函数*/
 var r20 = /%20/g,
 	rbracket = /\[\]$/,
 	rCRLF = /\r?\n/g,
@@ -10273,6 +10276,7 @@ jQuery.parseHTML = function( data, context, keepScripts ) {
 };
 
 
+/*异步请求-便捷方法*/
 // Keep a copy of the old load method
 var _load = jQuery.fn.load;
 
@@ -10349,7 +10353,7 @@ jQuery.expr.filters.animated = function( elem ) {
 
 
 
-
+/*坐标系统*/
 var docElem = window.document.documentElement;
 
 /**
