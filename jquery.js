@@ -10570,6 +10570,9 @@ jQuery.each( [ "top", "left" ], function( i, prop ) {
 
 
 // Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
+/*读取尺寸innerHeight、innerWidth、height、width、outerHeight和outerWidth
+  inner:content+padding
+*/
 jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 	jQuery.each( { padding: "inner" + name, content: type, "": "outer" + name }, function( defaultExtra, funcName ) {
 		// margin is only for outerHeight, outerWidth
@@ -10579,20 +10582,21 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 
 			return access( this, function( elem, type, value ) {
 				var doc;
-
+                /*window对象，返回当前客户区宽度或高度*/
 				if ( jQuery.isWindow( elem ) ) {
 					// As of 5/8/2012 this will yield incorrect results for Mobile Safari, but there
 					// isn't a whole lot we can do. See pull request at this URL for discussion:
 					// https://github.com/jquery/jquery/pull/764
 					return elem.document.documentElement[ "client" + name ];
 				}
-
+                /*文档对象*/
 				// Get document width or height
 				if ( elem.nodeType === 9 ) {
 					doc = elem.documentElement;
 
 					// Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
 					// whichever is greatest
+					/*返回滚动、偏移、客户区中最大的宽度或高度*/
 					return Math.max(
 						elem.body[ "scroll" + name ], doc[ "scroll" + name ],
 						elem.body[ "offset" + name ], doc[ "offset" + name ],
@@ -10602,8 +10606,9 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 
 				return value === undefined ?
 					// Get width or height on the element, requesting but not forcing parseFloat
+					/*调用css，读取宽度或高度*/
 					jQuery.css( elem, type, extra ) :
-
+                    /*调用style，设置宽度或高度*/
 					// Set width or height on the element
 					jQuery.style( elem, type, value, extra );
 			}, type, chainable ? margin : undefined, chainable, null );
