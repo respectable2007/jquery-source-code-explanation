@@ -10462,7 +10462,9 @@ jQuery.fn.extend({
 			left: box.left + win.pageXOffset - docElem.clientLeft
 		};
 	},
-    /*读取坐标，相对于定位祖先元素*/
+    /*读取坐标，相对于定位祖先元素
+      读取当前DOM集合中第一个元素相对于最近定位祖先元素的坐标
+    */
 	position: function() {
 		if ( !this[ 0 ] ) {
 			return;
@@ -10473,26 +10475,31 @@ jQuery.fn.extend({
 			parentOffset = { top: 0, left: 0 };
 
 		// Fixed elements are offset from window (parentOffset = {top:0, left: 0}, because it is its only offset parent
+		/*当元素position为fixed时，offsetParent属性返回为null。因此，调用getBoundingClientRect方法，计算其坐标*/
 		if ( jQuery.css( elem, "position" ) === "fixed" ) {
 			// We assume that getBoundingClientRect is available when computed position is fixed
 			offset = elem.getBoundingClientRect();
 
 		} else {
+			/*读取最近的定位祖先元素*/
 			// Get *real* offsetParent
 			offsetParent = this.offsetParent();
-
+            /*读取当前元素的文档坐标*/
 			// Get correct offsets
 			offset = this.offset();
 			if ( !jQuery.nodeName( offsetParent[ 0 ], "html" ) ) {
+				/*读取最近的定位祖先元素的文档坐标*/
 				parentOffset = offsetParent.offset();
 			}
 
 			// Add offsetParent borders
+			/*为最近的定位祖先元素的文档坐标添加边框*/
 			parentOffset.top += jQuery.css( offsetParent[ 0 ], "borderTopWidth", true );
 			parentOffset.left += jQuery.css( offsetParent[ 0 ], "borderLeftWidth", true );
 		}
 
 		// Subtract parent offsets and element margins
+		/*当前元素的外边框到最近祖先元素内边框的距离*/
 		return {
 			top: offset.top - parentOffset.top - jQuery.css( elem, "marginTop", true ),
 			left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
