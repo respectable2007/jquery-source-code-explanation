@@ -10361,7 +10361,7 @@ function getWindow( elem ) {
 }
 
 jQuery.offset = {
-	/*设置文档坐标*/
+	/*设置单个元素的文档坐标*/
 	setOffset: function( elem, options, i ) {
 		var curPosition, curLeft, curCSSTop, curTop, curOffset, curCSSLeft, calculatePosition,
 			position = jQuery.css( elem, "position" ),
@@ -10369,13 +10369,17 @@ jQuery.offset = {
 			props = {};
 
 		// Set position first, in-case top/left are set even on static elem
+		/*默认值时，设置为relative*/
 		if ( position === "static" ) {
 			elem.style.position = "relative";
 		}
-
+        /*读取当前元素相对于文档的坐标*/
 		curOffset = curElem.offset();
+        /*读取当前元素计算的top值*/
 		curCSSTop = jQuery.css( elem, "top" );
+        /*读取当前元素计算的left值*/
 		curCSSLeft = jQuery.css( elem, "left" );
+		/*是否需要计算坐标*/
 		calculatePosition = ( position === "absolute" || position === "fixed" ) &&
 			( curCSSTop + curCSSLeft ).indexOf("auto") > -1;
 
@@ -10389,11 +10393,13 @@ jQuery.offset = {
 			curTop = parseFloat( curCSSTop ) || 0;
 			curLeft = parseFloat( curCSSLeft ) || 0;
 		}
-
+        /*options为函数*/
 		if ( jQuery.isFunction( options ) ) {
 			options = options.call( elem, i, curOffset );
 		}
-
+        /*计算最终样式值
+          最终样式值 = （目标坐标-当前坐标）+ 当前样式值
+        */
 		if ( options.top != null ) {
 			props.top = ( options.top - curOffset.top ) + curTop;
 		}
@@ -10448,7 +10454,9 @@ jQuery.fn.extend({
 		/*读取window对象*/
 		win = getWindow( doc );
 		return {
-			/*元素距窗口上边距+垂直滚动距离-文档距视口上边距*/
+			/*元素距窗口上边距+垂直滚动距离-文档距视口上边距
+              window.pageYOffset，是窗口垂直滚动距离，与scrollY相同
+			*/
 			top: box.top + win.pageYOffset - docElem.clientTop,
 			/*元素距窗口左边距+水平滚动距离-文档距视口左边距*/
 			left: box.left + win.pageXOffset - docElem.clientLeft
