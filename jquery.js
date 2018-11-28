@@ -10505,15 +10505,17 @@ jQuery.fn.extend({
 			left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
 		};
 	},
-    /*读取最近的定位祖先元素*/
+    /*读取最近的定位祖先元素
+      定位元素是指样式position为relative、absolute、fixed的元素
+    */
 	offsetParent: function() {
 		return this.map(function() {
 			var offsetParent = this.offsetParent || docElem;
-
+            /*过滤掉样式postion为static，且不为html的元素，这些不为定位祖先元素*/
 			while ( offsetParent && ( !jQuery.nodeName( offsetParent, "html" ) && jQuery.css( offsetParent, "position" ) === "static" ) ) {
 				offsetParent = offsetParent.offsetParent;
 			}
-
+            /*返回最近的定位祖先元素*/
 			return offsetParent || docElem;
 		});
 	}
