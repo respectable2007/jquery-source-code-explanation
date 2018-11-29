@@ -8951,7 +8951,9 @@ jQuery.parseXML = function( data ) {
 	return xml;
 };
 
-/*异步请求Ajax模块*/
+/*异步请求Ajax模块
+  涉及了异步队列Deferred、数据缓存Data和事件系统Event三个模块
+*/
 var
 	// Document location
 	ajaxLocParts,
@@ -8975,6 +8977,9 @@ var
 	 * 4) the catchall symbol "*" can be used
 	 * 5) execution will start with transport dataType and THEN continue down to "*" if needed
 	 */
+	/*前置过滤器集
+      在请求发送之前处理自定义选项或修改已有选项，或将当前请求重定向到另一个数据类型
+	*/
 	prefilters = {},
 
 	/* Transports bindings
@@ -8982,6 +8987,9 @@ var
 	 * 2) the catchall symbol "*" can be used
 	 * 3) selection will start with transport dataType and THEN go to "*" if needed
 	 */
+	/*请求发送器集
+      含有方法send、abort，分别用于发送和取消请求
+	*/
 	transports = {},
 
 	// Avoid comment-prolog char sequence (#10098); must appease lint and evade compression
@@ -9003,6 +9011,7 @@ try {
 ajaxLocParts = rurl.exec( ajaxLocation.toLowerCase() ) || [];
 
 // Base "constructor" for jQuery.ajaxPrefilter and jQuery.ajaxTransport
+/*构造jQuery.ajaxPrefilter、jQuery.ajaxTransport*/
 function addToPrefiltersOrTransports( structure ) {
 
 	// dataTypeExpression is optional and defaults to "*"
@@ -9035,6 +9044,7 @@ function addToPrefiltersOrTransports( structure ) {
 }
 
 // Base inspection function for prefilters and transports
+/*应用前置过滤器、获取请求发送器*/
 function inspectPrefiltersOrTransports( structure, options, originalOptions, jqXHR ) {
 
 	var inspected = {},
@@ -9062,6 +9072,7 @@ function inspectPrefiltersOrTransports( structure, options, originalOptions, jqX
 // A special extend for ajax options
 // that takes "flat" options (not to be deep extended)
 // Fixes #9887
+/*合并选项*/
 function ajaxExtend( target, src ) {
 	var key, deep,
 		flatOptions = jQuery.ajaxSettings.flatOptions || {};
@@ -9082,6 +9093,7 @@ function ajaxExtend( target, src ) {
  * - finds the right dataType (mediates between content-type and expected dataType)
  * - returns the corresponding response
  */
+/*修正数据类型、读取响应数据*/
 function ajaxHandleResponses( s, jqXHR, responses ) {
 
 	var ct, type, finalDataType, firstDataType,
@@ -9138,6 +9150,7 @@ function ajaxHandleResponses( s, jqXHR, responses ) {
 /* Chain conversions given the request and the original response
  * Also sets the responseXXX fields on the jqXHR instance
  */
+/*将响应的数据转换为期望的类型*/
 function ajaxConvert( s, response, jqXHR, isSuccess ) {
 	var conv2, current, conv, tmp, prev,
 		converters = {},
@@ -9237,7 +9250,7 @@ jQuery.extend({
 	// Last-Modified header cache for next request
 	lastModified: {},
 	etag: {},
-
+    /*默认选项集*/
 	ajaxSettings: {
 		url: ajaxLocation,
 		type: "GET",
@@ -9280,6 +9293,7 @@ jQuery.extend({
 
 		// Data converters
 		// Keys separate source (or catchall "*") and destination types with a single space
+		/*数据转换器将特定类型的响应数据转换为期望类型的数据*/
 		converters: {
 
 			// Convert anything to text
@@ -9309,6 +9323,7 @@ jQuery.extend({
 	// Creates a full fledged settings object into target
 	// with both ajaxSettings and settings fields.
 	// If target is omitted, writes into ajaxSettings.
+	/*设置选项默认值，或构造完整选项集*/
 	ajaxSetup: function( target, settings ) {
 		return settings ?
 
@@ -9318,12 +9333,17 @@ jQuery.extend({
 			// Extending ajaxSettings
 			ajaxExtend( jQuery.ajaxSettings, target );
 	},
-
+    /*添加前置过滤器*/
 	ajaxPrefilter: addToPrefiltersOrTransports( prefilters ),
+    /*添加请求发送器工具函数*/
 	ajaxTransport: addToPrefiltersOrTransports( transports ),
     
 
 	// Main method
+	/*执行一个异步HTTP请求
+      负责应用前置过滤器处理选项，获取请求发送器发送请求，响应完成后调用数据转换器转换数据类型，
+      并管理和触发若干本地事件、全局事件
+	*/
 	ajax: function( url, options ) {
 
 		// If url is an object, simulate pre-1.5 signature
@@ -9713,16 +9733,18 @@ jQuery.extend({
 	},
 
     /*异步请求-便捷方法*/
+    /*使用HTTP GET请求从服务端加载JSON格式的数据*/
 	getJSON: function( url, data, callback ) {
 		return jQuery.get( url, data, callback, "json" );
 	},
-
+    /*使用HTTP GET请求从服务端加载一个JavaScript文件，然后执行它*/
 	getScript: function( url, callback ) {
 		return jQuery.get( url, undefined, callback, "script" );
 	}
 });
 
 /*异步请求-便捷方法*/
+/*jQuery.get、jQuery.post，分别使用HTTP GET、POST请求从服务端加载数据*/
 jQuery.each( [ "get", "post" ], function( i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
 		// shift arguments if data argument was omitted
@@ -9897,6 +9919,7 @@ function buildParams( prefix, obj, traditional, add ) {
 
 // Serialize an array of form elements or a set of
 // key/values into a query string
+/*将一个数组或对象编码为一个字符串（序列化）*/
 jQuery.param = function( a, traditional ) {
 	var prefix,
 		s = [],
@@ -9931,9 +9954,11 @@ jQuery.param = function( a, traditional ) {
 };
 
 jQuery.fn.extend({
+	/*将一组表单元素编码为一个字符串*/
 	serialize: function() {
 		return jQuery.param( this.serializeArray() );
 	},
+	/*将一组表单元素编码为一个对象数组*/
 	serializeArray: function() {
 		return this.map(function() {
 			// Can add propHook for "elements" to filter or add form elements
@@ -10114,6 +10139,7 @@ jQuery.ajaxSetup({
 });
 
 // Handle cache's special case and crossDomain
+/*添加script对应的前置过滤器*/
 jQuery.ajaxPrefilter( "script", function( s ) {
 	if ( s.cache === undefined ) {
 		s.cache = false;
@@ -10124,6 +10150,7 @@ jQuery.ajaxPrefilter( "script", function( s ) {
 });
 
 // Bind script tag hack transport
+/*添加script对应的请求发送器工厂函数，使用script元素发送请求*/
 jQuery.ajaxTransport( "script", function( s ) {
 	// This transport only deals with cross domain requests
 	if ( s.crossDomain ) {
@@ -10172,6 +10199,7 @@ jQuery.ajaxSetup({
 });
 
 // Detect, normalize options and install callbacks for jsonp requests
+/*添加json、jsonp对应的前置过滤器*/
 jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 
 	var callbackName, overwritten, responseContainer,
@@ -10283,6 +10311,7 @@ var _load = jQuery.fn.load;
 /**
  * Load a url into a page
  */
+/*从服务器加载数据，将返回的HTML插入匹配元素*/
 jQuery.fn.load = function( url, params, callback ) {
 	if ( typeof url !== "string" && _load ) {
 		return _load.apply( this, arguments );
