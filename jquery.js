@@ -8957,15 +8957,18 @@ jQuery.parseXML = function( data ) {
 var
 	// Document location
 	ajaxLocParts,
+	/*请求地址*/
 	ajaxLocation,
-
+    /*hash*/
 	rhash = /#.*$/,
 	rts = /([?&])_=[^&]*/,
 	rheaders = /^(.*?):[ \t]*([^\r\n]*)$/mg,
 	// #7653, #8125, #8152: local protocol detection
 	rlocalProtocol = /^(?:about|app|app-storage|.+-extension|file|res|widget):$/,
 	rnoContent = /^(?:GET|HEAD)$/,
+	/*网络服务协议*/
 	rprotocol = /^\/\//,
+	/*url*/
 	rurl = /^([\w.+-]+:)(?:\/\/(?:[^\/?#]*@|)([^\/?#:]*)(?::(\d+)|)|)/,
 
 	/* Prefilters
@@ -9245,6 +9248,7 @@ function ajaxConvert( s, response, jqXHR, isSuccess ) {
 jQuery.extend({
 
 	// Counter for holding the number of active queries
+	/*正在查询的事件的计数器*/
 	active: 0,
 
 	// Last-Modified header cache for next request
@@ -9328,6 +9332,7 @@ jQuery.extend({
 		return settings ?
 
 			// Building a settings object
+			/*合并默认选项集和自定义选项集*/
 			ajaxExtend( ajaxExtend( target, jQuery.ajaxSettings ), settings ) :
 
 			// Extending ajaxSettings
@@ -9351,10 +9356,10 @@ jQuery.extend({
 			options = url;
 			url = undefined;
 		}
-
+        
 		// Force options to be an object
 		options = options || {};
-
+        /*声明局部变量*/
 		var transport,
 			// URL without anti-cache param
 			cacheURL,
@@ -9370,6 +9375,7 @@ jQuery.extend({
 			// Loop variable
 			i,
 			// Create the final options object
+			/*读取选项集*/
 			s = jQuery.ajaxSetup( {}, options ),
 			// Callbacks context
 			callbackContext = s.context || s,
@@ -9460,6 +9466,7 @@ jQuery.extend({
 			};
 
 		// Attach deferreds
+		/*构造jqXHR对象，并增加异步队列的行为*/
 		deferred.promise( jqXHR ).complete = completeDeferred.add;
 		jqXHR.success = jqXHR.done;
 		jqXHR.error = jqXHR.fail;
@@ -9468,13 +9475,16 @@ jQuery.extend({
 		// Add protocol if not provided (prefilters might expect it)
 		// Handle falsy url in the settings object (#10093: consistency with old signature)
 		// We also use the url parameter if available
+		/*url去掉hash值，且添加了网络服务协议*/
 		s.url = ( ( url || s.url || ajaxLocation ) + "" ).replace( rhash, "" )
 			.replace( rprotocol, ajaxLocParts[ 1 ] + "//" );
 
 		// Alias method option to type as per ticket #12004
+		/*发送请求的类型*/
 		s.type = options.method || options.type || s.method || s.type;
 
 		// Extract dataTypes list
+		/*数据类型*/
 		s.dataTypes = jQuery.trim( s.dataType || "*" ).toLowerCase().match( rnotwhite ) || [ "" ];
 
 		// A cross-domain request is in order when we have a protocol:host:port mismatch
@@ -9488,27 +9498,33 @@ jQuery.extend({
 		}
 
 		// Convert data if not already a string
+		/*数据类型转换，转为字符串*/
 		if ( s.data && s.processData && typeof s.data !== "string" ) {
 			s.data = jQuery.param( s.data, s.traditional );
 		}
 
 		// Apply prefilters
+		/*应用前置过滤器，读取发送器请求*/
 		inspectPrefiltersOrTransports( prefilters, s, options, jqXHR );
 
 		// If request was aborted inside a prefilter, stop there
+		/*请求被中止，返回jqXHR对象*/
 		if ( state === 2 ) {
 			return jqXHR;
 		}
 
 		// We can fire global events as of now if asked to
+		/*如果被访问，则触发全局事件*/
 		fireGlobals = s.global;
 
 		// Watch for a new set of requests
+		/*无正在执行的事件，则触发ajaxStart事件*/
 		if ( fireGlobals && jQuery.active++ === 0 ) {
 			jQuery.event.trigger("ajaxStart");
 		}
 
 		// Uppercase the type
+		/*请求类型转为大写形式*/
 		s.type = s.type.toUpperCase();
 
 		// Determine if request has content
