@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ajax</title>
+</head>
+<body>
+  <img id='img'>
+  <script type="text/javascript">
+  	/*跨浏览器CORS兼容*/
+  	/*function createCORSRequest(method, url) {
+  	  var xhr = new XMLHttpRequest();
+  	  if('withCredentials' in xhr){
+        xhr.open(method,url)
+  	  } else if(typeof XDomainRequest != 'undefined') {
+  	  	xhr = new XDomainRequest()
+        xhr.open(method,url)
+  	  } else {
+  	  	xhr = null
+  	  }
+  	}*/
+
+  	/*图片Ping*/
+  	/*var img = document.getElementById('img')
+  	img.onload = function(){
+  	  console.log('DONE')
+  	}
+  	img.src ='http://www.xinhuanet.com/politics/leaders/2018-11/30/1123789618_15435488685511n.jpg'*/
+
+  	/*JSONP*/
+  	function handleResponse(res) {
+  		console.log(res)
+  	}
+  	var script = document.createElement('script')
+  	script.src ='http://news.ifeng.com/a/20181130/60178884_0.shtml?callback=handleResponse'
+  	document.body.insertBefore(script,document.body.firstChild)
+  </script>
+</body>
+</html>
