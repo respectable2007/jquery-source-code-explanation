@@ -9317,6 +9317,7 @@ jQuery.extend({
 		// you can add your own custom options here if
 		// and when you create one that shouldn't be
 		// deep extended (see ajaxExtend)
+		/*默认选项中不做深度合并的属性*/
 		flatOptions: {
 			url: true,
 			context: true
@@ -9350,8 +9351,11 @@ jQuery.extend({
       并管理和触发若干本地事件、全局事件
 	*/
 	ajax: function( url, options ) {
-
+        /*url:可选，包含了请求的URL的字符串
+          options：可选，一组选项键值对，用于配置Ajax请求
+        */
 		// If url is an object, simulate pre-1.5 signature
+		/*若第一个参数是对象，则修正参数url和options*/
 		if ( typeof url === "object" ) {
 			options = url;
 			url = undefined;
@@ -9360,46 +9364,63 @@ jQuery.extend({
 		// Force options to be an object
 		options = options || {};
         /*声明局部变量*/
+            /*为当前请求分配的请求发送器，含有send和abort*/
 		var transport,
 			// URL without anti-cache param
 			cacheURL,
 			// Response headers
+			/*存储响应头字符串*/
 			responseHeadersString,
+			/*存储解析后的响应头和值*/
 			responseHeaders,
 			// timeout handle
+			/*一个超时计时器，如果超过指定的时间将会调用方法abort来取消本次请求*/
 			timeoutTimer,
 			// Cross-domain detection vars
+			/*一个数组，存放解析当前请求的地址得到的协议、域名或IP、端口，用来判断当前请求是否跨域*/
 			parts,
 			// To know if global events are to be dispatched
+			/*是否触发全局Ajax事件*/
 			fireGlobals,
 			// Loop variable
 			i,
 			// Create the final options object
-			/*读取选项集*/
+			/*读取请求选项集，构造完整的请求选项集*/
 			s = jQuery.ajaxSetup( {}, options ),
 			// Callbacks context
+			/*回调函数的上下文*/
 			callbackContext = s.context || s,
 			// Context for global events is callbackContext if it is a DOM node or jQuery collection
+			/*Ajax全局事件的上下文，默认上下文为对象jQuery.event*/
 			globalEventContext = s.context && ( callbackContext.nodeType || callbackContext.jquery ) ?
 				jQuery( callbackContext ) :
 				jQuery.event,
 			// Deferreds
+			/*异步对象*/
 			deferred = jQuery.Deferred(),
+			/*回调函数*/
 			completeDeferred = jQuery.Callbacks("once memory"),
 			// Status-dependent callbacks
+			/*依赖于状态码的回调函数，当服务器返回响应时，状态码对应的回调函数将被执行*/
 			statusCode = s.statusCode || {},
 			// Headers (they are sent all at once)
+			/*存储和记录请求头*/
 			requestHeaders = {},
 			requestHeadersNames = {},
 			// The jqXHR state
+			/*表示当前请求（jqXHR）的状态，可选值有0、1、2，分别表示初始状态、处理中、响应成功*/
 			state = 0,
 			// Default abort message
 			strAbort = "canceled",
 			// Fake xhr
+			/*构造jqXHR对象，是XMLHttpRequest对象的超集，当请求发送器不是XMLHttpRequest时，
+			  jqXHR对象会尽可能地模拟XMLHttpRequest的功能*/
 			jqXHR = {
+				/*jqXHR对象的状态*/
 				readyState: 0,
 
 				// Builds headers hashtable if needed
+				/*获取指定名称的响应头的值*/
 				getResponseHeader: function( key ) {
 					var match;
 					if ( state === 2 ) {
@@ -9415,11 +9436,13 @@ jQuery.extend({
 				},
 
 				// Raw string
+				/*获取响应头字符串*/
 				getAllResponseHeaders: function() {
 					return state === 2 ? responseHeadersString : null;
 				},
 
 				// Caches the header
+				/*设置请求头*/
 				setRequestHeader: function( name, value ) {
 					var lname = name.toLowerCase();
 					if ( !state ) {
@@ -9430,6 +9453,7 @@ jQuery.extend({
 				},
 
 				// Overrides response content-type header
+				/*用于覆盖MIME类型*/
 				overrideMimeType: function( type ) {
 					if ( !state ) {
 						s.mimeType = type;
@@ -9438,6 +9462,7 @@ jQuery.extend({
 				},
 
 				// Status-dependent callbacks
+				/*获取状态码*/
 				statusCode: function( map ) {
 					var code;
 					if ( map ) {
@@ -9455,6 +9480,7 @@ jQuery.extend({
 				},
 
 				// Cancel the request
+				/*取消本次请求*/
 				abort: function( statusText ) {
 					var finalText = statusText || strAbort;
 					if ( transport ) {
