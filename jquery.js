@@ -9659,7 +9659,18 @@ jQuery.extend({
 		}
 
 		// Callback for when everything is done
+		/*将复杂的事封装起来，在服务端响应完成后被调用，其执行的动作包括：
+		  清理本次请求用到的变量、读取响应数据、转换数据类型、执行回调函数、触发全局事件
+		*/
 		function done( status, nativeStatusText, responses, headers ) {
+			/* status：对应XMLHttpRequest对象的同名属性，表示响应的HTTP状态码。
+			           若没有找到请求发送器，或调用请求发送器的方法send时抛出异常，则该参数的值为-1，否则其值为响应的HTTP状态码。
+			   nativeStatusText：对应XMLHttpRequest对象的属性statusText，表示响应的HTTP状态描述。若没找到请求发送器，则该参数的
+			   值为“No Transport”;若调用请求发送器的方法send时抛出了异常，则该参数的值为异常对象；若script请求成功，则该参数的值
+			   为“success”；其他情况下，该参数的值为XMLHttpRequest对象的属性statusText。
+			   responses：对象，含有属性text或xml，分别对应XMLHttpRequest对象的responseText和responseXML。
+			   headers：响应头字符串，响应完成后通过调用XMLHttpRequest对象的方法getAllResponseHeaders()取得。
+			*/
 			var isSuccess, success, error, response, modified,
 				statusText = nativeStatusText;
 
@@ -9672,18 +9683,22 @@ jQuery.extend({
 			state = 2;
 
 			// Clear timeout if it exists
+			/*清理之前设定的定时器*/
 			if ( timeoutTimer ) {
 				clearTimeout( timeoutTimer );
 			}
 
 			// Dereference transport for early garbage collection
 			// (no matter how long the jqXHR object will be used)
+			/*解除对请求发送器的引用，使得垃圾回收尽可能早的发生*/
 			transport = undefined;
 
 			// Cache response headers
+			/*将响应头字符串缓存到变量responseHeadersString中，函数done通过闭包机制引用该变量*/
 			responseHeadersString = headers || "";
 
 			// Set readyState
+			/*同步属性*/
 			jqXHR.readyState = status > 0 ? 4 : 0;
 
 			// Determine if successful
