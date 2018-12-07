@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>栈、队列、链表</title>
+</head>
+<body>
+  <script type="text/javascript">
+  	var arr = [6,3,1,7,5,8,9,2,4];
+  	function getQQ(arr){
+  	  var nArr = [];
+  	  while(arr.length) {
+  	  	nArr.push(arr[0])
+  	  	arr.push(arr[1])
+  	  	arr.splice(0,2)
+  	  }
+  	  return nArr
+  	}
+    getQQ(arr)
+  </script>
+</body>
+</html>
