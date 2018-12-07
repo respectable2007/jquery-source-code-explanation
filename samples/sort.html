@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>排序</title>
+</head>
+<body>
+  <script type="text/javascript">
+  /*冒泡排序*/
+  var arr = [12,35,99,18,76];
+  function sort(arr) {
+    for(var i =0 ; i<arr.length -1; i++){
+  	  for(var j = 0; j< arr.length - i; j++) {
+  	  	if (arr[j+1]) {
+  	  		var t ;
+  	  		if (arr[j+1] < arr[j]) {
+  	  		  t = arr[j];
+  	  		  arr[j] = arr[j+1];
+  	  		  arr[j+1] = t;
+  	  		}
+  	  	}
+  	  }
+  	}
+  	return arr;
+  }
+  console.log(sort(arr))
+  </script>
+</body>
+</html>
