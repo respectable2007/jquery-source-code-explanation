@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta charset="utf-8">
 	<title>排序</title>
 </head>
 <body>
   <script type="text/javascript">
+
+  /*桶排序*，空间浪费/
+  function bucketSort(arr) {
+    var arrc = new Array(1000),
+        res = [];
+    for (var i = 0; i < arr.length; i ++) {
+      	arrc[arr[i]] = 1 ;//计数
+    }
+    for(var j = 0; j < arrc.length; j++) {
+      if(arrc[j] == 1) {
+      	res.push(j)
+      }
+    }
+    console.log(res.length)
+    console.log(res)
+  }
+  bucketSort([20,40,32,67,40,20,89,300,400,15])
+
+
+
   /*冒泡排序 n个数，时间浪费*/
-  var arr = [12,35,99,18,76];
+  // var arr = [12,35,99,18,76];
   /*从小到大*/
   /*function sort(arr) {
     for(var i =0 ; i<arr.length -1; i++){ //n-1趟排序
@@ -25,9 +46,29 @@
   }*/
   // console.log(sort(arr))
 
+ /* function book(list) {
+  	for(var i =0; i<list.length-1;i++) {
+  	  for(var j = 0;j<list.length-i;j++){
+  	  	var t ;
+  	  	if (list[j]==list[j+1]){
+  	  	  list.splice(j+1, 1);
+  	  	  continue;
+  	  	}
+  	  	if(list[j]>list[j+1]){
+  	  		t = list[j + 1];
+  	  		list[j+1] = list[j];
+  	  		list[j] = t
+
+  	  	} 
+  	  }
+  	}
+  }
+  book([20,40,32,67,40,20,89,300,400,15])*/
+
+
+
   /*快速排序*/
   var qArr = [6,1,2,7,9,3,4,5,10,8];
-  31254
   function quickSort(left, right){
   	var i = left,
   	    j = right - 1,
@@ -51,7 +92,7 @@
 
 	    //左向右，大于基准数
 	    while(qArr[i]<temp && (i<j)){
-	     i++;--3
+	     i++;
 	    }
 	    /*互换*/
 	    if (i < j) {
@@ -66,7 +107,46 @@
     quickSort(left,i);
     quickSort(i+2,right);
   }
-  quickSort(1,10)
+  // quickSort(1,10)
+
+  function book(arr){
+  	/*快速排序*/
+  	function sort(left,right) {
+  	   var temp = arr[left - 1],
+       i = left,
+       j = right -1,
+       t;
+       if(left>=right){
+   	    return;
+       }
+       while(i!=j) {
+       	while(arr[j]>temp && i < j) {
+   	      j--;
+   	    }
+       	while(arr[i]<temp && i < j) {
+   	      i++;
+       	}
+       	if(i<j){
+          t = arr[i];
+          arr[i] = arr[j];
+          arr[j] = t;
+       	}
+       }
+       arr[left -1] = arr[i];
+       arr[i] = temp;
+       sort(left,i);
+       sort(i+2,right);
+  	}
+  	sort(1,arr.length);
+  	/*去重*/
+  	for(var i = 0; i<arr.length;i++){
+  		if(arr[i] == arr[i+1]){
+  			arr.splice(i+1,1)
+  		}
+  	}
+    console.log(arr)
+  }
+  book([20,40,32,67,40,20,89,300,400,15])
   </script>
 </body>
 </html>
