@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>栈</title>
+</head>
+<body>
+	<script type="text/javascript">
+      /*在一端进行删除和插入操作*/
+      function testHuiWen(str){
+      	var mid = Math.floor(str.length/2);
+      	var isHui = true;
+      	for(var i = 0; i < mid; i++) {
+      	  if (str[i] != str[str.length - 1 - i]) {
+             isHui = false;
+             break
+      	  }
+      	}
+      	return isHui;
+      }		
+      console.log(Date.now())
+      console.log(testHuiWen('xyzzx'));
+      console.log(Date.now())
+
+      function test(str) {
+      	var mid = Math.floor(str.length/2);
+      	var strBefore = [];
+      	for (var i =0 ; i < mid; i++) {
+      	  strBefore[i] = str[i];
+      	}
+      	for (var j = mid+1;j<str.length;j++){
+      	  if (str[i] != str[j]){
+      	  	break;
+      	  }
+      	  i--;
+      	}
+      	return i;
+      }
+      console.log(Date.now())
+      console.log(test('xyzzx'));
+      console.log(Date.now())
+      /*时间复杂度，O(M)，性能是差不多*/
+	</script>
+</body>
+</html>

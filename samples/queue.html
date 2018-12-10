@@ -20,7 +20,6 @@
   	console.log(Date.now())
     getQQ(arr)
   	console.log(Date.now())
-    /*Chrome耗时6ms，FireFox耗时7ms*/
     function getQQ1(arr){
       var nArr =[],
           head = 0,
@@ -34,18 +33,20 @@
       }
       return nArr;
     }
-    console.log(Date.now())
+ /*   console.log(Date.now())
     getQQ1(arr)
-  	console.log(Date.now())
-    /*Chrome、FireFox均耗时1ms*/
+  	console.log(Date.now())*/
+    /*时间复杂度，O(M)，时间差不多*/
+
+    
     /*抽象出一个结构体*/
-    function Queue() {
+/*    function Queue() {
       var obj = new Object();
       obj.data = new Array(100);
       obj.head = 0;
       obj.tail = 0;
       return obj;
-    }
+    }*/
   </script>
 </body>
 </html>
