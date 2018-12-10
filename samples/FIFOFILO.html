@@ -6,7 +6,7 @@
 </head>
 <body>
 <script type="text/javascript">
-function diaoyu(){
+function diaoyu(a,b){
 	/*队列*/
 	function Queue() {
 	  this.data = [];
@@ -17,8 +17,8 @@ function diaoyu(){
 	var s = [], top = 0,
 	    q1 = new Queue();
 	    q2 = new Queue();
-        q1.data = [2,4,1,2,5,6];
-        q2.data = [3,1,3,5,6,4];
+        q1.data = a;
+        q2.data = b;
 	    q1.tail = q1.data.length;
 	    q2.tail = q2.data.length;
 	/*出牌*/
@@ -79,18 +79,20 @@ function diaoyu(){
 	}
 	/*q1获胜*/
 	if (q2.tail == q2.head) {
+	  console.log('老大赢了')
 	  console.log(q1.data.slice(q1.head));
 	  if (s.length > 0) {
 	  	console.log(s.slice(0,top))
 	  }
 	} else {
+	  console.log('老二赢了')
 	  console.log(q2.data.slice(q2.head));
 	  if (s.length > 0) {
 	  	console.log(s.slice(0,top))
 	  }
 	}
 }
-diaoyu();
+diaoyu([2,2,3,3,4,4],[2,2,3,3,4,4]);
 </script>
 </body>
 </html>
