@@ -11,6 +11,7 @@
   	   sum = 0;
   function gun(m) {
    var l = 0;
+   /*十进制是0-9间的数拼在一起的，获取每位数，计算火柴棍总和*/
    while(Math.floor(m/10) != 0) {
      l += arr[m % 10];
 	 m = Math.floor(m / 10);
@@ -19,13 +20,10 @@
   }
   function fun(n) {
     var i, j, k;
-  	/*枚举*/
+  	/*枚举，1111是可以拼接的做大数*/
   	for(i = 0; i <= 1111; i++) {
   		for(j = 0 ; j <= 1111; j++) {
   		  k = i + j;
-  		  if( j == 11) {
-  		  	// debugger
-  		  }
           if (gun(k) + gun(i) + gun(j) == (n - 4)) {
           	sum ++;
           	console.log(i + '+' + j + '=' + k)
@@ -34,9 +32,63 @@
   	}
   	console.log(sum);
   }
-  var s = Date.now()
+/*  var s = Date.now()
   fun(18)
-  console.log(Date.now() - s)
+  console.log(Date.now() - s)*/
+
+  /*数的全排列,123*/
+  function sort(m) {
+  	var a = [],
+  	    n = 1,
+  	    m = m % 10;//计数
+    var sum = m,
+        str = '';
+    var j = 0, i;
+    /*方向*/
+    function x() {
+    	/*小到大*/
+		if (sum != i) {
+	       str = '' + i + sum;
+	   	 } else {
+	   	 	str = '' + i;
+	   	 }
+	     j = 1;
+	     for(j; j<= m; j++ ) {
+	       if(i == j || str.indexOf(j) > -1) {
+	      	 continue;
+	       }
+	       str += j;
+	       if(str.length == m && a.indexOf(Number(str)) < 0) {
+	         a.push(Number(str))
+	       }
+	     }
+
+    	/*大到小*/
+	     if (sum != i) {
+	       str = '' + i + sum;
+	   	 } else {
+	   	 	str = '' + i;
+	   	 }
+	     k = m;
+	     for(k; k >= 1; k-- ) {
+	       if(i == k || str.indexOf(k) > -1) {
+	      	 continue;
+	       }
+	       str += k;
+	       if(str.length == m && a.indexOf(Number(str)) < 0) {
+	         a.push(Number(str))
+	       }
+	     }
+    }
+    for(i = 1; i <= m; i ++) {
+       sum = m;
+       while(sum > 0) {
+       	 x();
+         sum --;
+       }
+    }
+  }
+  sort(12345)
 </script>
 </body>
 </html>
