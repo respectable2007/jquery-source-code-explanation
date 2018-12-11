@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>万能搜索优化</title>
+</head>
+<body>
+<script type="text/javascript">
+ /**/
+ var book = new Array(10),
+     a = [],
+     n = 9,
+     sum = 0,
+     j = 0;
+ function dfs(step) {
+ 	/*边界条件*/
+ 	if( step == n + 1) {
+ 	  if ((a[1]*100 +a[2]*10 +a[3]) + (a[4]*100 +a[5]*10 +a[6]) == (a[7]*100 +a[8]*10 +a[9])) {
+         sum ++;
+         console.log(a)
+ 	  }
+ 	  return;
+ 	}
+ 	/*遍历每一种可能*/
+ 	for(var i = 1; i <= n; i ++) {
+ 	  if (typeof book[i] == 'undefined') {
+ 	    a[step] = i;
+ 	    book[i] = 1;
+ 	    /*继续下一步*/
+ 	    dfs(step + 1);
+ 	    book[i] = undefined;
+ 	  } 
+ 	}
+ 	/*返回*/
+ 	return;
+ }
+ 
+ dfs(1);
+ console.log(sum/2)
+</script>
+</body>
+</html>
