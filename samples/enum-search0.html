@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>万能搜索优化</title>
+</head>
+<body>
+<script type="text/javascript">
+ /*深度优化算法*/
+ /*方块+方块=方块*/
+ var book = new Array(10),
+     a = [],
+     n = 9,
+     sum = 0,
+     j = 0;
+ function dfs(step) {
+   /*边界条件*/
+   if( step == n + 1) {
+     if ((a[1]*100 +a[2]*10 +a[3]) + (a[4]*100 +a[5]*10 +a[6]) == (a[7]*100 +a[8]*10 +a[9])) {
+         sum ++;
+         console.log(a)
+     }
+     return;
+   }
+   /*遍历每一种可能*/
+   for(var i = 1; i <= n; i ++) {
+     if (typeof book[i] == 'undefined') {
+       a[step] = i;
+       book[i] = 1;
+       /*继续下一步*/
+       dfs(step + 1);
+       book[i] = undefined;
+     } 
+   }
+   /*返回*/
+   return;
+ }
+ // dfs(1);
+ // console.log(sum/2)
+(function () {
+ /*迷宫*/
+ var a = [],
+     book = [],
+     start,
+     end,
+     min = 999999999,
+     k,
+     t;
+ function maze(n,m) {
+  for (var i = 1; i <= n;i++) {
+    a[i] = [];
+    book[i] = [];
+    for(var j = 1; j <= m;j++) {
+      a[i][j] = 0;
+      book[i][j] = 0;
+      if((i==1&&j==3) 
+          || (i==3&&j==3)
+          || (i==4&&j==2) 
+          || (i==5&&j==4)) {
+        a[i][j] = 1;
+      }
+    }
+  }
+ }
+ /*计算最短路线*/
+ function dfsd(x,y,step) {
+    /*边界条件*/
+    if(x == end[0] && y == end[1]) {
+      if(step < min) {
+        min = step;
+      }
+      return;
+    }
+   /*遍历每一种可能*/
+   /*计算下一步坐标*/
+   var next = [[0,1],[1,0],[0,-1],[-1,0]];
+   var nx,ny;
+   for(var i = 0 ;i < next.length; i++) {
+       nx = x + next[i][0];
+       ny = y + next[i][1];
+       if(nx < 1 || nx > k || ny <1 || ny > t) {
+         continue;
+       }
+       if(a[nx][ny] == 0 && book[nx][ny] == 0) {
+         book[x][y] = 1;
+         dfsd(nx,ny,step + 1);
+         book[x][y] = 0;
+       }
+   }
+    /*返回*/
+   return;
+ }
+ /*开始点和目标点*/
+ function find(a, b, c) {
+   start = a;
+   end = b;
+   k = c[0];
+   t = c[1];
+   maze(k, t);
+   dfsd(start[0],start[1],0);
+ }
+})()
+ // find([1,1], [4,3],[5,4]);
+ // console.log(min);
+
+ /*广度优化算法*/
+ ;(function(){
+  /*坐标*/
+  function Queue() {
+   this.x = 0;
+   this.y = 0;
+   this.step = 0;
+  }
+
+  var a = [],//迷宫
+      book = [],//标记法
+      que = new Array(2501),//队列-数组
+      head = 1,
+      tail = 1,
+      start = [1,1],
+      end = [4,3],//队列
+      bound = [5,4];//边界
+
+  /*输入迷宫*/
+  function maze(n,m) {
+   for (var i = 1; i <= n;i++) {
+    a[i] = [];
+    book[i] = [];
+    for(var j = 1; j <= m;j++) {
+      a[i][j] = 0;
+      book[i][j] = 0;
+      if((i==1&&j==3) 
+          || (i==3&&j==3)
+          || (i==4&&j==2) 
+          || (i==5&&j==4)) {
+        a[i][j] = 1;
+      }
+    }
+   }
+  }
+  
+  maze(bound[0], bound[1]);
+  var nx,ny,flag;
+  /*从(1,1)开始*/
+  que[tail] = new Queue();
+  que[tail].x = 1;
+  que[tail].y = 1;
+  que[tail].step = 0;
+  tail++;
+  book[1][1] = 1;
+  var next = [[0,1],[1,0],[0,-1],[-1,0]];
+  
+  while( head < tail) {
+    flag = 0;
+    /*遍历当前位置的可能性*/
+  	for(var i = 0; i < next.length; i++) {
+      nx = que[head].x + next[i][0];
+      ny = que[head].y + next[i][1];
+      /*超出边界*/
+      if (nx < 1 || nx > bound[0] || ny < 1 || ny > bound[1]) {
+        continue;
+      }
+    
+      /*走过或障碍*/
+      if (a[nx][ny] == 0 && book[nx][ny] == 0) {
+        book[nx][ny] = 1;
+        que[tail] = new Queue();
+        que[tail].x = nx;
+        que[tail].y = ny;
+        que[tail].step = que[head].step + 1;
+        tail++;
+      }
+      
+      /*目标点*/
+      if(nx == end[0] && ny == end[1]) {
+      	flag = 1;
+      	break;
+      }
+    }
+    if(flag == 1) {
+      break;
+    }
+    head++;
+  }
+  console.log(que[tail-1].step)
+ })();
+ 
+    
+</script>
+</body>
+</html>
