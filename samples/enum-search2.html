@@ -7,7 +7,7 @@
 <body>
 <script type="text/javascript">
 ;(function() {
-  /*炸弹人--广度搜索*/
+  /*炸弹人--深度搜索*/
   function Queue() {
   	this.x = 0;
   	this.y = 0;
@@ -87,38 +87,29 @@
   	}
   	return sum;
   }
+  var next = [[0,1],[1,0],[0,-1],[-1,0]];
 
-  a[tail] = new Queue();
-  a[tail].x = 3;
-  a[tail].y = 3;
-  tail++;
-
-  while(head < tail) {
-    /*获取可以走到的点*/
-    var next = [[0,1],[1,0],[0,-1],[-1,0]],tx,ty;
-    for (var i = 0; i < next.length; i++){
-      tx = a[head].x + next[i][0];
-      ty = a[head].y + next[i][1];
-      if(tx < 0 || tx > 12 || ty < 0 || ty > 12) {
-        continue;
+  function dfs(x, y) {
+  	var sum = getEnemy(x,y),tx,ty;
+  	if (sum > max.sum) {
+  	  max.x = x;
+  	  max.y = y;
+  	  max.sum = sum;
+  	}
+  	for(var i = 0; i < next.length; i++) {
+      tx = x + next[i][0];
+      ty = y + next[i][1];
+      if(map[tx][ty] == 1 || map[tx][ty] == 2) {
+      	continue;
       }
       if(map[tx][ty] == 0 && book[tx][ty] == 0) {
-      	a[tail] = new Queue();
-        a[tail].x = tx;
-        a[tail].y = ty;
-        tail ++;
-        book[tx][ty] = 1;
-        var num = getEnemy(tx,ty);
-        if (num > max.sum) {
-          max.x = tx;
-          max.y = ty;
-          max.sum = num;
-        }
+      	book[tx][ty] = 1;
+      	dfs(tx,ty);
       }
-    }
-  	head++;
+  	}
+  	return;
   }
-  console.log(a);
+  dfs(1,3);
   console.log(max);
 })()
 </script>
