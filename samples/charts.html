@@ -19,20 +19,23 @@
       n = 5,
       s = [],
       top = 0,
-      min = 999999;
+      min = 999999,
+      t = [];
   s[0] = 1;
   top ++;
   function dfs(cur, dis) {
   	var i;
-  	if (dis > min) return;
+  	if (dis > min) return;//大于当前距离的，没必要循环
     /*边界*/
     if (cur == n) {
       if (dis < min) {
       	min = dis;
+      	t = [];
+        for(var j = 0 ; j < top; j++) {
+          t[j] = s[j]
+        }
       }
-      /*for(var j = 0 ; j < top; j++) {
-        sum += s[]
-      }*/
+     
 
       return;
     }
@@ -46,16 +49,17 @@
         s[top] = i;
         top ++;
         dfs(i, dis + map[cur][i]);
-        
         book[i] = undefined;
         top --;
+        s.length = top;
       }
-    }    
+    }  
     /*返回*/
     return;
   }
   dfs(1, 0);
   console.log(min);
+  console.log(t);
 })()
 </script>
 </body>

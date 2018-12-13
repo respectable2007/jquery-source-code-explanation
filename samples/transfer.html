@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>图的遍历</title>
+</head>
+<body>
+<script type="text/javascript">
+/*最少转机*/
+;(function() {
+  function Q() {
+    this.x = 0;
+    this.step = 0;
+  }
+  var map = [[undefined,undefined,undefined,undefined,undefined,undefined],
+             [undefined,0,1,1,-1,-1],
+             [undefined,1,0,1,1,-1],
+             [undefined,1,1,0,1,1],
+             [undefined,-1,1,1,0,1],
+             [undefined,-1,-1,1,1,0]
+            ],
+      book = [undefined,undefined,undefined,undefined,undefined,undefined],//标记城市i是否在队列中
+      a = [],
+      head = 1,
+      tail = 1,//队列，存储路线
+      flag = 0;//是否到达5城市
+
+      /*从1城市出发*/
+      a[head] = new Q();
+      a[head].x = 1;
+      a[head].step = 0;
+      book[head] = 1;
+      tail ++;
+
+      /*广度搜索*/
+      while(head < tail) {
+        var x = a[head].x;
+        for(var i = 1; i <= 5; i++) {
+
+          if(map[x][i] == 1 && book[i] == undefined) {
+          	book[i] = 1;
+          	a[tail] = new Q();
+          	a[tail].x = i;
+          	a[tail].step = a[head].step + 1;
+          	tail ++;
+          }
+
+          if(a[tail - 1].x == 5) {
+          	flag = 1;
+          	break;
+          }
+        }
+
+        if(flag) {
+          break;
+        }
+
+      	head ++;
+      }
+      console.log(a[tail - 1].step)
+})()
+</script>
+</body>
+</html>  
