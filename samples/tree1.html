@@ -1,14 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>二叉树和堆</title>
+	<meta charset="utf-8">
+	<title>二叉树和堆</title>
 </head>
 <body>
 <script type="text/javascript">
 /*建堆2*/
 ;(function(){
-  
+  var arr = [undefined,99,5,36,7,22,17,46,12,2,19,25,28,1,92],
+      n = arr.length;
+  function exchange(x, y) {
+    var mid = arr[x];
+    arr[x] = arr[y];
+    arr[y] = mid;
+  }
+  function shiftDown(i) {
+  	var flag = 0,
+        t;
+    while(i*2 <= n && flag == 0) {
+      /*左儿子*/
+      if(arr[i] > arr[i*2]){
+        t = i * 2;
+      } else {
+        t = i;
+      }
+      /*右儿子*/
+      if(i*2+1<=n) {
+        if(arr[t] > arr[i*2+1]){
+          t = i*2+1;
+        }
+      }
+      /*位置发生变化*/
+      if(t != i) {
+        exchange(i, t); //交换当前位置与向下位置
+        i = t;
+      } else {
+        flag = 1;
+      }
+    }  
+  }
+
+  /*遍历非叶节点*/
+  for(var j = Math.floor(n/2); j >= 1; j--) {
+  	console.log(j);
+    shiftDown(j);
+  }
+
+  console.log(arr);
 })()
 </script>
 </body>
