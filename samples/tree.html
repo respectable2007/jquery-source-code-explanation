@@ -11,22 +11,23 @@
   var arr = [99,5,36,7,22,17,46,12,2,19,25,28,1,92],
       h = [],
       n = 0;
+  /*建最小堆1*/
   function exchange(x,y) {
     var t = h[x];
         h[x] = h[y];
         h[y] = t;
   }
-  function shiftUp(n) {
+  function shiftUp(i) {
   	var flag = 0;
-    if(n == 1) return;
-  	while(n != 1 && flag == 0) {
+    if(i == 1) return;
+  	while(i != 1 && flag == 0) {
   	  /*父节点*/
-  	  if (h[n] < h[n/2]) {
-        exchange(n,n/2);
+  	  if (h[i] < h[Math.floor(i/2)]) {
+        exchange(i,Math.floor(i/2));
   	  } else {
   	  	flag = 1;
-        n = n/2;
   	  }
+      i = Math.floor(i/2);
   	}
   	return;
   }
