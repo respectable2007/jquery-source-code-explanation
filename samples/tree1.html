@@ -43,11 +43,22 @@
 
   /*遍历非叶节点*/
   for(var j = Math.floor(n/2); j >= 1; j--) {
-  	console.log(j);
     shiftDown(j);
   }
-
+  
+  /*排序*/
+  function num() {
+    var z;
+    z = arr[1];
+    n --;
+    arr[1] = arr[n];
+    shiftDown(1);
+    return z;
+  }
   console.log(arr);
+  for(var i = 1; i <= 14; i++) {
+    console.log(num());
+  }
 })()
 </script>
 </body>
