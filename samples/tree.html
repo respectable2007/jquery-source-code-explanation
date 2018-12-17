@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>二叉树和堆</title>
+</head>
+<body>
+<script type="text/javascript">
+/*最小堆*/
+;(function(){
+  var arr = [99,5,36,7,22,17,46,12,2,19,25,28,1,92],
+      h = [],
+      n = 0;
+  function exchange(x,y) {
+    var t = h[x];
+        h[x] = h[y];
+        h[y] = t;
+  }
+  function shiftUp(n) {
+  	var flag = 0;
+    if(n == 1) return;
+  	while(n != 1 && flag == 0) {
+  	  /*父节点*/
+  	  if (h[n] < h[n/2]) {
+        exchange(n,n/2);
+  	  } else {
+  	  	flag = 1;
+        n = n/2;
+  	  }
+  	}
+  	return;
+  }
+  for(var i = 0; i < arr.length; i++) {
+    n ++;
+    h[n] = arr[i];
+    shiftUp(n);
+  }
+  console.log(h);
+})()
+</script>
+</body>
+</html>
