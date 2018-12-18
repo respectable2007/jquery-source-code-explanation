@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>擒贼先擒王--并查集</title>
+</head>
+<body>
+<script type="text/javascript">
+/*强盗团伙*/
+;(function(){
+ var arr = [[1,2],[3,4],[5,2],[4,6],[2,6],[7,11],[8,7],[9,7],[9,11],[1,6]],
+     f = [];
+ /*初始化强盗团伙*/ 
+ for(var i = 1; i <= 11; i++){
+   f[i] = i;
+ }
+
+ /*靠左原则*/
+ function left(w) {
+   var l = w[0],
+       r = w[1];
+   var t1 = getBoss(l);
+   var t2 = getBoss(r);
+   if(t1 != t2) {
+   	f[t2] = t1;
+   }
+
+ }
+ /*擒贼先擒王原则*/
+ function getBoss(v) {
+  if(f[v] == v) {
+  	return v;
+  } else {
+  	f[v] = getBoss(f[v]);//若不是本身，就查找其超级大BOSS，并将路径压缩
+  	return f[v];
+  }
+ }
+
+ for(var j = 0; j < arr.length; j++){
+   left(arr[j]);
+ }
+ 
+ /*输出团伙*/
+ for(var k = 0; k < f.length; k++) {
+   if(f[k] == k){//超级大boss的条件时索引是其本身值
+   	console.log(k);
+   }
+ }
+})()
+</script>
+</body>
+</html>
