@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>更多算法</title>
+</head>
+<body>
+<script type="text/javascript">
+/*最小生成树*/
+;(function(){
+  var arr = [undefined,{u:2,v:4,w:11},
+              {u:3,v:5,w:13},
+              {u:4,v:6,w:3},
+              {u:5,v:6,w:4},
+              {u:2,v:3,w:6},
+              {u:4,v:5,w:7},
+              {u:1,v:2,w:1},
+              {u:3,v:4,w:9},
+              {u:1,v:3,w:2}
+            ],
+      book = new Array(7),
+      dis = [81,81,81,81,81,81,81,81,81,81],
+      sum = 0,
+      b = 1;
+  /**/
+  book[1] = 1;
+
+  /**/
+  while(b <= 6) {
+   for(var k = 1; k < book.length; k++){
+    if(book[k] == 1) {
+      for(var i = 1; i < arr.length; i++) {
+        if(arr[i].u == k && book[arr[i].v] == undefined) {
+          if (dis[arr[i].v] > arr[i].w) {
+            dis[arr[i].v] = arr[i].w
+          }
+        }
+      }
+    }
+   }
+   debugger;
+   var temp = b ;
+   for(var j = b + 1; j < dis.length; j++) {
+     if(dis[j] < dis[temp] && book[j] == undefined) {
+       temp = j;
+     }
+   }
+   sum += dis[temp];
+   book[temp] = 1;
+   b ++;
+  }
+  console.log(book)
+  console.log(sum)
+})()
+</script>
+</body>
+</html>
