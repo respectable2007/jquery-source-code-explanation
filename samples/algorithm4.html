@@ -6,17 +6,16 @@
 </head>
 <body>
 <script type="text/javascript">
-/*图的割点*/
+/*二分图最大匹配*/
 ;(function(){
  var e = [[undefined,undefined,undefined,undefined,undefined,undefined,undefined],
            [undefined,0,81,1,1,81,81],
-           [undefined,81,0,1,1,1,1],
+           [undefined,81,0,1,1,1,81],
            [undefined,1,1,0,81,81,81],
            [undefined,1,1,81,0,81,81],
            [undefined,81,1,81,81,0,1],
-           [undefined,81,1,81,81,1,0]
+           [undefined,81,81,81,81,1,0]
           ],
-     flag = new Array(7),
      root = 1,
      index = 0,
      num = new Array(7),
@@ -26,22 +25,18 @@
  	return a < b ? a : b;
  }
  function dfs(x,f) {
-   var child = 0;
    index++;
-   /*time 当前点最短时间戳大于等于父节点的时间戳，则认为是当前点必须经过父节点才能返回*/
+   /*time*/
    num[x] = index;
    low[x] = index;
    for(var i = 1; i <= n; i++) {
      if(e[x][i] == 1) {
-       if(num[i] == undefined) {
-       	 child ++;
+       if(num[i] == undefined) {  
          dfs(i, x);
          low[x] = min(low[x],low[i]);
-         if(x!=root && low[i] >= num[x]) {
-           flag[x] = 1;
-         }
-         if(x == root && child == 2) {
-           flag[x] = 1;
+         /*time 当前点最短时间戳大于父节点的时间戳，则认为是当前点不能返回到父节点*/
+         if(low[i] > num[x]) {
+           console.log(i + '-' + x);
          }
        } else if(i != f) {
          low[x] = min(low[x], num[i])
@@ -51,11 +46,6 @@
    return;
  }
  dfs(1,1);
- for(var i = 1; i <= n; i++) {
-   if(flag[i] == 1) {
-     console.log(i);
-   }
- }
 })()
 </script>
 </body>
