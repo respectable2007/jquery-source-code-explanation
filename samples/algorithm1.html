@@ -7,6 +7,7 @@
 <body>
 <script type="text/javascript">
 /*最小生成树*/
+
 /*时间复杂度为O(N3),需要优化*/
 /*;(function(){
   var arr = [undefined,{u:2,v:4,w:11},
@@ -54,7 +55,7 @@
 })()*/
 
 /*时间复杂度优化O(N2)*/
-;(function(){
+/*;(function(){
   var e = [[undefined,undefined,undefined,undefined,undefined,undefined,undefined],
            [undefined,0,1,2,81,81,81],
            [undefined,1,0,6,11,81,81],
@@ -69,9 +70,9 @@
       count = 1,
       min = 81,
       sum = 0,
-      k = 0;
+      k = 0;*/
   /*init*/
-  book[1] = 1;
+  /*book[1] = 1;
   for(var m = 1; m <= n; m++) {
     dis[m] = e[1][m];
   }
@@ -94,13 +95,14 @@
     }
   }
   console.log(sum);
-})()
+})()*/
+
 /*时间复杂度O(MlogN)*/
 ;(function(){
   var u = [undefined,2,3,4,5,2,4,1,3,1],
       v = [undefined,4,5,6,6,3,5,2,4,3],
       w = [undefined,11,13,3,4,6,7,1,9,2],
-      firt = [],
+      first = [],
       next = [],
       m = 9,
       n = 6,
@@ -108,34 +110,129 @@
       h = [],
       pos = [],
       book = new Array(7),
-      count = 1;
-   /*无向图*/
+      count = 0,
+      l = 0,
+      size = 0,
+      b = 0,
+      sum = 0;
+   /*map*/
    for(var j = m + 1; j <= 2*m; j++) {
     u[j] = v[j - m];
     v[j] = u[j - m];
     w[j] = w[j - m];
    }
-   /*邻接表*/
-   for(var k = 1; k <= n; n++) {
+
+   /*table*/
+   for(var k = 1; k <= n; k++) {
     first[k] = -1;
     next[k] = -1;
    }
-   for(var i = 1; i <= m; m++) {
+   
+   /*line*/
+   for(var i = 1; i <= 2*m; i++) {
      next[i] = first[u[i]];
      first[u[i]] = i;
    }
    
-   /*树*/
+   /*tree*/
    book[1] = 1;
    count ++;
    
+   /*init dis*/
+   dis[1] = 0;
+   l = first[1];
+   while(l != -1) {
+    dis[v[l]] = w[l];
+    l = next[l];
+   }
+   
+   /*heap*/
+   function exchange(x,y) {
+    var t = h[x];
+    h[x] = h[y];
+    h[y] = t;
 
-   /*堆*/
-   for(var a = 1; a <= n ; a++) {
-    h[a] = a;
+    var index = pos[h[x]];
+    pos[h[x]] = pos[h[y]];
+    pos[h[y]] = index;
    }
 
-   
+   function shiftDown(x) {
+    var flag = 0,t;
+    while(2*x <= size && flag == 0) {
+      /*son node*/
+      if(dis[h[2*x]] < dis[h[x]]) {
+        t = 2*x;
+      } else {
+        t = x;
+      }
+      if(2*x + 1 <= size) {
+        if(dis[h[x*2 + 1]] <dis[h[t]]) {
+          t = 2*x + 1;
+        }
+      }
+      if( t != x) {
+        exchange(t, x);
+        x = t;
+      } else {
+        flag = 1;
+      }
+    }
+   }
+
+   function shiftUp(y) {
+     var flag = 0;
+     if(y == 1) return;
+     while( y != 1 && flag == 0) {
+       if(dis[h[y]] < dis[h[Math.floor(y/2)]]) {
+        exchange(y,Math.floor(y/2));
+       } else {
+        flag = 1;
+       }
+       y = Math.floor(y/2);
+     }
+   }
+   /*pop min dis*/
+   function pop() {
+     var t;
+     t = h[1];
+     pos[t] = 0;
+     h[1] = h[size];//最后一位一直根节点
+     pos[h[size]] = 1;
+     size--;
+     shiftDown(1);//重新恢复成最小堆
+     return t;
+   }
+
+   size = n;
+   for(var a = 1; a <= n ; a++) {
+    h[a] = a;
+    pos[a] = a;
+   }
+  
+   /*dis-sort*/
+   for(var o = Math.floor(size/2); o >= 1; o--) {
+    shiftDown(o);
+   }
+   pop();
+
+   /*find or search*/
+   while(count < n) {
+     b = pop();
+     book[b] = 1;
+     count ++;
+     sum += dis[b];
+     
+     l = first[b];
+     while(l != -1) {
+      if(book[v[l]] == undefined && dis[v[l]] > w[l]) {
+        dis[v[l]] = w[l];
+        shiftUp(pos[v[l]]);
+      }
+      l = next[l];
+     }
+   }
+   console.log(sum);
 })()
 </script>
 </body>
