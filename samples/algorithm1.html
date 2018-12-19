@@ -9,7 +9,7 @@
 /*最小生成树*/
 
 /*时间复杂度为O(N3),需要优化*/
-/*;(function(){
+;(function(){
   var arr = [undefined,{u:2,v:4,w:11},
               {u:3,v:5,w:13},
               {u:4,v:6,w:3},
@@ -52,10 +52,10 @@
   }
   console.log(book)
   console.log(sum)
-})()*/
+})()
 
 /*时间复杂度优化O(N2)*/
-/*;(function(){
+;(function(){
   var e = [[undefined,undefined,undefined,undefined,undefined,undefined,undefined],
            [undefined,0,1,2,81,81,81],
            [undefined,1,0,6,11,81,81],
@@ -70,9 +70,9 @@
       count = 1,
       min = 81,
       sum = 0,
-      k = 0;*/
+      k = 0;
   /*init*/
-  /*book[1] = 1;
+  book[1] = 1;
   for(var m = 1; m <= n; m++) {
     dis[m] = e[1][m];
   }
@@ -95,7 +95,7 @@
     }
   }
   console.log(sum);
-})()*/
+})()
 
 /*时间复杂度O(MlogN)*/
 ;(function(){
