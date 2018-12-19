@@ -7,7 +7,8 @@
 <body>
 <script type="text/javascript">
 /*最小生成树*/
-;(function(){
+/*时间复杂度为O(N3),需要优化*/
+/*;(function(){
   var arr = [undefined,{u:2,v:4,w:11},
               {u:3,v:5,w:13},
               {u:4,v:6,w:3},
@@ -22,10 +23,10 @@
       dis = [81,81,81,81,81,81,81,81,81,81],
       sum = 0,
       b = 1;
-  /**/
+
   book[1] = 1;
 
-  /**/
+
   while(b <= 6) {
    for(var k = 1; k < book.length; k++){
     if(book[k] == 1) {
@@ -38,7 +39,6 @@
       }
     }
    }
-   debugger;
    var temp = b ;
    for(var j = b + 1; j < dis.length; j++) {
      if(dis[j] < dis[temp] && book[j] == undefined) {
@@ -51,6 +51,91 @@
   }
   console.log(book)
   console.log(sum)
+})()*/
+
+/*时间复杂度优化O(N2)*/
+;(function(){
+  var e = [[undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+           [undefined,0,1,2,81,81,81],
+           [undefined,1,0,6,11,81,81],
+           [undefined,2,6,0,9,13,81],
+           [undefined,81,11,9,0,7,3],
+           [undefined,81,81,13,7,0,4],
+           [undefined,81,81,81,3,4,0]
+          ],
+      book = new Array(7),
+      dis = [81,81,81,81,81,81,81],
+      n = 6,
+      count = 1,
+      min = 81,
+      sum = 0,
+      k = 0;
+  /*init*/
+  book[1] = 1;
+  for(var m = 1; m <= n; m++) {
+    dis[m] = e[1][m];
+  }
+  while(count < n) {
+    min = 81;
+    for(var i = 1; i <= n; i++) {
+      if (book[i] == undefined && dis[i] < min) {
+        min = dis[i];
+        k = i;
+      }
+    }
+    book[k] = 1;
+    sum += dis[k];
+    count++;
+
+    for(var j = 1; j <= n; j++) {
+      if(book[j] == undefined && dis[j] > e[k][j]) {
+        dis[j] = e[k][j];
+      }
+    }
+  }
+  console.log(sum);
+})()
+/*时间复杂度O(MlogN)*/
+;(function(){
+  var u = [undefined,2,3,4,5,2,4,1,3,1],
+      v = [undefined,4,5,6,6,3,5,2,4,3],
+      w = [undefined,11,13,3,4,6,7,1,9,2],
+      firt = [],
+      next = [],
+      m = 9,
+      n = 6,
+      dis = [81,81,81,81,81,81,81],
+      h = [],
+      pos = [],
+      book = new Array(7),
+      count = 1;
+   /*无向图*/
+   for(var j = m + 1; j <= 2*m; j++) {
+    u[j] = v[j - m];
+    v[j] = u[j - m];
+    w[j] = w[j - m];
+   }
+   /*邻接表*/
+   for(var k = 1; k <= n; n++) {
+    first[k] = -1;
+    next[k] = -1;
+   }
+   for(var i = 1; i <= m; m++) {
+     next[i] = first[u[i]];
+     first[u[i]] = i;
+   }
+   
+   /*树*/
+   book[1] = 1;
+   count ++;
+   
+
+   /*堆*/
+   for(var a = 1; a <= n ; a++) {
+    h[a] = a;
+   }
+
+   
 })()
 </script>
 </body>
