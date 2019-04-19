@@ -3305,13 +3305,19 @@ var rootjQuery,
 			this.selector = selector.selector;
 			this.context = selector.context;
 		}
-        /*若为任意其他值，例如{context:'aa'}，则将其属性添加到jQuery对象上*/
+		/*若为任意其他值，例如{context:'aa'}，则将其属性添加到jQuery.fn.init的实例对象上*/
+		/* 因为jQuery旧构造函数内，使用new运算符，调用了init新构造函数，
+		   new运算符会创建一个新的对象，将函数作用域赋给这个对象，this指向这个对象，并执行
+		   函数代码，返回这个新对象。所以，不加return关键字，也可以将init实例对象返回，也
+		   可以进行链式调用
+		*/
 		return jQuery.makeArray( selector, this );
+		// jQuery.makeArray( selector, this );
 	};
 
 /** jQuery使用了new运算符，this指向了init对象，使其无法调用jQuery原型对象的属性和方法。
     jQuery.fn.init.prototype被赋值了jQuery.fn，使init原型对象上包含了jQuery原型对象的属性和方法，
-    这样jQeury就可以调用jQuery原来定义的原型属性和方法，进而解决新旧构造器隔离的问题
+    这样jQuery就可以调用jQuery原来定义的原型属性和方法，进而解决新旧构造器隔离的问题
 */
 // Give the init function the jQuery prototype for later instantiation
 init.prototype = jQuery.fn;
